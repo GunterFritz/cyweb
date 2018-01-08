@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>openTeamCybernetics</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'vendor/bootstrap-3.3.5-dist/css/bootstrap.min.css' %}" rel="stylesheet">
+        
+    <!-- Custom styles for this template -->
+    <!-- link href="css/simple-sidebar.css" rel="stylesheet"-->
+    <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/table.css' %}">
+    <link rel="stylesheet" href="{% static 'css/django.css' %}">
+    <link rel="stylesheet" href="{% static 'css/glyphicon.css' %}">
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="{% url 'cyka:project_list' %}">
+                        Start
+                    </a>
+                </li>
+                <li>
+	            <a href="{% url 'cyka:project_details' project.id %}">
+                        Projekt
+                    </a>
+                </li>
+                <li>
+	            <a href="{% url 'cyka:project_topics' project.id %}">
+                        Themen
+                    </a>
+                </li>
+                <li>
+	            <a href="{% url 'cyka:project_team' project.id %}">
+                        Teilnehmer
+                    </a>
+                </li>
+                <li>
+                    <a href="#">Agenda</a>
+                </li>
+                <li>
+                    <a href="#">Impressum</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+                    {% block content %}
+                    {% endblock %}
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+</body>
+
+</html>

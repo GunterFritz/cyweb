@@ -1,0 +1,26 @@
+{% extends 'cyka/project_base.html' %}
+
+{% block content %}
+    <div class="project">
+
+	<div id="content-main">
+        	<div class="app-polls module">
+        		<table>
+		        <caption>
+            			<p class="section" title="Models in the Polls application">Themen</p>
+        		</caption>
+        
+			{% for topic in project.topic_set.all %}
+   			         <tr class="model-question">
+                		<th scope="row"><p>{{topic.number}}</p></th>
+                		<td><p>{{topic.name}}</p></td>
+                		<td><a href="{% url 'cyka:topic_edit' topic.id %}"><span class="glyphicon glyphicon-pencil"></span> Editieren</a></td>
+            			</tr>
+	{% endfor %}
+        </table>
+        </div>
+    
+
+</div>
+    </div>
+{% endblock %}

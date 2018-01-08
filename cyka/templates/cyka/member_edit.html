@@ -1,0 +1,28 @@
+{% extends 'cyka/project_base.html' %}
+
+{% block content %}
+    <div class="project">
+
+	<div id="content-main">
+        	<div class="app-polls module">
+                	<p>{{member.name}}</p>
+        		<table>
+		        <caption>
+            			<p class="section" title="Themen sortiert nach Priorität">Themen</p>
+        		</caption>
+        
+			{% for prio in priority_list %}
+   			        <tr class="model-question">
+                		<th scope="row"><p>{{prio.priority}}</p></th>
+                		<td><p>{{prio.topic.number}}</p></td>
+                		<td><p>{{prio.topic.name}}</p></td>
+                                <td><a href="{% url 'cyka:member_edit_up' member.id prio.priority%}"><span class="glyphicon glyphicon-arrow-up"></span></a></td>
+            			</tr>
+	{% endfor %}
+        </table>
+        </div>
+    
+
+</div>
+    </div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'cyka/project_base.html' %}
+
+{% block content %}
+    <div class="project">
+        <div id="content-main">
+            <div class="app-polls module">
+                <table>
+                    <script type="text/javascript">counter = 1</script>
+                    <caption>
+                        <p class="section" title="Teilnehmer des Workshops">Teilnehmer</p>
+                    </caption>
+        
+                    {% for member in project.member_set.all %}
+                        <tr class="section">
+                            <td scope="row"><script type="text/javascript">document.write( counter++ )</script></td>
+                            <td>{{member.name}}</td>
+                            <td><a href="{% url 'cyka:member_edit' member.id %}" class="glyphicon glyphicon-pencil"> Editieren</a></td>
+                        </tr>
+                    {% endfor %}
+                        <tr class="section">
+                            <td></td>
+			    <td><a></a></th>
+                            <td>
+                                <a href="{% url 'cyka:member_new' project.id %}"><span class="glyphicon glyphicon-plus addcolor"></span> Neu</a>
+                            </td>
+                        </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+{% block member_add %}
+{% endblock %}
+{% endblock %}

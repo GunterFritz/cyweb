@@ -1,0 +1,11 @@
+{% extends 'cyka/base.html' %}
+
+{% block content %}
+    <a href="{% url 'cyka:project_new' %}" class="top-menu"><span class="glyphicon glyphicon-plus addcolor">Neues Projekt</span></a>
+    {% for p in projects %}
+        <div class="project">
+	    <h1><a href="{% url 'cyka:project_details' p.id %}">{{ p.name }}</a></h1>
+            <p>{{ p.question|linebreaksbr }}</p>
+        </div>
+    {% endfor %}
+{% endblock %}
