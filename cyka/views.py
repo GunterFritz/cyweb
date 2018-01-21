@@ -98,6 +98,8 @@ def project_topics(request, project_id):
 	return render(request, 'cyka/project_topics.html', {'project' : project })
 	
 def project_list(request):
+	if not request.user.is_authenticated():
+		return redirect('/admin')
 	projects = Project.objects.all()
 	return render(request, 'cyka/project_list.html', {'projects': projects})
 
