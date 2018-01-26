@@ -85,7 +85,8 @@ def project_team(request, project_id):
 		project = Project.objects.get(pk=project_id)
 	except Project.DoesNotExist:
 		raise Http404("Project does not exist")
-	return render(request, 'cyka/project_team.html', {'project' : project })
+	struct = Structure.factory(project.ptype)
+	return render(request, 'cyka/project_team.html', {'project' : project, 'min' : struct.getMinPersons(), 'max' : struct.getMaxPersons() })
 	
 def project_topics(request, project_id):
 	try:
@@ -146,6 +147,17 @@ def login(request):
         	# Return an 'invalid login' error message.
 		return HttpResponse("login failed")
 
+"""
+helper function create topics for project and add it to database
+
+params
+-------
+prj:	database object Project
+
+return
+-------
+list of topics
+"""
 def create_topics(prj):
 	num = Structure.factory(prj.ptype).getNumTopics()
 	for i in range(1, num +1):
