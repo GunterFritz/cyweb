@@ -24,6 +24,7 @@ class Topic(models.Model):
 class Member(models.Model):
 	name = models.CharField(max_length=128)
 	proj = models.ForeignKey(Project, on_delete=models.CASCADE)
+	status = models.BooleanField(default=False)
 
 class Priority(models.Model):
 	priority = models.IntegerField(default=20)
