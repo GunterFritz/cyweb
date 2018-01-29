@@ -5,39 +5,33 @@
         <div id="content-main">
             <div class="app-polls module">
                 <table>
-                    <script type="text/javascript">counter = 1</script>
+                    <script type="text/javascript">counter = 0</script>
                     <caption>
                         <p class="section" title="Teilnehmer des Workshops">Teilnehmer</p>
                     </caption>
         
                     {% for member in project.member_set.all %}
                         <tr class="section">
-                            <td scope="row"><script type="text/javascript">document.write( counter++ )</script></td>
+                            <td scope="row"><script type="text/javascript">document.write( 1 + counter++ )</script></td>
                             <td>{{member.name}}</td>
                             <td><a href="{% url 'cyka:member_edit' member.id %}" class="glyphicon glyphicon-pencil"> Editieren</a></td>
+                            <td>{{member.status}}</td>
                         </tr>
                     {% endfor %}
-                        <tr class="section">
-                            <td></td>
-			    <td><a></a></th>
-                    	    <script type="text/javascript">
-                            document.write("<td>
-                                <a href="{% url 'cyka:member_new' project.id %}"><span class="glyphicon glyphicon-plus addcolor"></span> Neu</a>
-                            </td>");
-			    </script>
-                        </tr>
                 </table>
-		<p id="demo">hallo</p>
+		<p id="addbutton"/p>
                     	    <script>
-				var a = document.createElement('a');
-                                a.href="{% url 'cyka:member_new' project.id %}";
-				text = document.createTextNode("Neu");
-				var span = document.createElement('span');
-				span.className ="glyphicon glyphicon-plus addcolor";
-				a.appendChild(span)
-				a.appendChild(text)
+				if(counter < {{max}}){
+				  var a = document.createElement('a');
+                                  a.href="{% url 'cyka:member_new' project.id %}";
+				  text = document.createTextNode(" Teilnehmer hinzufügen");
+				  var span = document.createElement('span');
+				  span.className ="glyphicon glyphicon-plus addcolor";
+				  a.appendChild(span)
+				  a.appendChild(text)
                             //document.getElementById("demo").appendChild(<a href="{% url 'cyka:member_new' project.id %}"><span class="glyphicon glyphicon-plus addcolor"></span> Neu</a>);
-                            	document.getElementById("demo").appendChild(a);
+                            	  document.getElementById("addbutton").appendChild(a);
+				}
 			    </script>
             </div>
         </div>
