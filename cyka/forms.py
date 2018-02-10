@@ -15,3 +15,8 @@ class MemberForm(ModelForm):
 	class Meta:
 		model = Member
 		fields = ('name',)
+
+class MemberOkForm(ModelForm):
+	class Meta:
+		model = Member
+		fields = ('status',)

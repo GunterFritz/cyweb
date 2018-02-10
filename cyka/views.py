@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView
 from django.http import HttpResponseRedirect,HttpResponse
 from django.contrib.auth import authenticate, login
-from .forms import ProjectForm, TopicForm, MemberForm
+from .forms import ProjectForm, TopicForm, MemberForm, MemberOkForm
 from .models import Project, Topic, Member
 # Create your views here.
 
@@ -44,6 +44,15 @@ def member_new(request, project_id):
 		form = MemberForm()
 	return render(request, 'cyka/member_add.html', {'project' : project, 'form' : form })
 
+"""
+is called when priority of a topic is changed in member_edit
+it resorts the list
+
+params
+-------
+member_id: private key
+priority: position of topic that was clicked
+"""
 def member_edit_up(request, member_id, priority):
 	try:
 		member = Member.objects.get(pk=member_id)
@@ -68,6 +77,18 @@ def member_edit_up(request, member_id, priority):
 
 	return redirect('cyka:member_edit', member_id)
 
+def member_ok(request, member_id, ok):
+	try:
+		member = Member.objects.get(pk=member_id)
+	except Member.DoesNotExist:
+		raise Http404("Member does not exist")
+	member.status = ok
+	member.save()
+	return redirect('cyka:member_edit', member_id)
+
+"""
+edit view of member
+"""
 def member_edit(request, member_id):
 	try:
 		member = Member.objects.get(pk=member_id)
@@ -78,7 +99,16 @@ def member_edit(request, member_id):
 
 	except Member.DoesNotExist:
 		raise Http404("Member does not exist")
-	return render(request, 'cyka/member_edit.html', {'project' : member.proj, 'member': member, 'priority_list':priority_list })
+	
+	if request.method == 'POST':
+		form = MemberOkForm(request.POST)
+		if form.is_valid():
+			form = MemberOkForm(request.POST, instance=member)
+			member = form.save(commit=False)
+			member.save()
+	else:
+		form = MemberOkForm(instance=member)
+	return render(request, 'cyka/member_edit.html', {'project' : member.proj, 'member': member, 'priority_list':priority_list, 'form' : form })
 
 def project_team(request, project_id):
 	try:
