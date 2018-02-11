@@ -778,6 +778,17 @@ class Ikosaeder(Structure):
 			t.print()
 		print("-----------------------------------------------------")
 
+	"""
+	[
+	[[Topic 1],[Opposite]],
+	[[Topic 2],[Opposite]],
+	...
+	]
+	"""
+	def getAgenda(self):
+		retval = []
+		return 
+
 class Oktaeder(Structure):
 	def __init__(self, persons = 12):
 		self.numTopics = 6
@@ -789,6 +800,8 @@ class Oktaeder(Structure):
 		self.type = "Oktaeder"
 		self.colors = {"white" : 1, "green" : 2, "blue" : 3, "yellow" : 4, "red" : 5, "black" : 6}
 		self.struts = [(1,2),(1,3),(1,4),(1,5),(2,3),(3,4),(4,5),(2,5),(2,6),(3,6),(4,6),(5,6)]
+		#opposites: white-black, green-yellow, blue-red
+		#opposites: 1-6, 2-4, 3-5
 
 	def build(self, topics, persons):
 		self.var = 1
@@ -894,6 +907,21 @@ class Oktaeder(Structure):
 					continue
 				p1.switchIfBetter(p2)
 
+	"""
+	[
+	[Topic 1,Opposite],
+	[Topic 2,Opposite],
+	...
+	]
+	"""
+	def getAgenda(self):
+		#opposites: white-black, green-yellow, blue-red
+		#opposites: 1-6, 2-4, 3-5
+		retval = [[self.getTopic("white"), self.getTopic("black")],
+		         [self.getTopic("green"), self.getTopic("yellow")],
+		         [self.getTopic("blue"), self.getTopic("red")]]
+		return retval
+ 
 	def printStructure(self):
 		print("-Oktaeder--------------------------------------------")
 		self.ring.head.print()	
@@ -937,6 +965,29 @@ class IkoTest:
 		for line in fobj:
 			p = Person(line.split(';')[0])
 			p.listinput(line.split(';')[1:])
+			self.persons.append(p)
+			self.persons_stat.append(p)
+		
+		for i in range(1, self.numTopics + 1):
+			name = "T_" + str(i).zfill(2)
+			p = Topic(name, i)
+			self.topics.append(p)
+
+		return None
+	
+	"""
+	reads the priority list from a two dimensional array
+	each line is one Person
+
+	params
+	-------
+	array: two dimensional array
+		line: Person ID; topic one; topic 2; ...
+	"""
+	def array_init(self, array):
+		for line in array:
+			p = Person(line[0])
+			p.listinput(line[1:])
 			self.persons.append(p)
 			self.persons_stat.append(p)
 		

@@ -110,6 +110,31 @@ def member_edit(request, member_id):
 		form = MemberOkForm(instance=member)
 	return render(request, 'cyka/member_edit.html', {'project' : member.proj, 'member': member, 'priority_list':priority_list, 'form' : form })
 
+def agenda(request, project_id):
+	try:
+		project = Project.objects.get(pk=project_id)
+	except Project.DoesNotExist:
+		raise Http404("Project does not exist")
+	members = project.member_set.all()
+	struct = Structure.factory(project.ptype)
+	if len(members)< struct.getMinPersons():
+		err_text = "Minimale Anzahl Teilnhemer nicht erreicht"
+	arr = []
+	for m in members:
+		if m.status == False:
+			err_text = "Teilnhemer müsser ihre Themenliste bestätigen"
+			#break;
+		else:
+			arr.append(get_priority_list(m))
+	if err_text != "":
+		#do not create agenda
+		return render(request, 'cyka/project_agenda_err.html', {'project' : project, 'err_text' : err_text })
+	#create agenda
+	struct.array_init(arr)
+	return render(request, 'cyka/project_agenda_err.html', {'project' : project, 'err_text' : str(arr) })
+
+
+
 def project_team(request, project_id):
 	try:
 		project = Project.objects.get(pk=project_id)
@@ -205,3 +230,10 @@ def create_priority_list(person):
 		i=i+1
 
 	return person.priority_set.all()
+
+def get_priority_list(person):
+	plist = person.priority_set.all().order_by('priority')
+	retval = [person.id]
+	for p in plist:
+		retval.append(p.topic.number)
+	return retval
