@@ -1,0 +1,16 @@
+{% extends 'cyka/project_base.html' %}
+
+{% block content %}
+    <div class="project">
+        <div id="content-main">
+    {% for a in agenda %}
+        <div class="project">
+            <p>{{ a.0.name }}  | {{ a.1.name }}</p>
+        </div>
+    {% endfor %}
+        </div>
+    </div>
+{% block member_add %}
+{% endblock %}
+{% endblock %}
+

@@ -1,4 +1,5 @@
 from lib.algorithm import Structure
+from lib.algorithm import Topic as A_Topic
 from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView
 from django.http import HttpResponseRedirect,HttpResponse
@@ -120,18 +121,20 @@ def agenda(request, project_id):
 	if len(members)< struct.getMinPersons():
 		err_text = "Minimale Anzahl Teilnhemer nicht erreicht"
 	arr = []
+	err_text = ""
 	for m in members:
 		if m.status == False:
 			err_text = "Teilnhemer müsser ihre Themenliste bestätigen"
 			#break;
 		else:
 			arr.append(get_priority_list(m))
+	arr = get_count_stat(project)
 	if err_text != "":
 		#do not create agenda
-		return render(request, 'cyka/project_agenda_err.html', {'project' : project, 'err_text' : err_text })
+		return render(request, 'cyka/project_agenda_err.html', {'project' : project, 'err_text' : err_text, 'arr' : arr})
 	#create agenda
-	struct.array_init(arr)
-	return render(request, 'cyka/project_agenda_err.html', {'project' : project, 'err_text' : str(arr) })
+	agenda = get_agenda(project)
+	return render(request, 'cyka/project_agenda.html', {'project' : project, 'agenda' : agenda })
 
 
 
@@ -231,9 +234,46 @@ def create_priority_list(person):
 
 	return person.priority_set.all()
 
+#returns the priority for a person as list
 def get_priority_list(person):
 	plist = person.priority_set.all().order_by('priority')
 	retval = [person.id]
 	for p in plist:
 		retval.append(p.topic.number)
 	return retval
+
+#creates an array that can be used as input for structure object
+def create_if_list(proj):
+	retval = []
+	for p in proj.member_set.all():
+		retval.append(get_priority_list(p))
+	print("---")
+	print(retval)
+	print("---")
+	return retval
+
+#statistical information, returns for each topic how many people vote for it
+def get_count_stat(proj):
+	struct = Structure.factory(proj.ptype)
+	struct.array_init(create_if_list(proj))
+	arr = struct.count_popularity()
+	print(arr)
+	return arr
+
+def switch(proj, t):
+	topics =  proj.topic_set.all()
+	for db in topics:
+		if db.number == t.index:
+			return db
+	return None
+
+def get_agenda(proj):
+	struct = Structure.factory(proj.ptype)
+	struct.array_init(create_if_list(proj))
+	agenda = struct.getAgenda()
+	dbagenda = []
+	for t in agenda:
+		print(t)
+		dbagenda.append([switch(proj, t[0]), switch(proj, t[1])])
+	#print(agenda)
+	return dbagenda

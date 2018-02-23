@@ -630,7 +630,9 @@ class Structure:
 		self.type = ""
 		self.struts = None
 		self.colors = None
-		self.persons = None	
+		self.persons = None
+		self.test = None
+		self.opposites = None	
 	
 	"""
 	prints the satisfaction from all persons and calculates the average
@@ -699,7 +701,69 @@ class Structure:
 
 	def getMaxPersons(self):
 		return self.maxPersons
+	
+	"""
+	reads the priority list from a two dimensional array
+	each line is one Person
 
+	params
+	-------
+	array: two dimensional array
+		line: Person ID; topic one; topic 2; ...
+	"""
+	def array_init(self, array):
+		self.orig_persons = []
+		self.orig_topics = []
+		for line in array:
+			p = Person(line[0])
+			p.listinput(line[1:])
+			self.orig_persons.append(p)
+		
+		for i in range(1, self.numTopics + 1):
+			name = "T_" + str(i).zfill(2)
+			p = Topic(name, i)
+			self.orig_topics.append(p)
+
+		return None
+
+	def count_popularity(self):
+		#array
+		count = np.zeros((self.numTopics, self.numTopics + 1), int)
+		row = -1
+		for t in self.orig_topics:
+			#write index into first column
+			row = row + 1
+			count[row][0] = t.index
+			for p in self.orig_persons:
+				#iterate through the prioritylist of each person
+				#and increment the topic at position of priority 
+				for pindex in range(len(p.priorityList)):
+					if p.priorityList[pindex] == t.index:
+						count[row][pindex+1] = count[row][pindex+1] + 1
+						break
+		return count
+	
+	"""
+	[
+	[[Topic 1],[Opposite]],
+	[[Topic 2],[Opposite]],
+	...
+	]
+	"""
+	def getAgenda(self):
+		self.build(self.orig_topics, self.orig_persons)
+		retval = []
+		for t in self.opposites:
+			retval.append([self.getTopicByColor(t[0]), self.getTopicByColor(t[1])])
+		return retval
+
+	def getTopicByColor(self, color):
+		print(color)
+		for t in self.topics:
+			print("C: ", t.color)
+			if t.color == color:
+				return t
+		return None
 
 class Ikosaeder(Structure):
 	def __init__(self, persons = 30):				
@@ -778,16 +842,6 @@ class Ikosaeder(Structure):
 			t.print()
 		print("-----------------------------------------------------")
 
-	"""
-	[
-	[[Topic 1],[Opposite]],
-	[[Topic 2],[Opposite]],
-	...
-	]
-	"""
-	def getAgenda(self):
-		retval = []
-		return 
 
 class Oktaeder(Structure):
 	def __init__(self, persons = 12):
@@ -800,7 +854,7 @@ class Oktaeder(Structure):
 		self.type = "Oktaeder"
 		self.colors = {"white" : 1, "green" : 2, "blue" : 3, "yellow" : 4, "red" : 5, "black" : 6}
 		self.struts = [(1,2),(1,3),(1,4),(1,5),(2,3),(3,4),(4,5),(2,5),(2,6),(3,6),(4,6),(5,6)]
-		#opposites: white-black, green-yellow, blue-red
+		self.opposites ={ ("white", "black") , ("green", "yellow"), ("blue", "red")}
 		#opposites: 1-6, 2-4, 3-5
 
 	def build(self, topics, persons):
@@ -814,6 +868,8 @@ class Oktaeder(Structure):
 			self.var = 2
 
 		self.colorize()
+
+		self.topics = [self.ring.head, self.star.head] + self.ring.ring 
 
 	"""
 	assagins a color to each topic
@@ -914,12 +970,12 @@ class Oktaeder(Structure):
 	...
 	]
 	"""
-	def getAgenda(self):
+	def _getAgenda(self):
 		#opposites: white-black, green-yellow, blue-red
 		#opposites: 1-6, 2-4, 3-5
-		retval = [[self.getTopic("white"), self.getTopic("black")],
-		         [self.getTopic("green"), self.getTopic("yellow")],
-		         [self.getTopic("blue"), self.getTopic("red")]]
+		retval = [[self.getTopicByColor("white"), self.getTopicByColor("black")],
+		         [self.getTopicByColor("green"), self.getTopicByColor("yellow")],
+		         [self.getTopicByColor("blue"), self.getTopicByColor("red")]]
 		return retval
  
 	def printStructure(self):
@@ -1030,6 +1086,16 @@ class IkoTest:
 		for p in self.persons:
 			p.out(fobj)
 
+def test2():
+	arr = [[1, 2, 3, 1, 5, 4, 6], [2, 6, 5, 4, 1, 2, 3], [3, 2, 4, 3, 1, 5, 6], [4, 4, 5, 3, 1, 2, 6], [5, 1, 2, 3, 4, 5, 6], [6, 1, 3, 5, 4, 6, 2], [7, 2, 4, 1, 3, 5, 6], [8, 6, 2, 3, 1, 4, 5], [9, 3, 6, 1, 2, 4, 5], [10, 5, 3, 4, 1, 2, 6], [11, 6, 1, 2, 3, 4, 5], [12, 1, 2, 3, 4, 5, 6]]
+	struct = Structure.factory("O")
+	struct.array_init(arr)
+	agenda = struct.getAgenda()
+	for t in agenda:
+		print(t)
+	return True
+
+
 
 if __name__ == '__main__':
 	#names = [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M" ]
@@ -1038,6 +1104,8 @@ if __name__ == '__main__':
 	#	p1 = Person(p)
 	#	p1.random(6)
 	#	p1.out()
+	test2()
+"""
 	filename = None
 	for i in range(len(sys.argv)):
 		if sys.argv[i] == "-f":
@@ -1051,3 +1119,4 @@ if __name__ == '__main__':
 		t.file_init(filename)
 	t.run()
 	t.test()
+"""
