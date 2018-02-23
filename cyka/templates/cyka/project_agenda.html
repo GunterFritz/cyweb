@@ -3,12 +3,20 @@
 {% block content %}
     <div class="project">
         <div id="content-main">
-    {% for a in agenda %}
-        <div class="project">
-            <p>{{ a.0.name }}  | {{ a.1.name }}</p>
+            <div class="app-polls module">
+          <table>
+	    <caption>
+              <p class="section" title="Cyka">Themen</p>
+            </caption>
+            {% for a in agenda %}
+   	      <tr class="model-question">
+                <th scope="row"></th>
+                <td><p>{{ a.0.name }}</p><td>
+                <td><p>{{ a.1.name }}</p><td>
+	      </tr>
+            {% endfor %}
         </div>
-    {% endfor %}
-        </div>
+    </div>
     </div>
 {% block member_add %}
 {% endblock %}
