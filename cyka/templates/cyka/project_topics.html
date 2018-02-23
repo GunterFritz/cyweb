@@ -2,12 +2,11 @@
 
 {% block content %}
     <div class="project">
-
-	<div id="content-main">
-        	<div class="app-polls module">
+        <div id="content-main">
+            <div class="app-polls module">
         		<table>
 		        <caption>
-            			<p class="section" title="Models in the Polls application">Themen</p>
+            			<p class="section" title="Cyka">Themen</p>
         		</caption>
         
 			{% for topic in project.topic_set.all %}
@@ -19,8 +18,7 @@
 	{% endfor %}
         </table>
         </div>
+        </div>
     
-
-</div>
     </div>
 {% endblock %}
