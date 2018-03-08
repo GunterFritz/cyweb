@@ -11,8 +11,18 @@
             {% for a in agenda %}
    	      <tr class="model-question">
                 <th scope="row"></th>
-                <td><p>{{ a.0.name }}</p><td>
-                <td><p>{{ a.1.name }}</p><td>
+                <td><p>{{ a.0.name }} - {{ a.0.color }}</p>
+			<p>
+            		{% for p in a.0.person %}
+                		{{ p.name }}
+            		{% endfor %}
+			</p><td>
+                <td><p>{{ a.1.name }} - {{ a.1.color }}</p>
+			<p>
+            		{% for p in a.1.person %}
+                		{{ p.name }}
+            		{% endfor %}
+			</p><td>
 	      </tr>
             {% endfor %}
         </div>

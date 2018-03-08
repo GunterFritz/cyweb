@@ -5,7 +5,7 @@ from django.views.generic.edit import CreateView
 from django.http import HttpResponseRedirect,HttpResponse
 from django.contrib.auth import authenticate, login
 from .forms import ProjectForm, TopicForm, MemberForm, MemberOkForm
-from .models import Project, Topic, Member
+from .models import Project, Topic, Member, Assignment
 # Create your views here.
 
 def project(request):
@@ -247,9 +247,6 @@ def create_if_list(proj):
 	retval = []
 	for p in proj.member_set.all():
 		retval.append(get_priority_list(p))
-	print("---")
-	print(retval)
-	print("---")
 	return retval
 
 #statistical information, returns for each topic how many people vote for it
@@ -260,20 +257,72 @@ def get_count_stat(proj):
 	print(arr)
 	return arr
 
-def switch(proj, t):
+"""
+return the corresponding db topic object from a "flat" algorithm object
+"""
+def switch_topic(proj, t, num):
 	topics =  proj.topic_set.all()
+	db_topic = None
+	#TODO: direct access with id?
 	for db in topics:
 		if db.number == t.index:
-			return db
-	return None
+			db_topic = db
+			break
+	if db_topic == None:
+		return None
+	
+	#clean existing assignment
+	plist = db_topic.assignment_set.all()
+	for p in plist:
+		p.delete()
 
-def get_agenda(proj):
+	#recreate assignment
+	for p in t.persons:
+		person = Member.objects.get(pk=p.name)
+		db_topic.assignment_set.create(member=person, atype="M")
+		db_topic.agendanumber = num
+		db_topic.color = t.color
+		db_topic.save()
+	return db_topic
+	
+
+def calculate_agenda(proj):
 	struct = Structure.factory(proj.ptype)
 	struct.array_init(create_if_list(proj))
 	agenda = struct.getAgenda()
-	dbagenda = []
+	print(agenda)
+	i = 1
 	for t in agenda:
-		print(t)
-		dbagenda.append([switch(proj, t[0]), switch(proj, t[1])])
-	#print(agenda)
-	return dbagenda
+		switch_topic(proj, t[0], i)
+		switch_topic(proj, t[1], i +1)
+		i = i + 2
+
+class HtmlPerson:
+	def __init__(self, db):
+		self.ty = db.atype
+		self.name = db.member.name
+
+class HtmlTopic:
+	def __init__(self, db):
+		self.name = db.name
+		self.color = db.color
+		self.person = []
+		assignments =  db.assignment_set.all()
+
+		for a in assignments:
+			self.person.append(HtmlPerson(a))
+
+def get_agenda(proj):
+	calculate_agenda(proj)
+	return get_agenda_from_db(proj)
+"""
+creates a good readable structure from db objects
+"""
+def get_agenda_from_db(proj):
+	topics =  proj.topic_set.all().order_by('agendanumber')
+	agenda = []
+	i = 0	
+	while i < len(topics):
+		agenda.append([HtmlTopic(topics[i]), HtmlTopic(topics[i+1])])
+		i = i + 2
+	return agenda
