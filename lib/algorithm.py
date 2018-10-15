@@ -112,6 +112,7 @@ class Person:
 		for i in range(len(self.priorityList)):
 			if self.priorityList[i] == topic.index:
 				return i + 1
+		return len(self.priorityList) + 1
 
 	def getStrutAsString(self):
 		return self.topic_A.color + " - " + self.topic_B.color
@@ -497,6 +498,10 @@ class Ring:
 			_ring_persons.append(p)
 			self.pers.append(p)
 			_persons.remove(p)
+			if len(_persons) == 0:
+				#if number of persons is less than
+				#optimal number
+				break
 
 		#sort ring
 		_ring = []
@@ -617,6 +622,10 @@ class Star:
 			center.assignPerson(p)
 			self.pers.append(p)
 			_persons.remove(p)
+			if len(_persons) == 0:
+				#if number of persons is less than
+				#optimal number
+				break
 
 		return [self.head], self.pers
 
@@ -846,7 +855,7 @@ class Ikosaeder(Structure):
 class Oktaeder(Structure):
 	def __init__(self, persons = 12):
 		self.numTopics = 6
-		self.minPersons = 12
+		self.minPersons = 11
 		self.maxPersons = 12
 		self.numPersons = persons
 		self.topics = None
@@ -855,6 +864,15 @@ class Oktaeder(Structure):
 		self.colors = {"white" : 1, "green" : 2, "blue" : 3, "yellow" : 4, "red" : 5, "black" : 6}
 		self.struts = [(1,2),(1,3),(1,4),(1,5),(2,3),(3,4),(4,5),(2,5),(2,6),(3,6),(4,6),(5,6)]
 		self.opposites ={ ("white", "black") , ("green", "yellow"), ("blue", "red")}
+		#parts (1,2), (3,4), (5,6)
+		#             (4,5), (3,6)
+		#      (1,3), (4,5), (2,6)
+		#             (2,5), (4,6)
+		#      (1,4), (2,5), (3,6)
+		#             (2,3), (5,6)
+		#      (1,5), (2,3), (4,6)
+		#             (3,4), (2,6)
+		
 		#opposites: 1-6, 2-4, 3-5
 
 	def build(self, topics, persons):
