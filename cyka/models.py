@@ -21,7 +21,7 @@ class Topic(models.Model):
 	proj = models.ForeignKey(Project, on_delete=models.CASCADE)
 	#list number in agenda(1 opposite of 2, 3 opposite of 4, ...)
 	color = models.CharField(max_length=64, default="")
-	agendanumber = models.IntegerField()
+	agendanumber = models.IntegerField(null=True)
 	
 	def __str__(self):
 		return self.name
