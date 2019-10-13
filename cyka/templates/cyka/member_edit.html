@@ -27,6 +27,8 @@
         {{ form.as_table }}
       </table>
       <button type="submit" class="save btn btn-primary">Save</button>
+      <br><br>
     </form>
+    <a href="{% url 'cyka:member_shuffle_topics' member.id%}"><button>Random</button></a>
   </div>
 {% endblock %}

@@ -25,6 +25,8 @@ urlpatterns = [
 	url(r'^(?P<project_id>[0-9]+)/agenda/$', views.agenda, name="project_agenda"),
 	# ex: /cyka/project/5/member/edit
 	url(r'^(?P<member_id>[0-9]+)/member/edit/$', views.member_edit, name="member_edit"),
+	# ex: /cyka/project/5/member/member_shuffle_topics
+	url(r'^(?P<member_id>[0-9]+)/member/member_shuffle_topics/$', views.member_shuffle_topics, name="member_shuffle_topics"),
 	# ex: /cyka/project/5/member/edit
 	url(r'^(?P<member_id>[0-9]+)/member/edit/up/(?P<priority>[0-9]+)$', views.member_edit_up, name="member_edit_up"),
 	url(r'^(?P<member_id>[0-9]+)/member/edit/up/(?P<priority>-[0-9]+)$', views.member_edit_up, name="member_edit_up"),
