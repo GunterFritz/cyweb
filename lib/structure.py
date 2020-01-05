@@ -136,7 +136,6 @@ class Edge:
     def switchAssignments(self, rhs, edge = None):
         if self == rhs:
             return
-        print("Switch: ", self.color, "-", rhs.color)
         topic = rhs.topic
         rhs.topic = self.topic
         self.topic = topic
@@ -351,7 +350,6 @@ class Structure2:
 
         if num_empty > 0:
             empty = self.sets[0][:num_empty]
-            print("Debug empty", empty) 
         for pos in self.positions:
             strut = Strut(pos)
             self.struts.append(strut)
@@ -508,7 +506,6 @@ class Structure2:
         #assign persons to struts of edge
         edge.assignPersons(pers)
         for p in pers:
-            print(p.name)
             persons.remove(p)
 
         #assign second topic to each person
@@ -563,9 +560,7 @@ class Structure2:
         #get basic geometry information(edges) and topics
         ring_edges, ring_topics = edge.getNeighbours()
         start, ring_struts = self.getStart(ring_edges)
-        print(start.position)
         topic = Topic.getLeastPopular(ring_topics, persons)
-        print(start.position)
         tmp = start.getLeftStrut(ring_struts)
         pers = None
         left = len(ring_topics)
@@ -578,12 +573,10 @@ class Structure2:
 
         while True:
             #close strut (last strut)
-            print(tmp.getLeft().color, "-", tmp.getRight().color)
             if left < 3 and not tmp.isEmpty():
                 #if less than optimize number of persons, edge could be unsigned
                 if tmp.getLeft().getTopic() == None:
                     topic = Topic.getLeastPopular(topics, persons, 2)
-                    print(topic.name)
                     #pers = tmp.getRight().getTopic().nPersonsLikeTopic(persons, 1)[0]
                     #2Personen zur Auswahl!!! Richtung 6. wie kann das "richtige Topic" selectiert werden
                     #t = pers.getMostBeautyfulTopic(topics)
@@ -594,7 +587,6 @@ class Structure2:
                     #persons.remove(pers)
                 #else:
                 p = tmp.assignPersonFromList(persons)
-                print ("DDDDDDD:", p.name)
                 persons.remove(p)
             elif not tmp.isEmpty():
 
@@ -620,11 +612,7 @@ class Structure2:
                     raise Exception("edge does not match empty")
                 
                 edge1.switchAssignments(edge2, edge)
-            else:
-                print("EMPTY")
-
-
-                #if edge.pos == pos:
+            
             left = left - 1
             if tmp == start:
                 return None #break
@@ -717,6 +705,9 @@ class Oktaeder2(Structure2):
         self.build_ring(_topics, _persons, self.edges[0])
         self.build_ring2(_topics, _persons, self.edges[5])
         self.optimize()
+
+        print("Person left:", len(_persons))
+
         #self.optimize()
         #self.optimize()
 
