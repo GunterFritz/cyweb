@@ -4,16 +4,22 @@ import getopt
 
 def usage():
     print("run algorithm")
+    print("Options:")
+    print("  s|save <filename>: saves the configuration into a file")
+    print("  o|open <filename>: open the configuration from a file")
+    print("  p|print:           print the configuration to stdout")
+    print("  x|pers <num>:        number of person (only random configuration)")
 
 def main(argv):
     try:
-        opts, args = getopt.getopt(argv, "s:o:p", ['save=', 'open=', 'print' ])
+        opts, args = getopt.getopt(argv, "s:o:px:", ['save=', 'open=', 'print', 'pers=' ])
     except getopt.GetoptError:
         usage()
         return
     s = False
     o = False
     p = False
+    pers = 12
     
     struct = Oktaeder2()
     
@@ -22,6 +28,8 @@ def main(argv):
         if opt in ('-o', '--open'):
             o = True
             filename = arg
+        if opt in ('-x', '--pers'):
+            pers = int(arg)
         if opt in ('-s', '--save'):
             s = True
             filename = arg
@@ -31,7 +39,7 @@ def main(argv):
     if o:
         struct.file_init(filename)
     else:
-        struct.random_init(12)
+        struct.random_init(pers)
     
     struct.build()
     struct.printAgenda()
