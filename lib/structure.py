@@ -207,7 +207,9 @@ class Strut:
         self.person = rhs.person
         rhs.person = person
 
-    def getSatisfaction(self):
+    def getSatisfaction(self, person = None):
+        if person:
+            return person.satisfaction(self.edge1.getTopic(), self.edge2.getTopic())
         if self.person:
             return self.person.satisfaction(self.edge1.getTopic(), self.edge2.getTopic())
         return 100
@@ -252,10 +254,10 @@ class Strut:
     def getLeft(self):
         return self.edge1
 
-    def assignPerson(self, p):
+    def assignPerson(self, p, second=False):
         if self.person == None:
             self.person = p
-        else:
+        elif not second:
             raise Exception("person already assigned to")
     
     """
@@ -321,6 +323,128 @@ class Structure2:
         for c in self.colors:
             t = Edge("-", self.colors[c], c)
             self.edges.append(t)
+
+    """
+    the function splits the list z into all combinations of a subset
+    with num elements of the list
+    ---
+    params
+      num: (number) size of the subset
+      z: list
+    ---
+    return
+      list[] with all subsets
+    """
+    def split(self, num, z):
+        inputlist = []
+        retval = []
+        self.split2(num, z, inputlist, retval)
+    
+        return retval
+    
+    def split2(self, num, z, inputlist, retval):
+        if len(z) + len(inputlist) < num:
+            return
+        if len(inputlist) == num:
+            retval.append(inputlist)
+            return
+    
+        self.split2(num, z[1:], inputlist.copy(), retval)
+        
+        i2 = inputlist.copy()
+        i2.append(z[0])
+        self.split2(num, z[1:], i2, retval)
+
+    """
+    finds the best combination for a set
+    ---
+    params
+       persons [], list of persons
+    """
+    def distribute(self, persons):
+        possibilities = []
+        #calculate all possible (sub)sets, possibilities is a list of subsets
+        #each subset is a list of possitions
+        for z in self.sets:
+            possibilities = possibilities + self.split(len(persons), z)
+        
+        sat = 100
+        pos = None
+        for p in possibilities:
+            #TODO: calculate satisfaction for each posibility
+            struts = self.posToStrut(p)
+            sat_t, pos_t = self.calculatePossibility(struts, persons)
+            if sat_t < sat:
+                sat = sat_t
+                pos = pos_t
+
+        for p in pos:
+            p[0].assignPerson(p[1], True)
+
+
+    """
+    calculates the assignment for a possibility
+    ---
+    params
+       struts [] list of strut
+       persons [] list of persons
+    return
+       satisfaction, list of (strut, person)
+    """
+    def calculatePossibility(self,struts, persons):
+        if len(struts) != len(persons):
+            raise("Error: Number of persons does not match struts")
+        _persons = persons.copy()
+        retval = []
+        #just add a person to each strut
+        for s in struts:
+            pers = None
+            sat = 100
+            for p in _persons:
+                sp = s.getSatisfaction(p)
+                if sp < sat:
+                    sat = sp
+                    pers = p
+            _persons.remove(pers)
+            retval.append([s,pers])
+
+        #optimize
+        for v1 in retval:
+            for v2 in retval:
+                if v1 == v2:
+                    continue
+                #switch
+                if v1[0].getSatisfaction(v1[1]) + v2[0].getSatisfaction(v2[1]) > \
+                   v1[0].getSatisfaction(v2[1]) + v2[0].getSatisfaction(v1[1]):
+                       tmp = v2[1]
+                       v2[1] = v1[1]
+                       v1[1] = tmp
+        
+        #calculate sum
+        sat = 0
+        for v in retval:
+            sat = sat + v[0].getSatisfaction(v[1])
+        return sat, retval
+
+
+    """
+    transforms (or finds) a possibiliy into the corresponding struts
+    ---
+    params
+       possibility [] list of positions (1,2)
+    return
+       Struts []
+    """
+    def posToStrut(self, possibility):
+        retval = []
+        for pos in possibility:
+            for s in self.struts:
+                if pos == s.position:
+                    retval.append(s)
+        
+        if len(possibility) != len(retval):
+            raise("Error, length missmatch")
+        return retval
 
     def optimize(self):
         #if pers is None:
@@ -469,9 +593,11 @@ class Structure2:
         for h in agenda:
             print("-----")
             print(h[0].color, h[0].topic.name if h[0].topic else None)
+            #print left side
             for s in h[0].struts:
                 print("  ", s.debugName(h[0].topic))
             print(h[1].color, h[1].topic.name if h[1].topic else None)
+            #print opposite
             for s in h[1].struts:
                 print("  ", s.debugName(h[1].topic))
         print("Satisfaction:", self.getSatisfaction())
@@ -671,9 +797,9 @@ class Structure2:
 
 class Oktaeder2(Structure2):
     def __init__(self, persons = 12):
-        Structure2.__init__(self, 12)
+        Structure2.__init__(self, persons)
         self.numTopics = 6
-        self.minPersons = 11
+        self.minPersons = 9 
         self.maxPersons = 12
         self.optimalPersons = 12
         #self.numPersons = persons
@@ -707,7 +833,10 @@ class Oktaeder2(Structure2):
         self.optimize()
 
         print("Person left:", len(_persons))
-
+        if len(_persons) > 0:
+            self.distribute(_persons)
+        exit
+        
         #self.optimize()
         #self.optimize()
 
