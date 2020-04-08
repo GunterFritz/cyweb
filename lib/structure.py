@@ -47,8 +47,8 @@ class Edge:
     def assignPersons(self, persons):
         for p in persons:
             for s in self.struts:
-                if not s.empty and s.person == None:
-                    s.person = p
+                if not s.empty and s.numPerson() == 0:
+                    s.assignPerson(p)
                     break
                 if s.empty:
                     print("DEBUG", s.getLeft().color, s.getRight().color)
@@ -110,8 +110,7 @@ class Edge:
     def getPersons(self):
         retval = []
         for s in self.struts:
-            if s.person:
-                retval.append(s.person)
+            retval = retval + s.getPerson()
         return retval
 
     """
@@ -124,7 +123,7 @@ class Edge:
     """
     def assignTopicToPerson(self, topic, person):
         for s in self.struts:
-            if s.person == person:
+            if person in s.getPerson():
                 s.getNeighbour(self).topic = topic
                 return
                     
@@ -172,7 +171,7 @@ class Edge:
 
 class Strut:
     def __init__(self, position):
-        self.person = None
+        self.person = []
         self.empty = False  #True if person keeps None
         self.edge1 = None   #First edge/ topic
         self.edge2 = None   #second edge/ topic
@@ -180,8 +179,10 @@ class Strut:
 
     def debugName(self, topic = None):
         if topic and self.person:
-            return "Empty: " + str(self.empty) + " " + str(self.edge1.index) + "," + str(self.edge2.index) + \
-                ", Name: " + self.person.name + ", Rank(" + str(self.person.getRank(topic)) + ")"
+            string = ""
+            for p in self.person:
+                string = string + ", Name: " + p.name + ", Rank(" + str(p.getRank(topic)) + ")"
+            return "Empty: " + str(self.empty) + " " + str(self.edge1.index) + "," + str(self.edge2.index) + string
         return str(self.empty) + " " + str(self.edge1.index) + "," + str(self.edge2.index)
 
     """
@@ -199,6 +200,12 @@ class Strut:
             return True
         return False
     
+    def getPerson(self):
+        return self.person
+
+    def numPerson(self):
+        return len(self.person)
+    
     """
     switches the assigned persons
     """
@@ -208,24 +215,32 @@ class Strut:
         rhs.person = person
 
     def getSatisfaction(self, person = None):
+        #calculate sat for specific person
         if person:
             return person.satisfaction(self.edge1.getTopic(), self.edge2.getTopic())
-        if self.person:
-            return self.person.satisfaction(self.edge1.getTopic(), self.edge2.getTopic())
-        return 100
+
+        #nothing assigned
+        if len(self.person) == 0:
+            return 100
+
+        #accumulate
+        retval = 0
+        for p in self.person:
+            retval = retval + p.satisfaction(self.edge1.getTopic(), self.edge2.getTopic())
+        return retval
     
     def switchIfBetter(self, rhs):
-        current = self.getSatisfaction() + rhs.getSatisfaction()
+        for p in self.person:
+            for p_r in rhs.person:
+                current = self.getSatisfaction(p) + rhs.getSatisfaction(p_r)
+                tmp = self.getSatisfaction(p_r) + rhs.getSatisfaction(p)
+                
+                if current > tmp:
+                    self.person.remove(p)
+                    self.person.append(p_r)
+                    rhs.person.remove(p_r)
+                    rhs.person.append(p)
         
-        tmp = self.person.satisfaction(rhs.edge1.getTopic(), rhs.edge2.getTopic())
-        tmp = tmp + rhs.person.satisfaction(self.edge1.getTopic(), self.edge2.getTopic())
-
-        if current > tmp:
-            p = self.person
-            self.person = rhs.person
-            rhs.person = p
-
-
     """
     each strut has two neighbours, returns that edge, that is not given
     ---
@@ -255,8 +270,8 @@ class Strut:
         return self.edge1
 
     def assignPerson(self, p, second=False):
-        if self.person == None:
-            self.person = p
+        if len(self.person) == 0 or second:
+            self.person.append(p)
         elif not second:
             raise Exception("person already assigned to")
     
@@ -491,10 +506,10 @@ class Structure2:
         sat = 0
         i = 0
         for s in self.struts:
-            if s.person:
+            if s.numPerson() > 0:
                 sat = sat + s.getSatisfaction()
-                print(s.person.name, s.getSatisfaction())
-                i = i + 1
+                #print(s.person.name, s.getSatisfaction())
+                i = i + s.numPerson()
 
         self.satisfaction = sat/i
         return self.satisfaction
