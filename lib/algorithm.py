@@ -700,7 +700,7 @@ class Structure:
     """
     def factory(t):
         if t == "O" or t == "OKTAEDER" or t == 6:
-            return Oktaeder()
+            return Oktaeder2()
         if t == "I" or t == "IKOSAEDER" or t == 12:
             return Ikosaeder()
 
@@ -854,7 +854,7 @@ class Ikosaeder(Structure):
         print("-----------------------------------------------------")
 
 
-class Oktaeder(Structure):
+class Oktaeder2(Structure):
     def __init__(self, persons = 12):
         self.numTopics = 6
         self.minPersons = 11
