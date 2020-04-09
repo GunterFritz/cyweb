@@ -1,4 +1,4 @@
-from structure import Oktaeder2
+from .structure import Structure2
 import sys
 import getopt
 
@@ -21,7 +21,7 @@ def main(argv):
     p = False
     pers = 12
     
-    struct = Oktaeder2()
+    struct = Structure2.factory("O")
     
     for opt, arg in opts:
         print(opt, ",", arg)
