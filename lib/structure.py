@@ -1,7 +1,7 @@
 from copy import deepcopy
 from random import shuffle
-from algorithm import Person
-from algorithm import Topic
+from .algorithm import Person
+from .algorithm import Topic
 import sys
 import operator
 import numpy as np
@@ -329,6 +329,22 @@ class Structure2:
         self.orig_topics = []
     
     """
+    creates an object by name or number of topics
+    """
+    def factory(t):
+        if t == "O" or t == "OKTAEDER" or t == 6:
+            return Oktaeder()
+        if t == "I" or t == "IKOSAEDER" or t == 12:
+            return Ikosaeder()
+
+   
+    def getMinPersons(self):
+        return self.minPersons
+    
+    def getMaxPersons(self):
+        return self.maxPersons
+
+    """
     initializes the edges with color and index
     
     params
@@ -600,10 +616,15 @@ class Structure2:
     def getAgenda(self):
         retval = []
         for t in self.opposites:
+            print(t[0], "x", t[1])
+            print(self.colors[t[0]]-1, "y", self.colors[t[1]]-1)
+            print(self.edges[self.colors[t[0]]-1], "z", self.edges[self.colors[t[1]]-1])
             retval.append([self.edges[self.colors[t[0]]-1], self.edges[self.colors[t[1]]-1]])
         return retval
 
     def printAgenda(self):
+        print("Stat:")
+        print(self.count_popularity())
         agenda = self.getAgenda()
         for h in agenda:
             print("-----")
@@ -808,14 +829,39 @@ class Structure2:
             retval.append((p,tmp,end))
 
         return retval
+    
+    """
+    creates a statistic, how many people votes for topic
+    ---
+    return 
+      [] [Topic, number of p, number of p, ...
+         [Topic, number of p, number of p, ...
+    """
+    
+    def count_popularity(self):
+        #array
+        count = np.zeros((self.numTopics, self.numTopics + 1), int)
+        row = -1
+        for t in self.orig_topics:
+            #write index into first column
+            row = row + 1
+            count[row][0] = t.index
+            for p in self.orig_persons:
+                #iterate through the prioritylist of each person
+                #and increment the topic at position of priority 
+                for pindex in range(len(p.priorityList)):
+                    if p.priorityList[pindex] == t.index:
+                        count[row][pindex+1] = count[row][pindex+1] + 1
+                        break
+        return count
+    
 
-
-class Oktaeder2(Structure2):
+class Oktaeder(Structure2):
     def __init__(self, persons = 12):
         Structure2.__init__(self, persons)
         self.numTopics = 6
         self.minPersons = 9 
-        self.maxPersons = 12
+        self.maxPersons = 15
         self.optimalPersons = 12
         #self.numPersons = persons
         #self.topics = None

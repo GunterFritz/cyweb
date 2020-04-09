@@ -1,5 +1,5 @@
-from lib.algorithm import Structure
-from lib.algorithm import Topic as A_Topic
+from lib.structure import Structure2 as Structure
+from lib.structure import Topic as A_Topic
 from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView
 from django.http import HttpResponseRedirect,HttpResponse
@@ -311,7 +311,7 @@ def switch_topic(proj, t, num):
         p.delete()
 
     #recreate assignment
-    for p in t.persons:
+    for p in t.getPersons():
         person = Member.objects.get(pk=p.name)
         db_topic.assignment_set.create(member=person, atype="M")
         db_topic.agendanumber = num
@@ -323,6 +323,7 @@ def switch_topic(proj, t, num):
 def calculate_agenda(proj):
     struct = Structure.factory(proj.ptype)
     struct.array_init(create_if_list(proj))
+    struct.build()
     agenda = struct.getAgenda()
     print(agenda)
     i = 1
