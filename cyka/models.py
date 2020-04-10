@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -22,12 +23,21 @@ class Topic(models.Model):
     #list number in agenda(1 opposite of 2, 3 opposite of 4, ...)
     color = models.CharField(max_length=64, default="")
     agendanumber = models.IntegerField(null=True)
+    uuid = models.UUIDField( 
+         primary_key = False, 
+         default = uuid.uuid4, 
+         editable = False) 
     
     def __str__(self):
         return self.name
 
 class Member(models.Model):
     name = models.CharField(max_length=128)
+    email = models.EmailField(max_length=254,blank=True, null= True, default="")
+    uuid = models.UUIDField( 
+         primary_key = False, 
+         default = uuid.uuid4, 
+         editable = False) 
     proj = models.ForeignKey(Project, on_delete=models.CASCADE)
     status = models.BooleanField(default=False)
 
