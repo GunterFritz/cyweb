@@ -2,11 +2,18 @@
 
 {% block content %}
     <div class="project">
-
+    <form method="POST" class="post-form">{% csrf_token %}
+        	<div class="app-polls module">
+        		<table style=width:100%>
+	<caption>
+             <p class="section" title="Daten">Persönliche Daten</p>
+        </caption>
+        {{ member_form.as_table }}
+        		</table>
+        </div>
 	<div id="content-main">
         	<div class="app-polls module">
-                	<p>{{member.name}}</p>
-        		<table>
+        		<table style=width:100%>
 		        <caption>
             			<p class="section" title="Themen sortiert nach Priorität">Themen</p>
         		</caption>
@@ -22,9 +29,8 @@
         </table>
         </div>
     </div>
-    <form method="POST" class="post-form">{% csrf_token %}
       <table>
-        {{ form.as_table }}
+        {{ ok_form.as_table }}
       </table>
       <button type="submit" class="save btn btn-primary">Save</button>
       <br><br>

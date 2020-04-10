@@ -136,14 +136,20 @@ def member_edit(request, member_id):
         raise Http404("Member does not exist")
     
     if request.method == 'POST':
-        form = MemberOkForm(request.POST)
-        if form.is_valid():
-            form = MemberOkForm(request.POST, instance=member)
-            member = form.save(commit=False)
+        member_form = MemberForm(request.POST)
+        if member_form.is_valid():
+            member_form = MemberForm(request.POST, instance=member)
+            member = member_form.save(commit=False)
+            member.save()
+        ok_form = MemberOkForm(request.POST)
+        if ok_form.is_valid():
+            ok_form = MemberOkForm(request.POST, instance=member)
+            member = ok_form.save(commit=False)
             member.save()
     else:
-        form = MemberOkForm(instance=member)
-    return render(request, 'cyka/member_edit.html', {'project' : member.proj, 'member': member, 'priority_list':priority_list, 'form' : form })
+        ok_form = MemberOkForm(instance=member)
+        member_form = MemberForm(instance=member)
+    return render(request, 'cyka/member_edit.html', {'project' : member.proj, 'member': member, 'priority_list':priority_list, 'ok_form' : ok_form, 'member_form' : member_form })
 
 def agenda(request, project_id):
     try:
@@ -361,3 +367,6 @@ def get_agenda_from_db(proj):
         agenda.append([HtmlTopic(topics[i]), HtmlTopic(topics[i+1])])
         i = i + 2
     return agenda
+
+def personal(uuid):
+    return None
