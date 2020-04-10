@@ -205,7 +205,7 @@ class Strut:
 
     def numPerson(self):
         return len(self.person)
-    
+   
     """
     switches the assigned persons
     """
@@ -344,6 +344,9 @@ class Structure2:
     def getMaxPersons(self):
         return self.maxPersons
 
+    def getNumTopics(self):
+        return self.numTopics
+    
     """
     initializes the edges with color and index
     
