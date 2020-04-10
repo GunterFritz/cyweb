@@ -2,7 +2,7 @@ from lib.structure import Structure2 as Structure
 from lib.structure import Topic as A_Topic
 from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView
-from django.http import HttpResponseRedirect,HttpResponse
+from django.http import HttpResponseRedirect,HttpResponse,HttpResponseForbidden
 from django.contrib.auth import authenticate, login
 from .forms import ProjectForm, TopicForm, MemberForm, MemberOkForm
 from .models import Project, Topic, Member, Assignment
@@ -121,6 +121,21 @@ def member_ok(request, member_id, ok):
     member.save()
     return redirect('cyka:member_edit', member_id)
 
+def member_delete(request, member_id):
+    try:
+        member = Member.objects.get(pk=member_id)
+        project_id = member.proj.pk
+
+        if (member.proj.admin != request.user):
+            return HttpResponseForbidden('Access Denied')
+        member.priority_set.all().delete()
+        member.assignment_set.all().delete()
+        member.delete()
+        return redirect('cyka:project_team', project_id)
+
+    except Member.DoesNotExist:
+        raise Http404("Member does not exist")
+        
 """
 edit view of member
 """

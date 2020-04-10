@@ -23,6 +23,8 @@ urlpatterns = [
 	url(r'^(?P<project_id>[0-9]+)/member/new/$', views.member_new, name="member_new"),
 	# ex: /cyka/project/5/agenda/
 	url(r'^(?P<project_id>[0-9]+)/agenda/$', views.agenda, name="project_agenda"),
+	# ex: /cyka/project/5/member/delete
+	url(r'^(?P<member_id>[0-9]+)/member/delete/$', views.member_delete, name="member_delete"),
 	# ex: /cyka/project/5/member/edit
 	url(r'^(?P<member_id>[0-9]+)/member/edit/$', views.member_edit, name="member_edit"),
 	# ex: /cyka/project/5/member/member_shuffle_topics
