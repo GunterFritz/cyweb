@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView
 from django.http import HttpResponseRedirect,HttpResponse,HttpResponseForbidden
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 from .forms import ProjectForm, TopicForm, MemberForm, MemberOkForm
 from .models import Project, Topic, Member, Assignment
 from random import randrange 
@@ -121,6 +122,22 @@ def member_ok(request, member_id, ok):
     member.save()
     return redirect('cyka:member_edit', member_id)
 
+@login_required
+def project_delete(request, project_id):
+    try:
+        proj = Project.objects.get(pk=project_id)
+
+        if (proj.admin != request.user):
+            return HttpResponseForbidden('Access Denied')
+        #member.priority_set.all().delete()
+        #member.assignment_set.all().delete()
+        #member.delete()
+        return redirect('cyka:project_list')
+
+    except Member.DoesNotExist:
+        raise Http404("Project delete error")
+
+@login_required
 def member_delete(request, member_id):
     try:
         member = Member.objects.get(pk=member_id)
@@ -210,11 +227,10 @@ def project_topics(request, project_id):
     except Project.DoesNotExist:
         raise Http404("Project does not exist")
     return render(request, 'cyka/project_topics.html', {'project' : project })
-    
+   
+@login_required
 def project_list(request):
-    if not request.user.is_authenticated:
-        return redirect('/admin')
-    projects = Project.objects.all()
+    projects = Project.objects.all().filter(admin=request.user)
     return render(request, 'cyka/project_list.html', {'projects': projects})
 
 def topic_edit(request, topic_id):

@@ -1,11 +1,31 @@
 {% extends 'cyka/base.html' %}
 
 {% block content %}
-    <a href="{% url 'cyka:project_new' %}" class="top-menu"><span class="glyphicon glyphicon-plus addcolor">Neues Projekt</span></a>
-    {% for p in projects %}
-        <div class="project">
-	    <h1><a href="{% url 'cyka:project_details' p.id %}">{{ p.name }}</a></h1>
-            <p>{{ p.question|linebreaksbr }}</p>
+    <div class="project">
+        <div id="content-main">
+            <div class="app-polls module">
+                <table style=width:100%>
+                    <script type="text/javascript">counter = 0</script>
+                    <caption>
+                        <p class="section" title="Projektliste">Projekte</p>
+                    </caption>
+                    <tr>
+			    <th>Index</th>
+			    <th>Name</th>
+			    <th>Beschreibung</th>
+			    <th align="center">Löschen</th>
+                    </tr> 
+                    {% for p in projects %}
+                        <tr class="section">
+                            <td scope="row"><script type="text/javascript">document.write( 1 + counter++ )</script></td>
+	    		    <td><a href="{% url 'cyka:project_details' p.id %}">{{ p.name }}</a></td>
+                            <td>{{ p.question|linebreaksbr }}</td>
+		            <td><a href="{% url 'cyka:project_delete' p.id %}" style="color:#B30000;" class="glyphicon glyphicon-remove redcolor"<td/>
+                        </tr>
+                    {% endfor %}
+		</table>
+            </div>
         </div>
-    {% endfor %}
+    </div>
+    <a href="{% url 'cyka:project_new' %}" class="top-menu"><span class="glyphicon glyphicon-plus addcolor">Neues Projekt</span></a>
 {% endblock %}
