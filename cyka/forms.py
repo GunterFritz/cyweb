@@ -20,7 +20,7 @@ class TopicForm(ModelForm):
 class MemberForm(ModelForm):
     class Meta:
         model = Member
-        fields = ('name',)
+        fields = ('name', 'email')
 
 class MemberOkForm(ModelForm):
     class Meta:

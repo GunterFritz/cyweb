@@ -4,19 +4,44 @@
     <div class="project">
         <div id="content-main">
             <div class="app-polls module">
-                <table>
+                <table style=width:100%>
                     <script type="text/javascript">counter = 0</script>
                     <caption>
                         <p class="section" title="Teilnehmer des Workshops">Teilnehmer</p>
                     </caption>
-        
+                    <tr>
+			    <th>Index</th>
+			    <th>Name</th>
+			    <th>Email</th>
+			    <th>Edit</th>
+			    <th>Status</th>
+			    <th>Löschen</th>
+			    <th>Persönlicher Link</th>
+                    </tr> 
                     {% for member in project.member_set.all %}
                         <tr class="section">
                             <td scope="row"><script type="text/javascript">document.write( 1 + counter++ )</script></td>
                             <td>{{member.name}}</td>
-                            <td><a href="{% url 'cyka:member_edit' member.id %}" class="glyphicon glyphicon-pencil"> Editieren</a></td>
-                            <td>{{member.status}}</td>
+                            <td>{{member.email}}</td>
+                            <td align="center"><a href="{% url 'cyka:member_edit' member.id %}" class="glyphicon glyphicon-pencil"></a></td>
+			    <td/>
+		            <td align="center"><i class="glyphicon glyphicon-remove redcolor"<td/>
+			</td>
+                            <td><a href="{% url 'cyka:personal' member.uuid %}" > {% url 'cyka:personal' member.uuid %}</a></td>
                         </tr>
+		        <script>
+                            var table = document.getElementsByTagName("table")[0];
+                            var row = table.getElementsByTagName("tr")[counter]; 
+                            var cells = row.getElementsByTagName("td")[4]; 
+			    cells.style.textAlign = "center";
+                            var i = document.createElement('i');
+                            if("{{member.status}}" == "True"){
+			    i.className ="glyphicon glyphicon-ok addcolor";
+			    }else{
+			    i.className ="glyphicon glyphicon-minus greycolor";
+		            }
+			    cells.appendChild(i)
+			</script>
                     {% endfor %}
                 </table>
 		<p id="addbutton"/p>
