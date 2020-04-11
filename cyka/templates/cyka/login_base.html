@@ -28,26 +28,6 @@
     <div id="wrapper">
 
         <!-- Sidebar -->
-        <div id="sidebar-wrapper">
-            <ul class="sidebar-nav">
-                <li class="sidebar-brand">
-                    <p>
-                        Projektverwaltung
-                    </p>
-                </li>
-                <li>
-                    <a href="{% url 'cyka:project_list' %}">
-                        Projektliste
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'cyka:project_list' %}">
-                        Konto
-                    </a>
-                </li>
-		<li>User: {{ user.get_username }}</li>
-     		<li><a href="{% url 'cyka:logout'%}">Logout</a></li>
-            </ul>
         </div>
         <!-- /#sidebar-wrapper -->
 

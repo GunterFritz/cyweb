@@ -10,6 +10,7 @@ from .models import Project, Topic, Member, Assignment
 from random import randrange 
 # Create your views here.
 
+@login_required
 def project(request):
     username = None
     if request.user.is_authenticated():
@@ -22,6 +23,7 @@ def project(request):
 
     return HttpResponse(username)
     
+@login_required
 def project_details(request, project_id):
     try:
         project = Project.objects.get(pk=project_id)
@@ -30,6 +32,7 @@ def project_details(request, project_id):
     return render(request, 'cyka/project_details.html', {'project' : project })
     #projects = Project.objects.all()
 
+@login_required
 def member_new(request, project_id):
     try:
         project = Project.objects.get(pk=project_id)
@@ -56,6 +59,7 @@ params
 member_id: private key
 priority: position of topic that was clicked
 """
+@login_required
 def member_edit_up(request, member_id, priority):
     try:
         member = Member.objects.get(pk=member_id)
@@ -87,6 +91,7 @@ params
 -------
 member_id: private key of member
 """
+@login_required
 def member_shuffle_topics(request, member_id):
     try:
         member = Member.objects.get(pk=member_id)
@@ -156,6 +161,7 @@ def member_delete(request, member_id):
 """
 edit view of member
 """
+@login_required
 def member_edit(request, member_id):
     try:
         member = Member.objects.get(pk=member_id)
@@ -183,6 +189,7 @@ def member_edit(request, member_id):
         member_form = MemberForm(instance=member)
     return render(request, 'cyka/member_edit.html', {'project' : member.proj, 'member': member, 'priority_list':priority_list, 'ok_form' : ok_form, 'member_form' : member_form })
 
+@login_required
 def agenda(request, project_id):
     try:
         project = Project.objects.get(pk=project_id)
@@ -210,6 +217,7 @@ def agenda(request, project_id):
 
 
 
+@login_required
 def project_team(request, project_id):
     try:
         project = Project.objects.get(pk=project_id)
@@ -218,6 +226,7 @@ def project_team(request, project_id):
     struct = Structure.factory(project.ptype)
     return render(request, 'cyka/project_team.html', {'project' : project, 'min' : struct.getMinPersons(), 'max' : struct.getMaxPersons() })
     
+@login_required
 def project_topics(request, project_id):
     try:
         project = Project.objects.get(pk=project_id)
@@ -233,6 +242,7 @@ def project_list(request):
     projects = Project.objects.all().filter(admin=request.user)
     return render(request, 'cyka/project_list.html', {'projects': projects})
 
+@login_required
 def topic_edit(request, topic_id):
     try:
         topic = Topic.objects.get(pk=topic_id)
@@ -248,6 +258,7 @@ def topic_edit(request, topic_id):
         form = TopicForm(instance=topic)
     return render(request, 'cyka/topic_edit.html', {'project': topic.proj, 'form': form, 'topic': topic})
 
+@login_required
 def project_new(request):
     if request.method == 'POST':
         form = ProjectForm(request.POST)

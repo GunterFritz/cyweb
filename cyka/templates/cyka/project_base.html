@@ -58,6 +58,8 @@
                 <li>
                     <a href="#">Impressum</a>
                 </li>
+		<li>User: {{ user.get_username }}</li>
+     		<li><a href="{% url 'cyka:logout'%}">Logout</a></li>
             </ul>
         </div>
         <!-- /#sidebar-wrapper -->

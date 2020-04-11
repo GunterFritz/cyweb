@@ -1,0 +1,45 @@
+{% extends "cyka/login_base.html" %}
+
+{% block content %}
+
+  {% if form.errors %}
+    <p>Your username and password didn't match. Please try again.</p>
+  {% endif %}
+  
+  {% if next %}
+    {% if user.is_authenticated %}
+      <p>Your account doesn't have access to this page. To proceed,
+      please login with an account that has access.</p>
+    {% else %}
+      <p>Please login to see this page.</p>
+    {% endif %}
+  {% endif %}
+  
+  <form align="center" method="post" action="{% url 'cyka:login' %}">
+    {% csrf_token %}
+    <table align="center">
+       <caption>
+            <p class="section" title="Willkommen" align="center">Willkommen</p>
+      </caption>
+      <tr>
+        <td>{{ form.username.label_tag }}</td>
+        <td>{{ form.username }}</td>
+      </tr>
+      <tr>
+        <td>{{ form.password.label_tag }}</td>
+        <td>{{ form.password }}</td>
+      </tr>
+    <tr>
+    <td align="center">
+    <input align="center" type="submit" value="login" />
+    <input align="center" type="hidden" name="next" value="{{ next }}" />
+    <td valign="bottom" align="center">
+    {# Assumes you setup the password_reset view in your URLconf #}
+    <p><a href="{% url 'cyka:password_reset' %}">Passwort vergessen?</a></p>
+    </td>
+    </tr>
+    </table>
+  </form>
+  
+  
+{% endblock %}

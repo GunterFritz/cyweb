@@ -45,8 +45,11 @@
                         Konto
                     </a>
                 </li>
-		<li>User: {{ user.get_username }}</li>
-     		<li><a href="{% url 'cyka:logout'%}">Logout</a></li>
+                <li>
+                    <a href="{% url 'cyka:project_list' %}">
+                        logout
+                    </a>
+                </li>
             </ul>
         </div>
         <!-- /#sidebar-wrapper -->
