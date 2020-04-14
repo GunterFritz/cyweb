@@ -1,11 +1,16 @@
 {% extends 'cyka/project_base.html' %}
-
 {% block content %}
     <div class="project">
         <div id="content-main">
             <div class="app-polls module">
                 <table style=width:100%>
                     <script type="text/javascript">counter = 0</script>
+                    <script type="text/javascript">
+                      function confirm_click(name)
+                      {
+                        return confirm("Möchten Sie den Teilnehmer '" + name + "' löschen?");
+                      }
+                    </script>
                     <caption>
                         <p class="section" title="Teilnehmer des Workshops">Teilnehmer</p>
                     </caption>
@@ -25,9 +30,12 @@
                             <td>{{member.email}}</td>
                             <td align="center"><a href="{% url 'cyka:member_edit' member.id %}" class="glyphicon glyphicon-pencil"></a></td>
 			    <td/>
-		            <td align="center"><a href="{% url 'cyka:member_delete' member.id %}" style="color:#B30000;" class="glyphicon glyphicon-remove redcolor"<td/>
-			</td>
-                            <td><a href="{% url 'cyka:personal' member.uuid %}" > {% url 'cyka:personal' member.uuid %}</a></td>
+			    <td align="center">
+				<span onclick="return confirm_click('{{member.name}}');">
+					<a href="{% url 'cyka:member_delete' member.id %}" style="color:#B30000;" class="glyphicon glyphicon-remove redcolor"></i></a>
+				</span>
+			    </td>
+			    <td><a href="{% url 'cyka:personal_edit' member.uuid %}">{% url 'cyka:personal_edit' member.uuid %}</a></td>
                         </tr>
 		        <script>
                             var table = document.getElementsByTagName("table")[0];

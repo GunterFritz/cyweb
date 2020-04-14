@@ -6,6 +6,12 @@
             <div class="app-polls module">
                 <table style=width:100%>
                     <script type="text/javascript">counter = 0</script>
+                    <script type="text/javascript">
+                      function confirm_click(name)
+                      {
+                        return confirm("Möchten Sie das Projekt '" + name + "' löschen?");
+                      }
+                    </script>
                     <caption>
                         <p class="section" title="Projektliste">Projekte</p>
                     </caption>
@@ -20,7 +26,11 @@
                             <td scope="row"><script type="text/javascript">document.write( 1 + counter++ )</script></td>
 	    		    <td><a href="{% url 'cyka:project_details' p.id %}">{{ p.name }}</a></td>
                             <td>{{ p.question|linebreaksbr }}</td>
-		            <td><a href="{% url 'cyka:project_delete' p.id %}" style="color:#B30000;" class="glyphicon glyphicon-remove redcolor"<td/>
+		            <td>
+				<span onclick="return confirm_click('{{p.name}}');">
+					<a href="{% url 'cyka:project_delete' p.id %}" style="color:#B30000;" class="glyphicon glyphicon-remove redcolor"></i></a>
+			        </span>
+			    <td/>
                         </tr>
                     {% endfor %}
 		</table>
