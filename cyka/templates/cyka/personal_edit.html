@@ -1,0 +1,40 @@
+{% extends 'cyka/personal_base.html' %}
+
+{% block content %}
+    <div class="project">
+    <form method="POST" class="post-form">{% csrf_token %}
+        	<div class="app-polls module">
+        		<table style=width:100%>
+	<caption>
+             <p class="section" title="Daten">Persönliche Daten</p>
+        </caption>
+	<tr><td>Name:</td><td>{{member.name}}</td>
+	<tr><td>Email:</td><td>{{member.email}}</td>
+        </table>
+        </div>
+	<div id="content-main">
+        	<div class="app-polls module">
+        		<table style=width:100%>
+		        <caption>
+            			<p class="section" title="Themen sortiert nach Priorität">Themen</p>
+        		</caption>
+        
+			{% for prio in priority_list %}
+   			        <tr class="model-question">
+                		<th scope="row"><p>{{prio.priority}}</p></th>
+                		<td><p>{{prio.topic.number}}</p></td>
+                		<td><p>{{prio.topic.name}}</p></td>
+                                <td><a href="{% url 'cyka:personal_edit_up' member.uuid prio.priority%}"><span class="glyphicon glyphicon-arrow-up"></span></a></td>
+            			</tr>
+	{% endfor %}
+        </table>
+        </div>
+    </div>
+      <table>
+        {{ ok_form.as_table }}
+      </table>
+      <button type="submit" class="save btn btn-primary">Save</button>
+      <br><br>
+    </form>
+  </div>
+{% endblock %}
