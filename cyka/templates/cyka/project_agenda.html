@@ -11,18 +11,16 @@
             {% for a in agenda %}
    	      <tr class="model-question">
                 <th scope="row"></th>
-                <td><p>{{ a.0.name }} - {{ a.0.color }}</p>
-			<p>
+		<td><b><span class="glyphicon glyphicon-certificate" style="color:{{ a.0.color }}"></span>{{ a.0.name }} - {{ a.0.color }}</b>
             		{% for p in a.0.person %}
-                		{{ p.name }}
+			<p>{{ p.name }}</p>
             		{% endfor %}
-			</p><td>
-                <td><p>{{ a.1.name }} - {{ a.1.color }}</p>
-			<p>
+			<td>
+		<td><b><span class="glyphicon glyphicon-certificate" style="color:{{ a.1.color }}"></span>{{ a.1.name }} - {{ a.1.color }}</b>
             		{% for p in a.1.person %}
-                		{{ p.name }}
+			<p>{{ p.name }}</p>
             		{% endfor %}
-			</p><td>
+			<td>
 	      </tr>
             {% endfor %}
         </div>

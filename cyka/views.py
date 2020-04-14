@@ -217,20 +217,16 @@ def agenda(request, project_id):
         raise Http404("Project does not exist")
     members = project.member_set.all()
     struct = Structure.factory(project.ptype)
-    if len(members)< struct.getMinPersons():
-        err_text = "Minimale Anzahl Teilnhemer nicht erreicht"
-    arr = []
     err_text = ""
     for m in members:
         if m.status == False:
-            err_text = "Teilnhemer müsser ihre Themenliste bestätigen"
-            #break;
-        else:
-            arr.append(get_priority_list(m))
-    arr = get_count_stat(project)
+            err_text = "Es haben noch nicht alle Teilnhemer ihre Themenliste bestätigt"
+            break;
+    if len(members)< struct.getMinPersons():
+        err_text = "Minimale Anzahl von " + str(struct.getMinPersons()) + " Teilnehmern noch nicht erreicht"
     if err_text != "":
         #do not create agenda
-        return render(request, 'cyka/project_agenda_err.html', {'project' : project, 'err_text' : err_text, 'arr' : arr})
+        return render(request, 'cyka/project_agenda_err.html', {'project' : project, 'err_text' : err_text})
     #create agenda
     agenda = get_agenda(project)
     return render(request, 'cyka/project_agenda.html', {'project' : project, 'agenda' : agenda })
