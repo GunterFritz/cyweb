@@ -1,4 +1,4 @@
-from .structure import Structure2
+from structure import Structure2
 import sys
 import getopt
 

@@ -35,8 +35,10 @@ urlpatterns = [
 	# ex: /cyka/project/5/member/edit
 	url(r'^(?P<member_id>[0-9]+)/member/edit/up/(?P<priority>[0-9]+)$', views.member_edit_up, name="member_edit_up"),
 	url(r'^(?P<member_id>[0-9]+)/member/edit/up/(?P<priority>-[0-9]+)$', views.member_edit_up, name="member_edit_up"),
-	# ex: /cyka/personal/uuid
-        url(r'^personal/(?P<uuid>[0-9A-Za-z\-]+)$', views.personal, name="personal"),
+	# ex: /cyka/personal_edit/uuid
+        url(r'^personal_edit/(?P<uuid>[0-9A-Za-z\-]+)$', views.personal_edit, name="personal_edit"),
+	# ex: /cyka/personal_edit_up/5/member/edit
+	url(r'^(?P<uuid>[0-9A-Za-z\-]+)/personal/edit/up/(?P<priority>[0-9]+)$', views.personal_edit_up, name="personal_edit_up"),
 ]
 
 #Add Django site authentication urls (for login, logout, password management)

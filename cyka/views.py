@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import ProjectForm, TopicForm, MemberForm, MemberOkForm
 from .models import Project, Topic, Member, Assignment
 from random import randrange 
+from . import helpers
 # Create your views here.
 
 @login_required
@@ -134,9 +135,8 @@ def project_delete(request, project_id):
 
         if (proj.admin != request.user):
             return HttpResponseForbidden('Access Denied')
-        #member.priority_set.all().delete()
-        #member.assignment_set.all().delete()
-        #member.delete()
+        helpers.ProjectDelete(proj)
+        
         return redirect('cyka:project_list')
 
     except Member.DoesNotExist:
@@ -150,14 +150,34 @@ def member_delete(request, member_id):
 
         if (member.proj.admin != request.user):
             return HttpResponseForbidden('Access Denied')
-        member.priority_set.all().delete()
-        member.assignment_set.all().delete()
-        member.delete()
+        helpers.MemberDelete(member)
         return redirect('cyka:project_team', project_id)
 
     except Member.DoesNotExist:
         raise Http404("Member does not exist")
         
+def personal_edit(request, uuid):
+    try:
+        member = Member.objects.all().filter(uuid=uuid)[0]
+        priority_list = member.priority_set.all().order_by('priority')
+
+        if len(priority_list) == 0:
+            priority_list = create_priority_list(member)
+
+    except Member.DoesNotExist:
+        raise Http404("Member does not exist")
+    
+    if request.method == 'POST':
+        member_form = MemberForm(request.POST)
+        ok_form = MemberOkForm(request.POST)
+        if ok_form.is_valid():
+            ok_form = MemberOkForm(request.POST, instance=member)
+            member = ok_form.save(commit=False)
+            member.save()
+    else:
+        ok_form = MemberOkForm(instance=member)
+    return render(request, 'cyka/personal_edit.html', {'project' : member.proj, 'member': member, 'priority_list':priority_list, 'ok_form' : ok_form})
+
 """
 edit view of member
 """
@@ -410,5 +430,26 @@ def get_agenda_from_db(proj):
         i = i + 2
     return agenda
 
-def personal(uuid):
-    return None
+def personal_edit_up(request, uuid, priority):
+    try:
+        member = Member.objects.all().filter(uuid=uuid)[0]
+        priority_list = member.priority_set.all()
+
+        if len(priority_list) == 0:
+            priority_list = create_priority_list(member)
+    except Member.DoesNotExist:
+        raise Http404("Member does not exist")
+ 
+    priority = int(priority)
+    #arrow up: switch to elements
+    for p in priority_list:
+        if p.priority == priority - 1:
+            p.priority = priority
+            p.save()
+        elif p.priority == priority:
+            p.priority = priority - 1
+            if p.priority < 0:
+                p.priority = 0
+            p.save()
+
+    return redirect('cyka:personal_edit', uuid)
