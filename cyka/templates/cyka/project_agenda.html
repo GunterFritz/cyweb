@@ -13,12 +13,12 @@
                 <th scope="row"></th>
 		<td><b><span class="glyphicon glyphicon-certificate" style="color:{{ a.0.color }}"></span>{{ a.0.name }} - {{ a.0.color }}</b>
             		{% for p in a.0.person %}
-			<p>{{ p.name }}</p>
+			<p>{{ p.name }} ({{p.priority}})</p>
             		{% endfor %}
 			<td>
 		<td><b><span class="glyphicon glyphicon-certificate" style="color:{{ a.1.color }}"></span>{{ a.1.name }} - {{ a.1.color }}</b>
             		{% for p in a.1.person %}
-			<p>{{ p.name }}</p>
+			<p>{{ p.name }} ({{p.priority}})</p>
             		{% endfor %}
 			<td>
 	      </tr>

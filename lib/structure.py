@@ -1,7 +1,11 @@
 from copy import deepcopy
 from random import shuffle
-from .algorithm import Person
-from .algorithm import Topic
+try:
+    from .algorithm import Person
+    from .algorithm import Topic
+except:
+    from algorithm import Person
+    from algorithm import Topic
 import sys
 import operator
 import numpy as np
@@ -552,6 +556,7 @@ class Structure2:
             p = Topic(name, i)
             self.orig_topics.append(p)
 
+        self.print_out("debug_last_call.txt")
         self.numPersons = len(self.orig_persons)
         return None
 
@@ -631,11 +636,11 @@ class Structure2:
         agenda = self.getAgenda()
         for h in agenda:
             print("-----")
-            print(h[0].color, h[0].topic.name if h[0].topic else None)
+            print(h[0].color, h[0].topic.name if h[0].topic else None, h[0].topic.index)
             #print left side
             for s in h[0].struts:
                 print("  ", s.debugName(h[0].topic))
-            print(h[1].color, h[1].topic.name if h[1].topic else None)
+            print(h[1].color, h[1].topic.name if h[1].topic else None, h[1].topic.index)
             #print opposite
             for s in h[1].struts:
                 print("  ", s.debugName(h[1].topic))

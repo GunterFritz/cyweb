@@ -156,28 +156,6 @@ def member_delete(request, member_id):
     except Member.DoesNotExist:
         raise Http404("Member does not exist")
         
-def personal_edit(request, uuid):
-    try:
-        member = Member.objects.all().filter(uuid=uuid)[0]
-        priority_list = member.priority_set.all().order_by('priority')
-
-        if len(priority_list) == 0:
-            priority_list = create_priority_list(member)
-
-    except Member.DoesNotExist:
-        raise Http404("Member does not exist")
-    
-    if request.method == 'POST':
-        member_form = MemberForm(request.POST)
-        ok_form = MemberOkForm(request.POST)
-        if ok_form.is_valid():
-            ok_form = MemberOkForm(request.POST, instance=member)
-            member = ok_form.save(commit=False)
-            member.save()
-    else:
-        ok_form = MemberOkForm(instance=member)
-    return render(request, 'cyka/personal_edit.html', {'project' : member.proj, 'member': member, 'priority_list':priority_list, 'ok_form' : ok_form})
-
 """
 edit view of member
 """
@@ -363,33 +341,31 @@ def switch_topic(proj, t, num):
     db_topic = None
     #TODO: direct access with id?
     for db in topics:
-        if db.number == t.index:
+        if db.number == t.topic.index:
             db_topic = db
             break
     if db_topic == None:
         return None
     
     #clean existing assignment
-    plist = db_topic.assignment_set.all()
-    for p in plist:
-        p.delete()
-
+    db_topic.assignment_set.all().delete()
+    
+    db_topic.agendanumber = num
+    db_topic.color = t.color
     #recreate assignment
     for p in t.getPersons():
         person = Member.objects.get(pk=p.name)
         db_topic.assignment_set.create(member=person, atype="M")
-        db_topic.agendanumber = num
-        db_topic.color = t.color
         db_topic.save()
     return db_topic
     
 
 def calculate_agenda(proj):
-    struct = Structure.factory(proj.ptype)
+    #struct = Structure.factory(proj.ptype)
+    struct = Structure.factory("O")
     struct.array_init(create_if_list(proj))
     struct.build()
     agenda = struct.getAgenda()
-    print(agenda)
     i = 1
     for t in agenda:
         switch_topic(proj, t[0], i)
@@ -400,6 +376,8 @@ class HtmlPerson:
     def __init__(self, db):
         self.ty = db.atype
         self.name = db.member.name
+        p = db.member.priority_set.all().filter(topic=db.topic)[0]
+        self.priority = p.priority
 
 class HtmlTopic:
     def __init__(self, db):
@@ -414,6 +392,7 @@ class HtmlTopic:
 def get_agenda(proj):
     calculate_agenda(proj)
     return get_agenda_from_db(proj)
+
 """
 creates a good readable structure from db objects
 """
@@ -449,3 +428,34 @@ def personal_edit_up(request, uuid, priority):
             p.save()
 
     return redirect('cyka:personal_edit', uuid)
+
+def personal_agenda(request, uuid):
+    try:
+        member = Member.objects.all().filter(uuid=uuid)[0]
+
+    except Member.DoesNotExist:
+        raise Http404("Member does not exist")
+    return render(request, 'cyka/personal_agenda.html', {'project' : member.proj, 'member': member})
+
+def personal_edit(request, uuid):
+    try:
+        member = Member.objects.all().filter(uuid=uuid)[0]
+        priority_list = member.priority_set.all().order_by('priority')
+
+        if len(priority_list) == 0:
+            priority_list = create_priority_list(member)
+
+    except Member.DoesNotExist:
+        raise Http404("Member does not exist")
+    
+    if request.method == 'POST':
+        member_form = MemberForm(request.POST)
+        ok_form = MemberOkForm(request.POST)
+        if ok_form.is_valid():
+            ok_form = MemberOkForm(request.POST, instance=member)
+            member = ok_form.save(commit=False)
+            member.save()
+    else:
+        ok_form = MemberOkForm(instance=member)
+    return render(request, 'cyka/personal_edit.html', {'project' : member.proj, 'member': member, 'priority_list':priority_list, 'ok_form' : ok_form})
+
