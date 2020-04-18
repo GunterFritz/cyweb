@@ -9,6 +9,8 @@ from .forms import ProjectForm, TopicForm, MemberForm, MemberOkForm
 from .models import Project, Topic, Member, Assignment
 from random import randrange 
 from . import helpers
+from .helpers import Agenda
+
 # Create your views here.
 
 @login_required
@@ -206,7 +208,8 @@ def agenda(request, project_id):
         #do not create agenda
         return render(request, 'cyka/project_agenda_err.html', {'project' : project, 'err_text' : err_text})
     #create agenda
-    agenda = get_agenda(project)
+    a = Agenda(project)
+    agenda = a.get_agenda()
     return render(request, 'cyka/project_agenda.html', {'project' : project, 'agenda' : agenda })
 
 
@@ -309,101 +312,6 @@ def create_priority_list(person):
         i=i+1
 
     return person.priority_set.all()
-
-#returns the priority for a person as list
-def get_priority_list(person):
-    plist = person.priority_set.all().order_by('priority')
-    retval = [person.id]
-    for p in plist:
-        retval.append(p.topic.number)
-    return retval
-
-#creates an array that can be used as input for structure object
-def create_if_list(proj):
-    retval = []
-    for p in proj.member_set.all():
-        retval.append(get_priority_list(p))
-    return retval
-
-#statistical information, returns for each topic how many people vote for it
-def get_count_stat(proj):
-    struct = Structure.factory(proj.ptype)
-    struct.array_init(create_if_list(proj))
-    arr = struct.count_popularity()
-    print(arr)
-    return arr
-
-"""
-return the corresponding db topic object from a "flat" algorithm object
-"""
-def switch_topic(proj, t, num):
-    topics =  proj.topic_set.all()
-    db_topic = None
-    #TODO: direct access with id?
-    for db in topics:
-        if db.number == t.topic.index:
-            db_topic = db
-            break
-    if db_topic == None:
-        return None
-    
-    #clean existing assignment
-    db_topic.assignment_set.all().delete()
-    
-    db_topic.agendanumber = num
-    db_topic.color = t.color
-    #recreate assignment
-    for p in t.getPersons():
-        person = Member.objects.get(pk=p.name)
-        db_topic.assignment_set.create(member=person, atype="M")
-        db_topic.save()
-    return db_topic
-    
-
-def calculate_agenda(proj):
-    #struct = Structure.factory(proj.ptype)
-    struct = Structure.factory("O")
-    struct.array_init(create_if_list(proj))
-    struct.build()
-    agenda = struct.getAgenda()
-    i = 1
-    for t in agenda:
-        switch_topic(proj, t[0], i)
-        switch_topic(proj, t[1], i +1)
-        i = i + 2
-
-class HtmlPerson:
-    def __init__(self, db):
-        self.ty = db.atype
-        self.name = db.member.name
-        p = db.member.priority_set.all().filter(topic=db.topic)[0]
-        self.priority = p.priority
-
-class HtmlTopic:
-    def __init__(self, db):
-        self.name = db.name
-        self.color = db.color
-        self.person = []
-        assignments =  db.assignment_set.all()
-
-        for a in assignments:
-            self.person.append(HtmlPerson(a))
-
-def get_agenda(proj):
-    calculate_agenda(proj)
-    return get_agenda_from_db(proj)
-
-"""
-creates a good readable structure from db objects
-"""
-def get_agenda_from_db(proj):
-    topics =  proj.topic_set.all().order_by('agendanumber')
-    agenda = []
-    i = 0    
-    while i < len(topics):
-        agenda.append([HtmlTopic(topics[i]), HtmlTopic(topics[i+1])])
-        i = i + 2
-    return agenda
 
 def personal_edit_up(request, uuid, priority):
     try:
