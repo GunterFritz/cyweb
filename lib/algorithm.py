@@ -6,7 +6,7 @@ import numpy as np
 
 class Person:
     def __init__(self, name):
-        self.name = name
+        self.name = str(name)
         self.priorityList = []
         self.topic_A = None
         self.topic_B = None

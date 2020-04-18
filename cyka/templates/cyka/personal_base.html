@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="{% static 'css/table.css' %}">
     <link rel="stylesheet" href="{% static 'css/django.css' %}">
     <link rel="stylesheet" href="{% static 'css/glyphicon.css' %}">
+    <link rel="stylesheet" href="{% static 'css/section.css' %}">
 
 </head>
 
@@ -41,7 +42,7 @@
                     </a>
                 </li>
                 <li>
-	            <a href="{% url 'cyka:project_agenda' project.id %}">
+	            <a href="{% url 'cyka:personal_agenda' member.uuid %}">
                         Agenda
                     </a>
                 </li>
