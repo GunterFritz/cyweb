@@ -21,8 +21,7 @@ class HtmlPerson:
 
 class HtmlTopic:
     def __init__(self, db):
-        self.name = db.name
-        self.color = db.color
+        self.topic = db
         self.person = []
         assignments =  db.assignment_set.all()
 

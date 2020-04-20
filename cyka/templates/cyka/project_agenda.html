@@ -6,23 +6,60 @@
             <div class="app-polls module">
           <table style=width:100%>
 	    <caption>
+              <p class="section" title="Cyka">Plenum</p>
+            </caption>
+	    <tr>
+		<td align="center">
+			<a href="{% url 'cyka:join_room' project.uuid %}?project={{project.id}}"><button>Beitreten</button></a>
+		</td>
+            </tr>
+	  </table>
+          <table style=width:100%>
+	    <caption>
+              <p class="section" title="Cyka">Problem Jostle</p>
+            </caption>
+	    <tr>
+		    <td></td>
+            </tr>
+	  </table>
+          <table style=width:100%>
+	    <caption>
               <p class="section" title="Cyka">Themen</p>
             </caption>
             {% for a in agenda %}
    	      <tr class="model-question">
                 <th scope="row"></th>
-		<td><b><span class="glyphicon glyphicon-certificate" style="color:{{ a.0.color }}"></span>{{ a.0.name }} - {{ a.0.color }}</b>
+		<td><b><span class="glyphicon glyphicon-certificate" style="color:{{ a.0.topic.color }}"></span>{{ a.0.topic.name }} - {{ a.0.topic.color }}</b>
             		{% for p in a.0.person %}
 			<p>{{ p.name }} ({{p.priority}})</p>
             		{% endfor %}
-			<td>
-		<td><b><span class="glyphicon glyphicon-certificate" style="color:{{ a.1.color }}"></span>{{ a.1.name }} - {{ a.1.color }}</b>
+		</td>
+		<td>
+			{% if a.0.topic.is_active %}
+			    <a href="{% url 'cyka:topic_toggle' a.0.topic.id  %}"><button>Stoppen</button></a>
+			    <a href="{% url 'cyka:join_room' a.0.topic.uuid  %}?project={{project.id}}"><button>Teilnehmen</button></a>
+			{% else %}
+			    <a href="{% url 'cyka:topic_toggle' a.0.topic.id  %}"><button>Starten</button></a>
+			    <a href="{% url 'cyka:join_room' a.0.topic.uuid  %}?project={{project.id}}"><button disabled>Teilnehmen</button></a>
+			{% endif %}
+		</td>
+		<td><b><span class="glyphicon glyphicon-certificate" style="color:{{ a.1.topic.color }}"></span>{{ a.1.topic.name }} - {{ a.1.topic.color }}</b>
             		{% for p in a.1.person %}
 			<p>{{ p.name }} ({{p.priority}})</p>
             		{% endfor %}
-			<td>
+		</td>
+		<td>
+			{% if a.0.topic.is_active %}
+			    <a href="{% url 'cyka:topic_toggle' a.0.topic.id  %}"><button>Stoppen</button></a>
+			    <a href="{% url 'cyka:join_room' a.0.topic.uuid  %}?project={{project.id}}"><button>Teilnehmen</button></a>
+			{% else %}
+			    <a href="{% url 'cyka:topic_toggle' a.0.topic.id  %}"><button>Starten</button></a>
+			    <a href="{% url 'cyka:join_room' a.0.topic.uuid  %}?project={{project.id}}"><button disabled>Teilnehmen</button></a>
+			{% endif %}
+		</td>
 	      </tr>
             {% endfor %}
+	  </table>
         </div>
     </div>
     </div>

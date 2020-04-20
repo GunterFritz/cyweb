@@ -18,7 +18,9 @@ urlpatterns = [
 	url(r'^(?P<project_id>[0-9]+)/details/$', views.project_details, name="project_details"),
 	# ex: /cyka/project/5/topics/
 	url(r'^(?P<project_id>[0-9]+)/topics/$', views.project_topics, name="project_topics"),
-	# ex: /cyka/project/5/topics/edit/
+	# ex: /cyka/5/topic_edit/edit/
+	url(r'^(?P<topic_id>[0-9]+)/topic_toggle/$', views.topic_toggle, name="topic_toggle"),
+	# ex: /cyka/5/topic_edit/edit/
 	url(r'^(?P<topic_id>[0-9]+)/topic_edit/$', views.topic_edit, name="topic_edit"),
 	# ex: /cyka/project/5/team/
 	url(r'^(?P<project_id>[0-9]+)/team/$', views.project_team, name="project_team"),
@@ -37,6 +39,8 @@ urlpatterns = [
 	url(r'^(?P<member_id>[0-9]+)/member/edit/up/(?P<priority>-[0-9]+)$', views.member_edit_up, name="member_edit_up"),
 	# ex: /cyka/personal_agenda/uuid
         url(r'^personal_agenda/(?P<uuid>[0-9A-Za-z\-]+)$', views.personal_agenda, name="personal_agenda"),
+	# ex: /cyka/join_room/uuid
+        url(r'^join_room/(?P<uuid>[0-9A-Za-z\-]+)$', views.join_room, name="join_room"),
 	# ex: /cyka/personal_edit/uuid
         url(r'^personal_edit/(?P<uuid>[0-9A-Za-z\-]+)$', views.personal_edit, name="personal_edit"),
 	# ex: /cyka/personal_edit_up/5/member/edit

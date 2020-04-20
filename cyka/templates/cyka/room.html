@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>openTeamCybernetics</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'vendor/bootstrap-3.3.5-dist/css/bootstrap.min.css' %}" rel="stylesheet">
+        
+    <!-- Custom styles for this template -->
+    <!-- link href="css/simple-sidebar.css" rel="stylesheet"-->
+    <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/table.css' %}">
+    <link rel="stylesheet" href="{% static 'css/django.css' %}">
+    <link rel="stylesheet" href="{% static 'css/glyphicon.css' %}">
+    <link rel="stylesheet" href="{% static 'css/section.css' %}">
+
+</head>
+
+    <div class="project">
+        <div id="content-main">
+            <div class="app-polls module">
+		    {% if moderator is True %}
+		    <a href="{% url 'cyka:project_agenda' param  %}"><button>Zurück zur Agenda</button></a>
+		    {% else %}
+		    <a href="{% url 'cyka:personal_agenda' param  %}"><button>Zurück zur Agenda</button></a>
+		    {% endif %}
+		<script src="https://saturn2/external_api.js"></script>
+                <script>
+                  var domain = "saturn2";
+                  var options = {
+	            roomName: "{{room}}",
+                    height: 700,
+                    parentNode: undefined,
+                  }
+                  var api = new JitsiMeetExternalAPI(domain, options);
+                  api.executeCommand ('displayName', '{{name}}'); 
+                  api.executeCommand ('etherpad', 'test'); 
+               </script>
+            </div>
+        </div>
+  </div>
+</body>
+
+</html>

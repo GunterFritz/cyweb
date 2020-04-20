@@ -240,6 +240,20 @@ def project_list(request):
     return render(request, 'cyka/project_list.html', {'projects': projects})
 
 @login_required
+def topic_toggle(request, topic_id):
+    try:
+        topic = Topic.objects.get(pk=topic_id)
+    except Topic.DoesNotExist:
+        raise Http404("Topic does not exist")
+
+    topic.is_active = not topic.is_active
+    topic.save()
+    
+    a = Agenda(topic.proj)
+    agenda = a.get_agenda()
+    return render(request, 'cyka/project_agenda.html', {'project' : topic.proj, 'agenda' : agenda })
+
+@login_required
 def topic_edit(request, topic_id):
     try:
         topic = Topic.objects.get(pk=topic_id)
@@ -367,3 +381,9 @@ def personal_edit(request, uuid):
         ok_form = MemberOkForm(instance=member)
     return render(request, 'cyka/personal_edit.html', {'project' : member.proj, 'member': member, 'priority_list':priority_list, 'ok_form' : ok_form})
 
+@login_required
+def join_room(request, uuid):
+    project_id = request.GET.get('project', '')
+    print("PPPPPPPPPPPPP:", project_id)
+    name = request.user.get_username
+    return render(request, 'cyka/room.html', {'room' : uuid, 'name' : name, 'moderator' : True , 'param' : project_id})
