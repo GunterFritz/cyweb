@@ -31,6 +31,10 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'material.theme.lightblue',
+    'material.frontend',
+    'material',
+    'material.admin',
     'cyka.apps.CykaConfig',
     'django.contrib.admin',
     'django.contrib.auth',
