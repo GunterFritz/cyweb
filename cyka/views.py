@@ -296,7 +296,7 @@ def project_new(request):
             return redirect('cyka:project_list')
     else:
         form = ProjectForm()
-    return render(request, 'cyka/project_edit.html', {'form': form})
+    return render(request, 'cyka/project_new.html', {'form': form})
 
 
 def login(request):
