@@ -11,24 +11,13 @@
 
     <title>openTeamCybernetics</title>
 
-    <!-- Bootstrap core CSS -->
-    <link href="{% static 'vendor/bootstrap-3.3.5-dist/css/bootstrap.min.css' %}" rel="stylesheet">
-        
-    <!-- Custom styles for this template -->
-    <!-- link href="css/simple-sidebar.css" rel="stylesheet"-->
-    <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
-    <link rel="stylesheet" href="{% static 'css/table.css' %}">
-    <link rel="stylesheet" href="{% static 'css/django.css' %}">
-    <link rel="stylesheet" href="{% static 'css/glyphicon.css' %}">
-    <link rel="stylesheet" href="{% static 'css/section.css' %}">
-
 </head>
 
     <div class="project">
         <div id="content-main">
             <div class="app-polls module">
 		    {% if moderator is True %}
-		    <a href="{% url 'cyka:project_agenda' param  %}"><button>Zurück zur Agenda</button></a>
+		    <a href="{% url 'cyka:workflow' param  %}"><button>Zurück zur Agenda</button></a>
 		    {% else %}
 		    <a href="{% url 'cyka:personal_agenda' param  %}"><button>Zurück zur Agenda</button></a>
 		    {% endif %}
@@ -42,7 +31,6 @@
                   }
                   var api = new JitsiMeetExternalAPI(domain, options);
                   api.executeCommand ('displayName', '{{name}}'); 
-                  api.executeCommand ('etherpad', 'test'); 
                </script>
             </div>
         </div>

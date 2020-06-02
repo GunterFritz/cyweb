@@ -11,6 +11,10 @@ class Project(models.Model):
     ptype = models.CharField(max_length=32,choices=(('I', 'IKOSAEDER'),('O', 'OKTAEDER')))
     #don't recalculate agenda if already exists
     hasagenda = models.BooleanField(default=False)
+    uuid = models.UUIDField( 
+         primary_key = False, 
+         default = uuid.uuid4, 
+         editable = False) 
 
     def __str__(self):
         return self.name
@@ -23,6 +27,8 @@ class Topic(models.Model):
     #list number in agenda(1 opposite of 2, 3 opposite of 4, ...)
     color = models.CharField(max_length=64, default="")
     agendanumber = models.IntegerField(null=True)
+    #meeting can be started
+    is_active = models.BooleanField(default=False)
     uuid = models.UUIDField( 
          primary_key = False, 
          default = uuid.uuid4, 
@@ -30,6 +36,15 @@ class Topic(models.Model):
     
     def __str__(self):
         return self.name
+
+#class Table(models.Model):
+#    name = models.CharField(max_length=128)
+#    desc = models.TextField()
+#    proj = models.ForeignKey(Project, on_delete=models.CASCADE)
+#    uuid = models.UUIDField( 
+#         primary_key = False, 
+#         default = uuid.uuid4, 
+#         editable = False) 
 
 class Member(models.Model):
     name = models.CharField(max_length=128)
@@ -56,3 +71,9 @@ class Assignment(models.Model):
     atype = models.CharField(max_length=16,choices=(('M', 'MEMBER'),('C', 'CRITIC')))
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
     member = models.ForeignKey(Member, on_delete=models.CASCADE)
+
+class WorkflowElement(models.Model):
+    proj = models.ForeignKey(Project, on_delete=models.CASCADE)
+    step = models.IntegerField(default=0)
+    done = models.BooleanField(default=False)
+

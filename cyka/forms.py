@@ -1,11 +1,27 @@
 from django import forms
 from django.forms import ModelForm
 from .models import Project, Topic, Member
+from material import Layout, Row, Column, Fieldset, Span2, Span3, Span5, Span6, Span10
+from .workflow import Workflow
 
-class ProjectForm(ModelForm):
-    class Meta:
-        model = Project
-        fields = ('name', 'question', 'ptype')
+#class ProjectForm(ModelForm):
+#    class Meta:
+#        model = Project
+#        fields = ('name', 'question', 'ptype')
+
+class ProjectForm(forms.Form):
+    name = forms.CharField(label='Name')
+    question = forms.CharField(label='Ausgangsfrage', max_length=500, widget=forms.Textarea(attrs={"style": "resize: none"}))
+    ptype = forms.ChoiceField(choices=((None, ''), ('O', '9-15 Teilnehmer'), ('C', '16-24 Teilnehmer'), ('I', '25-36 Teilnehmer')), label='Gruppengröße')
+
+    def save(self, prj = None):
+        if prj == None:
+            prj = Project()
+        prj.name = self.cleaned_data['name']
+        prj.question = self.cleaned_data['question']
+        prj.ptype = self.cleaned_data['ptype']
+
+        return prj
 
 
 class TopicForm(ModelForm):
@@ -17,10 +33,26 @@ class TopicForm(ModelForm):
         model = Topic
         fields = ('name', 'desc',)
 
-class MemberForm(ModelForm):
-    class Meta:
-        model = Member
-        fields = ('name', 'email')
+class MemberForm(forms.Form):
+    name = forms.CharField()
+    email = forms.EmailField()
+    layout = Layout('name', 'email')
+
+    def save(self, member = None):
+        if member == None:
+            member = Member()
+        member.name = self.cleaned_data['name']
+        member.email = self.cleaned_data['email']
+
+        return member
+
+class WorkflowElementForm(forms.Form):
+    done = forms.BooleanField(label='erledigt', required=False)
+
+    def save(self, wf):
+        wf.done = self.cleaned_data['done']
+        wf.elem.done = self.cleaned_data['done']
+        return wf
 
 class MemberOkForm(ModelForm):
     class Meta:

@@ -32,25 +32,19 @@
             </form></dmc-form>
         </div>
         <div class="card">
-	    <dmc-form><form method="POST" enctype="multipart/form-data">
                 <div class="card-content">
-                    <span class="card-title grey-text text-darken-2">{% block formtitle %}Ausgangsfrage{% endblock %}</span>
-                    {% csrf_token %}
-                    {% block formbody %}
-                    <div class="right-align">
-                        {% form %}
-                        {% endform %}
-                    </div>
-                    {% endblock %}
+                    <span class="card-title grey-text text-darken-2">{% block formtitle %}Plenum{% endblock %}</span>
                 </div>
                 <div class="card-action">
                     {% block actions %}
                     <div class="right-align">
-                        {% block formbuttons %}<button class="btn btn-primary" name='workshop' type="submit">Speichern</button>{% endblock %}
+	    		<form method="GET" action="{% url 'cyka:join_room' project.uuid %}" target="_blank">
+			    <input type="hidden" name="project" value="{{project.id}}" /> 
+                            <button class="btn btn-primary" name='workshop' type="submit">Beitreten</button>
+			</form>
                     </div>
                     {% endblock %}
                 </div>
-            </form></dmc-form>
         </div>
     </div>
 </div>

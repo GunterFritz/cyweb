@@ -1,41 +1,92 @@
 {% extends 'cyka/project_base.html' %}
+{% load material_form %}
+
+{% block extrahead %}
+<script>
+function confirm_click(name)
+{
+    return confirm("Möchten Sie den Teilnehmer '" + name + "' löschen?");
+}
+
+var _el;
+
+function dragOver(e) {
+  if (isBefore(_el, e.target))
+    e.target.parentNode.insertBefore(_el, e.target);
+  else
+    e.target.parentNode.insertBefore(_el, e.target.nextSibling);
+}
+
+function dragStart(e) {
+  e.dataTransfer.effectAllowed = "move";
+  e.dataTransfer.setData("text/plain", null); // Thanks to bqlou for their comment.
+  _el = e.target;
+}
+
+function isBefore(el1, el2) {
+  if (el2.parentNode === el1.parentNode)
+    for (var cur = el1.previousSibling; cur && cur.nodeType !== 9; cur = cur.previousSibling)
+      if (cur === el2)
+        return true;
+  return false;
+}
+
+</script>
+{% endblock %}
 
 {% block content %}
-    <div class="project">
-    <form method="POST" class="post-form">{% csrf_token %}
-        	<div class="app-polls module">
-        		<table style=width:100%>
-	<caption>
-             <p class="section" title="Daten">Persönliche Daten</p>
-        </caption>
-        {{ member_form.as_table }}
-        		</table>
-        {{ member.id }}
+<div class="row valign change-form">
+    <div class="left col s12 m8 offset-m2 l8 offset-l2">
+	<ul class="tabs">
+          <li class="tab col s3"><a href="#daten">Persönliche Daten</a></li>
+          <li class="tab col s3"><a href="#themen">Themenliste</a></li>
+	</ul>
+    <div id="daten" class="{% block formclass %}col s12 m8 offset-m2 l8 offset-l2{% endblock %}">
+        <div class="card">
+	    <dmc-form><form method="POST" enctype="multipart/form-data">
+                <div class="card-content">
+                    <span class="card-title grey-text text-darken-2">{% block formtitle %}Persönliche Daten{% endblock %}</span>
+                    {% csrf_token %}
+                    {% block formbody %}
+                    <div class="right-align">
+    			{% form %}
+        		{% part form.name prefix %}<i class="material-icons prefix">account_box</i>{% endpart %}
+        		{% part form.email prefix %}<i class="material-icons prefix">email</i>{% endpart %}
+    			{% endform %}
+                    </div>
+                    {% endblock %}
+                </div>
+                <div class="card-content">
+			<span><i class="material-icons right secondary-content">{% if member.status %}done{% else %}work{% endif %}</i></span>
+			<span>Persönlicher Link</span>
+			<span><a href="{% url 'cyka:personal_edit' member.uuid %}">{% url 'cyka:personal_edit' member.uuid %}</a></span>
+                </div>
+                <div class="card-action">
+                    {% block actions %}
+                    <div class="right-align">
+			<span onclick="return confirm_click('{{member.name}}');">
+			    <a href="{% url 'cyka:member_delete' member.id %}"><button class="btn btn-primary">Löschen</button></a>
+			</span>
+			<a href="{% url 'cyka:project_team' project.id %}"><button class="btn btn-primary">Abbrechen</button></a>
+                        {% block formbuttons %}<button class="btn btn-primary" type="submit">OK</button>{% endblock %}
+                    </div>
+                    {% endblock %}
+                </div>
+            </form></dmc-form>
+    </div>
+    <div id="themen" class="col s12 m8 offset-m2 l8 offset-l2">
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title grey-text text-darken-2">Themen Liste</span>
+		    <ul class="collection">
+		    {% for prio in priority_list %}
+		    <li class="collection-item" draggable="true" ondragover="dragOver(event)" ondragstart="dragStart(event)">{{prio.topic.name}}</li>
+	            {% endfor %}
+		    </ul>
+            </div>
         </div>
-	<div id="content-main">
-        	<div class="app-polls module">
-        		<table style=width:100%>
-		        <caption>
-            			<p class="section" title="Themen sortiert nach Priorität">Themen</p>
-        		</caption>
-        
-			{% for prio in priority_list %}
-   			        <tr class="model-question">
-                		<th scope="row"><p>{{prio.priority}}</p></th>
-                		<td><p>{{prio.topic.number}}</p></td>
-                		<td><p>{{prio.topic.name}}</p></td>
-                                <td><a href="{% url 'cyka:member_edit_up' member.id prio.priority%}"><span class="glyphicon glyphicon-arrow-up"></span></a></td>
-            			</tr>
-	{% endfor %}
-        </table>
         </div>
     </div>
-      <table>
-        {{ ok_form.as_table }}
-      </table>
-      <button type="submit" class="save btn btn-primary">Save</button>
-      <br><br>
-    </form>
-    <a href="{% url 'cyka:member_shuffle_topics' member.id%}"><button>Random</button></a>
-  </div>
+</div>
+</div>
 {% endblock %}

@@ -1,75 +1,90 @@
 {% extends 'cyka/project_base.html' %}
+{% load material_form %}
+{% block extrahead %}
+      <style type="text/css">
+	.vcenter {
+          vertical-align: middle;
+        }
+      </style>
+<script type="text/javascript">
+  var counter = 0;
+  
+  function add(id) {
+    ele = document.getElementById(id);
+    if (ele.hasChildNodes() == 0) {
+      counter += 1;
+      var text = document.createTextNode(counter);
+      document.getElementById(id).appendChild(text)
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('.collapsible');
+    var instances = M.Collapsible.init(elems, options);
+  });
+
+  // Or with jQuery
+
+  $(document).ready(function(){
+    $('.collapsible').collapsible();
+  });
+</script>
+{% endblock %}
+
 {% block content %}
-    <div class="project">
-        <div id="content-main">
-            <div class="app-polls module">
-                <table style=width:100%>
-                    <script type="text/javascript">counter = 0</script>
-                    <script type="text/javascript">
-                      function confirm_click(name)
-                      {
-                        return confirm("Möchten Sie den Teilnehmer '" + name + "' löschen?");
-                      }
-                    </script>
-                    <caption>
-                        <p class="section" title="Teilnehmer des Workshops">Teilnehmer</p>
-                    </caption>
-                    <tr>
-			    <th>Index</th>
-			    <th>Name</th>
-			    <th>Email</th>
-			    <th align="center">Edit</th>
-			    <th align="center">Status</th>
-			    <th align="center">Löschen</th>
-			    <th>Persönlicher Link</th>
-                    </tr> 
-                    {% for member in project.member_set.all %}
-                        <tr class="section">
-                            <td scope="row"><script type="text/javascript">document.write( 1 + counter++ )</script></td>
-                            <td>{{member.name}}</td>
-                            <td>{{member.email}}</td>
-                            <td align="center"><a href="{% url 'cyka:member_edit' member.id %}" class="glyphicon glyphicon-pencil"></a></td>
-			    <td/>
-			    <td align="center">
-				<span onclick="return confirm_click('{{member.name}}');">
-					<a href="{% url 'cyka:member_delete' member.id %}" style="color:#B30000;" class="glyphicon glyphicon-remove redcolor"></i></a>
-				</span>
-			    </td>
-			    <td><a href="{% url 'cyka:personal_edit' member.uuid %}">{% url 'cyka:personal_edit' member.uuid %}</a></td>
-                        </tr>
-		        <script>
-                            var table = document.getElementsByTagName("table")[0];
-                            var row = table.getElementsByTagName("tr")[counter]; 
-                            var cells = row.getElementsByTagName("td")[4]; 
-			    cells.style.textAlign = "center";
-                            var i = document.createElement('i');
-                            if("{{member.status}}" == "True"){
-			    i.className ="glyphicon glyphicon-ok addcolor";
-			    }else{
-			    i.className ="glyphicon glyphicon-minus greycolor";
-		            }
-			    cells.appendChild(i)
-			</script>
-                    {% endfor %}
-                </table>
-		<p id="addbutton"/p>
-                    	    <script>
-				if(counter < {{max}}){
-				  var a = document.createElement('a');
-                                  a.href="{% url 'cyka:member_new' project.id %}";
-				  text = document.createTextNode(" Teilnehmer hinzufügen");
-				  var span = document.createElement('span');
-				  span.className ="glyphicon glyphicon-plus addcolor";
-				  a.appendChild(span)
-				  a.appendChild(text)
-                            //document.getElementById("demo").appendChild(<a href="{% url 'cyka:member_new' project.id %}"><span class="glyphicon glyphicon-plus addcolor"></span> Neu</a>);
-                            	  document.getElementById("addbutton").appendChild(a);
-				}
-			    </script>
+    <div class="row valign change-form">
+        <div class="col s12 m8 offset-m2 l8 offset-l2">
+            <div class="card">
+	        <dmc-form><form method="POST" enctype="multipart/form-data">
+                    <div class="card-content">
+                        <span class="card-title grey-text text-darken-2">Was ist zu tun</span>
+		        <p>{{step.todo}}</p>
+                        {% csrf_token %}
+                            {% form form=wf_form %}{% endform %}
+                    </div>
+                    <div class="card-action">
+                        <div class="right-align">
+                            <button class="btn btn-primary" name='step' type="submit">Speichern</button>
+                        </div>
+                    </div>
+                </form></dmc-form>
+            </div>
+            <div class="card">
+                <div class="card-content"><script>var counter = 0;</script>
+                    <span class="card-title grey-text text-darken-2">Teilnehmer des Workshops</span>
+		    <ul class="collapsible">
+	            <li>
+      			<div class="collapsible-header"><i class="material-icons">supervisor_account</i>Teilnehmer</div>
+			<div class="collapsible-body">
+		            <div class="collection">
+                            {% for member in project.member_set.all %}
+		            <a href="{% url 'cyka:member_edit' member.id %}" class="collection-item">
+		                <i class="left secondary-content">
+		                <span id="{{member.id}}" class="badge"></span>
+			        </i>{{member.name}}</i><i class="material-icons right secondary-content">{% if member.status %}done{% else %}close{% endif %}</i>
+		            </a>
+		            <script type="text/javascript">add({{member.id}});</script>
+		            {% endfor %}
+                            </div>
+		        </div>
+                    </li>
+		    <li>
+                        <div class="collapsible-header"><i class="material-icons">account_circle</i>Gäste</div>
+                        <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
+                    </li>
+		    <li>
+                        <div class="collapsible-header"><i class="material-icons">place</i>Moderatoren</div>
+                        <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
+                    </li>
+		    </ul>
+                </div>
+                <div class="card-action">
+                  <div class="right-align">
+		    <a href="{% url 'cyka:member_new' project.id %}"><button class="btn btn btn-primary">Neu</button></a>
+                  </div>
+                </div>
             </div>
         </div>
     </div>
-{% block member_add %}
-{% endblock %}
 {% endblock %}
 

@@ -1,8 +1,34 @@
-{% extends 'cyka/project_team.html' %}
+{% extends 'cyka/project_base.html' %}
+{% load material_form %}
 
-{% block member_add %}
-    <form method="POST" class="post-form">{% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="save btn btn-default">Save</button>
-    </form>
+{% block content %}
+<div class="row valign change-form">
+    <div class="{% block formclass %}col s12 m8 offset-m2 l8 offset-l2{% endblock %}">
+        <div class="card">
+	    <dmc-form><form method="POST" enctype="multipart/form-data">
+                <div class="card-content">
+                    <span class="card-title grey-text text-darken-2">{% block formtitle %}Neuer Teilnehmer{% endblock %}</span>
+                    {% csrf_token %}
+                    {% block formbody %}
+                    <div class="right-align">
+    			{% form %}
+        		{% part form.name prefix %}<i class="material-icons prefix">account_box</i>{% endpart %}
+        		{% part form.email prefix %}<i class="material-icons prefix">email</i>{% endpart %}
+    			{% endform %}
+                    </div>
+                    {% endblock %}
+                </div>
+                <div class="card-action">
+                    {% block actions %}
+                    <div class="right-align">
+			<a href="{% url 'cyka:project_team' project.id %}"><button class="btn btn-primary">Abbrechen</button></a>
+                        {% block formbuttons %}<button class="btn btn-primary" type="submit">Submit</button>{% endblock %}
+                    </div>
+                    {% endblock %}
+                </div>
+            </form></dmc-form>
+        </div>
+    </div>
+</div>
+</form>
 {% endblock %}

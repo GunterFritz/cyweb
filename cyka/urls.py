@@ -12,18 +12,24 @@ urlpatterns = [
 	url(r'^project/new/$', views.project_new, name="project_new"),
 	# ex: /cyka/project/list
 	url(r'^project/list/$', views.project_list, name="project_list"),
+	# ex: /cyka/project/5/jostle/welcome/
+	url(r'^(?P<project_id>[0-9]+)/jostle/welcome/$', views.jostle_welcome, name="jostle_welcome"),
 	# ex: /cyka/project/5/delete/
 	url(r'^(?P<project_id>[0-9]+)/delete/$', views.project_delete, name="project_delete"),
 	# ex: /cyka/project/5/details/
 	url(r'^(?P<project_id>[0-9]+)/details/$', views.project_details, name="project_details"),
+	# ex: /cyka/project/5/workflow/
+	url(r'^(?P<project_id>[0-9]+)/workflow/$', views.workflow, name="workflow"),
 	# ex: /cyka/project/5/topics/
 	url(r'^(?P<project_id>[0-9]+)/topics/$', views.project_topics, name="project_topics"),
-	# ex: /cyka/5/topic_edit/edit/
+	# ex: /cyka/5/topic_toggle/edit/
 	url(r'^(?P<topic_id>[0-9]+)/topic_toggle/$', views.topic_toggle, name="topic_toggle"),
 	# ex: /cyka/5/topic_edit/edit/
 	url(r'^(?P<topic_id>[0-9]+)/topic_edit/$', views.topic_edit, name="topic_edit"),
 	# ex: /cyka/project/5/team/
 	url(r'^(?P<project_id>[0-9]+)/team/$', views.project_team, name="project_team"),
+	# ex: /cyka/project/5/table/new/
+	url(r'^(?P<project_id>[0-9]+)/table/new/$', views.member_new, name="table_new"),
 	# ex: /cyka/project/5/member/new/
 	url(r'^(?P<project_id>[0-9]+)/member/new/$', views.member_new, name="member_new"),
 	# ex: /cyka/project/5/agenda/

@@ -1,68 +1,62 @@
 <!DOCTYPE html>
-{% load staticfiles %}
+{% load static %}
 <html lang="en">
-
-<head>
-
+  <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://unpkg.com/material-components-web@v4.0.0/dist/material-components-web.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script src="https://unpkg.com/material-components-web@v4.0.0/dist/material-components-web.min.js"></script>
 
-    <title>openTeamCybernetics</title>
+    <title>{% block title %}Cyiko Workshops{% endblock %}</title>
 
-    <!-- Bootstrap core CSS -->
-    <link href="{% static 'vendor/bootstrap-3.3.5-dist/css/bootstrap.min.css' %}" rel="stylesheet">
-        
-    <!-- Custom styles for this template -->
-    <!-- link href="css/simple-sidebar.css" rel="stylesheet"-->
-    <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
-    <link rel="stylesheet" href="{% static 'css/table.css' %}">
-    <link rel="stylesheet" href="{% static 'css/django.css' %}">
-    <link rel="stylesheet" href="{% static 'css/glyphicon.css' %}">
-
-</head>
-
-<body>
-
-    <div id="wrapper">
-
-        <!-- Sidebar -->
-        <div id="sidebar-wrapper">
-            <ul class="sidebar-nav">
-                <li class="sidebar-brand">
-                    <p>
-                        Projektverwaltung
-                    </p>
-                </li>
-                <li>
-                    <a href="{% url 'cyka:project_list' %}">
-                        Projektliste
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'cyka:project_list' %}">
-                        Konto
-                    </a>
-                </li>
-		<li>User: {{ user.get_username }}</li>
-     		<li><a href="{% url 'cyka:logout'%}">Logout</a></li>
-            </ul>
-        </div>
-        <!-- /#sidebar-wrapper -->
-
-        <!-- Page Content -->
-        <div id="page-content-wrapper">
-            <div class="container-fluid">
-                    {% block content %}
+    {% block head %}
+    {% include 'material/includes/material_css.html' %}
+      {% block js %}
+      <script src="{% static 'material/js/jquery.js' %}"></script>
+      <script src="{% static 'material/js/turbolinks.js' %}"></script>
+      {% include 'material/includes/material_js.html' %}
+      {% block extrajs %}{% endblock %}
+      {% endblock %}
+      <style type="text/css">
+	.brand-logo {
+          margin-left: 5px;
+        }
+        </style>
+        {% block extrahead %}{% endblock %}
+        {% endblock head %}
+    </head>
+  <body class="valign-wrapper2">
+            {% block topbar %}
+	    <div class="navbar-fixed">
+              <nav class="topbar">
+                <div class="nav-wrapper">
+                    <dmc-sidenav-trigger><a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a></dmc-sidenav-trigger>
+                    <div class="brand-logo">
+			<a href="#" class="brand-logo">Cyiko</a>
+                        {% block page_title %}{% endblock %}
+                    </div>
+                    <div>
+                    {% block topbar_links %}
+                        <ul id="nav-mobile" class="right hide-on-med-and-down">
+			    <li><a href="{% url 'cyka:project_list' %}" data-turbolinks="false">Workshops</a></li>
+			    <li><a href="{% url 'cyka:project_new' %}" data-turbolinks="false">Neuer Workshop</a></li>
+                            {% if user.is_authenticated %}
+                            <li><a href="{% url 'cyka:logout'%}" data-turbolinks="false"><i class="material-icons right">exit_to_app</i>Logout</a></li>
+                            {% else %}
+                            <li><a href="{% url 'cyka:login'%}" data-turbolinks="false"><i class="material-icons right">lock_open</i>Login</a></li>
+                            {% endif %}
+                        </ul>
                     {% endblock %}
+                    </div>
+                </div>
+            </nav>
             </div>
-        </div>
-        <!-- /#page-content-wrapper -->
-
-    </div>
-    <!-- /#wrapper -->
-
-</body>
-
+            {% endblock topbar %}
+      {% block sidebar %}{% endblock %}
+      <div class="{% block container_class %}container expand-on-small-only{% endblock %}">
+          {% block content %}{% endblock %}
+      </div>
+  </body>
 </html>

@@ -1,41 +1,47 @@
 {% extends 'cyka/base.html' %}
 
-{% block content %}
-    <div class="project">
-        <div id="content-main">
-            <div class="app-polls module">
-                <table style=width:100%>
-                    <script type="text/javascript">counter = 0</script>
-                    <script type="text/javascript">
-                      function confirm_click(name)
-                      {
-                        return confirm("Möchten Sie das Projekt '" + name + "' löschen?");
-                      }
-                    </script>
-                    <caption>
-                        <p class="section" title="Projektliste">Projekte</p>
-                    </caption>
-                    <tr>
-			    <th>Index</th>
-			    <th>Name</th>
-			    <th>Beschreibung</th>
-			    <th align="center">Löschen</th>
-                    </tr> 
-                    {% for p in projects %}
-                        <tr class="section">
-                            <td scope="row"><script type="text/javascript">document.write( 1 + counter++ )</script></td>
-	    		    <td><a href="{% url 'cyka:project_details' p.id %}">{{ p.name }}</a></td>
-                            <td>{{ p.question|linebreaksbr }}</td>
-		            <td>
-				<span onclick="return confirm_click('{{p.name}}');">
-					<a href="{% url 'cyka:project_delete' p.id %}" style="color:#B30000;" class="glyphicon glyphicon-remove redcolor"></i></a>
-			        </span>
-			    <td/>
-                        </tr>
-                    {% endfor %}
-		</table>
-            </div>
-        </div>
-    </div>
-    <a href="{% url 'cyka:project_new' %}" class="top-menu"><span class="glyphicon glyphicon-plus addcolor">Neues Projekt</span></a>
+{% block extrahead %}
+<style type="text/css">
+  @media only screen and (min-width : 601px) {
+      #id_card_type_container {
+          margin-top: 40px;
+          margin-left: 50px;
+      }
+}
+</style>
 {% endblock %}
+
+{% block content %}
+<script>
+function confirm_click(name)
+{
+    return confirm("Möchten Sie das Projekt '" + name + "' löschen?");
+}
+</script>
+
+<div class="row valign change-form">
+    <div class="{% block formclass %}col s12 m8 offset-m2 l8 offset-l2{% endblock %}">
+	{% for p in projects %}
+        <div class="card">
+                <div class="card-content">
+                    <span class="card-title grey-text text-darken-2">{{ p.name }}</span>
+		    <span>{{ p.question }}</span>
+                </div>
+                <div class="card-action">
+                    {% block actions %}
+                    <div class="right-align">
+			<a href="{% url 'cyka:project_details' p.id %}"><button class="btn btn-primary">Zum Workshop</button></a>
+			<span onclick="return confirm_click('{{p.name}}');">
+			    <a href="{% url 'cyka:project_delete' p.id %}"><button class="btn btn-delete">Löschen</button></a>
+			</span>
+                    </div>
+                    {% endblock %}
+                </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% block result %}
+{% endblock %}
+{% endblock %}
+

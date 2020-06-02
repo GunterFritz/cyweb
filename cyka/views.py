@@ -2,14 +2,16 @@ from lib.structure import Structure2 as Structure
 from lib.structure import Topic as A_Topic
 from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView
-from django.http import HttpResponseRedirect,HttpResponse,HttpResponseForbidden
+from django.http import HttpResponseRedirect,HttpResponse,HttpResponseForbidden, Http404
+from django.core.exceptions import PermissionDenied
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-from .forms import ProjectForm, TopicForm, MemberForm, MemberOkForm
+from .forms import ProjectForm, TopicForm, MemberForm, MemberOkForm, WorkflowElementForm
 from .models import Project, Topic, Member, Assignment
 from random import randrange 
 from . import helpers
 from .helpers import Agenda
+from .workflow import Workflow
 
 # Create your views here.
 
@@ -28,27 +30,40 @@ def project(request):
     
 @login_required
 def project_details(request, project_id):
-    try:
-        project = Project.objects.get(pk=project_id)
-    except Project.DoesNotExist:
-        raise Http404("Project does not exist")
-    return render(request, 'cyka/project_details.html', {'project' : project })
-    #projects = Project.objects.all()
+    proj = get_project(request, project_id)
+    step = Workflow.getStep(proj, 10)
+    wf_form = None
+    
+    if request.method == 'POST':
+        if 'workshop' in request.POST:
+            form = ProjectForm(request.POST)
+            if form.is_valid():
+                form.save(proj)
+                proj.save()
+            wf_form = WorkflowElementForm(initial={'done': step.done})
+        
+        if 'step' in request.POST:
+            wf_form = WorkflowElementForm(request.POST)
+            if wf_form.is_valid():
+                wf_form.save(step)
+                step.save()
+            form = ProjectForm(initial={'name': proj.name, 'question' : proj.question, 'ptype' : proj.ptype })
+    else:
+        form = ProjectForm(initial={'name': proj.name, 'question' : proj.question, 'ptype' : proj.ptype })
+        wf_form = WorkflowElementForm(initial={'done': step.done})
+    return render(request, 'cyka/project_details.html', {'project' : proj, 'form': form, 'step': step, 'wf_form': wf_form })
 
 @login_required
 def member_new(request, project_id):
-    try:
-        project = Project.objects.get(pk=project_id)
-    except Project.DoesNotExist:
-        raise Http404("Project does not exist")
+    project = get_project(request, project_id)
     
     if request.method == 'POST':
         form = MemberForm(request.POST)
         if form.is_valid():
-            member = form.save(commit=False)
+            member = form.save()
             member.proj = project
             member.save()
-        return redirect('cyka:project_team', project_id)
+            return redirect('cyka:project_team', project_id)
     else:
         form = MemberForm()
     return render(request, 'cyka/member_add.html', {'project' : project, 'form' : form })
@@ -146,38 +161,27 @@ def project_delete(request, project_id):
 
 @login_required
 def member_delete(request, member_id):
-    try:
-        member = Member.objects.get(pk=member_id)
-        project_id = member.proj.pk
+    member = Member.objects.get_member(request, member_id)
+    project_id = member.proj.pk
 
-        if (member.proj.admin != request.user):
-            return HttpResponseForbidden('Access Denied')
-        helpers.MemberDelete(member)
-        return redirect('cyka:project_team', project_id)
+    helpers.MemberDelete(member)
+    return redirect('cyka:project_team', project_id)
 
-    except Member.DoesNotExist:
-        raise Http404("Member does not exist")
-        
 """
 edit view of member
 """
 @login_required
 def member_edit(request, member_id):
-    try:
-        member = Member.objects.get(pk=member_id)
-        priority_list = member.priority_set.all().order_by('priority')
+    member = get_member(request, member_id)
+    priority_list = member.priority_set.all().order_by('priority')
 
-        if len(priority_list) == 0:
-            priority_list = create_priority_list(member)
+    if len(priority_list) == 0:
+        priority_list = create_priority_list(member)
 
-    except Member.DoesNotExist:
-        raise Http404("Member does not exist")
-    
     if request.method == 'POST':
         member_form = MemberForm(request.POST)
         if member_form.is_valid():
-            member_form = MemberForm(request.POST, instance=member)
-            member = member_form.save(commit=False)
+            member = member_form.save(member)
             member.save()
         ok_form = MemberOkForm(request.POST)
         if ok_form.is_valid():
@@ -186,8 +190,8 @@ def member_edit(request, member_id):
             member.save()
     else:
         ok_form = MemberOkForm(instance=member)
-        member_form = MemberForm(instance=member)
-    return render(request, 'cyka/member_edit.html', {'project' : member.proj, 'member': member, 'priority_list':priority_list, 'ok_form' : ok_form, 'member_form' : member_form })
+        member_form = MemberForm(initial={'name': member.name, 'email' : member.email })
+    return render(request, 'cyka/member_edit.html', {'project' : member.proj, 'member': member, 'priority_list':priority_list, 'ok_form' : ok_form, 'form' : member_form })
 
 @login_required
 def agenda(request, project_id):
@@ -216,13 +220,22 @@ def agenda(request, project_id):
 
 @login_required
 def project_team(request, project_id):
-    try:
-        project = Project.objects.get(pk=project_id)
-    except Project.DoesNotExist:
-        raise Http404("Project does not exist")
-    struct = Structure.factory(project.ptype)
-    return render(request, 'cyka/project_team.html', {'project' : project, 'min' : struct.getMinPersons(), 'max' : struct.getMaxPersons() })
+    proj = get_project(request, project_id)
+    step = Workflow.getStep(proj, 20)
+    struct = Structure.factory(proj.ptype)
+    wf_form = None
     
+    if request.method == 'POST':
+        if 'step' in request.POST:
+            wf_form = WorkflowElementForm(request.POST)
+            if wf_form.is_valid():
+                wf_form.save(step)
+                step.save()
+    else:
+        wf_form = WorkflowElementForm(initial={'done': step.done})
+
+    return render(request, 'cyka/project_team.html', {'project' : proj, 'min' : struct.getMinPersons(), 'max' : struct.getMaxPersons(), 'step' : step, 'wf_form' : wf_form })
+
 @login_required
 def project_topics(request, project_id):
     try:
@@ -271,15 +284,16 @@ def topic_edit(request, topic_id):
 
 @login_required
 def project_new(request):
+    form = None
     if request.method == 'POST':
         form = ProjectForm(request.POST)
         if form.is_valid():
-            prj = form.save(commit=False)
+            prj = form.save()
             prj.admin = request.user
             prj.save()
             create_topics(prj)
         #return redirect('cyka:project_list', pk=post.pk)
-        return redirect('cyka:project_list')
+            return redirect('cyka:project_list')
     else:
         form = ProjectForm()
     return render(request, 'cyka/project_edit.html', {'form': form})
@@ -326,6 +340,10 @@ def create_priority_list(person):
         i=i+1
 
     return person.priority_set.all()
+
+"""
+------------personal requests-------------
+"""
 
 def personal_edit_up(request, uuid, priority):
     try:
@@ -382,8 +400,117 @@ def personal_edit(request, uuid):
     return render(request, 'cyka/personal_edit.html', {'project' : member.proj, 'member': member, 'priority_list':priority_list, 'ok_form' : ok_form})
 
 @login_required
+def jostle_welcome(request, project_id):
+    proj = get_project(request, project_id)
+    step = Workflow.getStep(proj, 30)
+    wf_form = None
+    
+    if request.method == 'POST':
+        if 'step' in request.POST:
+            wf_form = WorkflowElementForm(request.POST)
+            if wf_form.is_valid():
+                wf_form.save(step)
+                step.save()
+    else:
+        wf_form = WorkflowElementForm(initial={'done': step.done})
+    return render(request, 'cyka/jostle_welcome.html', {'project' : proj, 'step': step, 'wf_form': wf_form })
+
+
+@login_required
+def workflow(request, project_id):
+    proj = get_project(request, project_id)
+    wf = Workflow.get(proj)
+    
+    return render(request, 'cyka/workflow.html', {'project' : proj, 'workflow': wf})
+
+"""
+------------common requests-------------
+"""
+"""
+edit or create an table
+"""
+def table(request, project_id):
+    table = None
+    try:
+        project = Project.objects.get(pk=project_id)
+        table_id = request.GET.get('table', '')
+        #Todo check member
+        member = request.GET.get('table', '')
+        if table == '':
+            raise Http404("No table")
+        if table_id != 'new':
+            table = Topic.objects.get(pk=table_id)
+    except Project.DoesNotExist:
+        raise Http404("Project or table does not exist")
+
+
+    
+    if request.method == 'POST':
+        form = TableForm(request.POST)
+        if form.is_valid():
+            table = form.save(commit=False)
+            table.proj = project
+            table.save()
+        return redirect('cyka:project_team', project_id)
+    else:
+        table = MemberForm()
+    return render(request, 'cyka/member_add.html', {'project' : project, 'form' : form })
+
+
+"""
+join room as common function
+"""
+
+@login_required
 def join_room(request, uuid):
     project_id = request.GET.get('project', '')
-    print("PPPPPPPPPPPPP:", project_id)
     name = request.user.get_username
     return render(request, 'cyka/room.html', {'room' : uuid, 'name' : name, 'moderator' : True , 'param' : project_id})
+
+
+"""
+returns member to an id and checks, if user has authorization
+
+params
+------
+request: http request
+pid: privat key of member
+
+return
+------
+Models.Member
+"""
+def get_member(request, mid):
+    try:
+        member = Member.objects.get(pk=mid)
+    except Member.DoesNotExist:
+        raise Http404("No such member")
+    
+    if (member.proj.admin != request.user):
+        raise Http404("No such member")
+    
+    return member
+
+"""
+returns project to an id and checks, if user has authorization
+
+params
+------
+request: http request
+pid: privat key of project
+
+return
+------
+Models.Project
+"""
+def get_project(request, pid):
+    try:
+        project = Project.objects.get(pk=pid)
+    except Project.DoesNotExist:
+        raise Http404("No workshop")
+    
+    if (project.admin != request.user):
+        raise Http404("No workshop")
+    
+    return project
+
