@@ -10,6 +10,7 @@ def ProjectDelete(project):
     for m in project.member_set.all():
         MemberDelete(m)
     project.topic_set.all().delete()
+    project.workflowelement_set.all().delete()
     project.delete()
 
 class HtmlPerson:
