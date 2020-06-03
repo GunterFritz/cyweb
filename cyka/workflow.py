@@ -20,7 +20,7 @@ workflow = [
             'desc' : 'Laden Sie die Teilnehmer ein', 
             'link' : 'cyka:project_team',
             'icon' : 'supervisor_account',
-            'todo' : "Legen Sie die Teilnehmer des Workshops fest. Klären Sie, wer aufgrund seines Wissens oder Erfahrung zur Lösung der Ausgangsfrage beitragen kann oder aufgrund seiner Position oder Funktion die Umsetzung entscheidend ist."
+            'todo' : 'Legen Sie die Teilnehmer des Workshops fest. Klären Sie, wer aufgrund seines Wissens oder Erfahrung zur Lösung der Ausgangsfrage beitragen kann oder aufgrund seiner Position oder Funktion die Umsetzung entscheidend ist. Sie können auch Gäste einladen. Ein Gast kann dem Plenum als Referent oder Zuhörer beitreten. Ein Gast kann nicht an Arbeitsgruppen teilnehmen.'
         }
         ]
     },{
