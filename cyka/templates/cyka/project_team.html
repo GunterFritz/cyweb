@@ -1,11 +1,8 @@
 {% extends 'cyka/project_base.html' %}
 {% load material_form %}
 {% block extrahead %}
-      <style type="text/css">
-	.vcenter {
-          vertical-align: middle;
-        }
-      </style>
+{% endblock %}
+{% block content %}
 <script type="text/javascript">
   var counter = 0;
   
@@ -29,9 +26,6 @@
     $('.collapsible').collapsible();
   });
 </script>
-{% endblock %}
-
-{% block content %}
     <div class="row valign change-form">
         <div class="col s12 m8 offset-m2 l8 offset-l2">
             <div class="card">
@@ -57,20 +51,30 @@
       			<div class="collapsible-header"><i class="material-icons">supervisor_account</i>Teilnehmer</div>
 			<div class="collapsible-body">
 		            <div class="collection">
-                            {% for member in project.member_set.all %}
+                            {% for member in project.member_set.all %}{% if member.mtype == 'M' %}
 		            <a href="{% url 'cyka:member_edit' member.id %}" class="collection-item">
 		                <i class="left secondary-content">
 		                <span id="{{member.id}}" class="badge"></span>
 			        </i>{{member.name}}</i><i class="material-icons right secondary-content">{% if member.status %}done{% else %}close{% endif %}</i>
 		            </a>
 		            <script type="text/javascript">add({{member.id}});</script>
-		            {% endfor %}
+		            {% endif %}{% endfor %}
                             </div>
 		        </div>
                     </li>
 		    <li>
                         <div class="collapsible-header"><i class="material-icons">account_circle</i>Gäste</div>
-                        <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
+                        <div class="collapsible-body">
+		            <div class="collection">
+                            {% for member in project.member_set.all %}{% if member.mtype == 'G' %}
+		            <a href="{% url 'cyka:member_edit' member.id %}" class="collection-item">
+		                <i class="left secondary-content">
+		                <span id="{{member.id}}" class="badge"></span>
+			        </i>{{member.name}}</i>
+		            </a>
+		            {% endif %}{% endfor %}
+                            </div>
+                        </div>
                     </li>
 		    <li>
                         <div class="collapsible-header"><i class="material-icons">place</i>Moderatoren</div>

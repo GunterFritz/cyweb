@@ -55,6 +55,7 @@ class Member(models.Model):
          editable = False) 
     proj = models.ForeignKey(Project, on_delete=models.CASCADE)
     status = models.BooleanField(default=False)
+    mtype = models.CharField(max_length=16,choices=(('M', 'MEMBER'),('G', 'GUEST')),default='M')
 
 """
 M:N for the priorization of topic

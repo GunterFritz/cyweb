@@ -36,13 +36,14 @@ class TopicForm(ModelForm):
 class MemberForm(forms.Form):
     name = forms.CharField()
     email = forms.EmailField()
-    layout = Layout('name', 'email')
+    mtype = forms.ChoiceField(choices=(('M', 'Teilnehmer'), ('G', 'Gast')))
 
     def save(self, member = None):
         if member == None:
             member = Member()
         member.name = self.cleaned_data['name']
         member.email = self.cleaned_data['email']
+        member.mtype = self.cleaned_data['mtype']
 
         return member
 

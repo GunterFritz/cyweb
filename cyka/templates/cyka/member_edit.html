@@ -74,6 +74,7 @@ function isBefore(el1, el2) {
                 </div>
             </form></dmc-form>
     </div>
+    {% if member.mtype == 'M' %}
     <div id="themen" class="col s12 m8 offset-m2 l8 offset-l2">
         <div class="card">
             <div class="card-content">
@@ -87,6 +88,7 @@ function isBefore(el1, el2) {
         </div>
         </div>
     </div>
+    {% endif %}
 </div>
 </div>
 {% endblock %}

@@ -161,7 +161,7 @@ def project_delete(request, project_id):
 
 @login_required
 def member_delete(request, member_id):
-    member = Member.objects.get_member(request, member_id)
+    member = get_member(request, member_id)
     project_id = member.proj.pk
 
     helpers.MemberDelete(member)
@@ -190,7 +190,7 @@ def member_edit(request, member_id):
             member.save()
     else:
         ok_form = MemberOkForm(instance=member)
-        member_form = MemberForm(initial={'name': member.name, 'email' : member.email })
+        member_form = MemberForm(initial={'name': member.name, 'email' : member.email, 'mtype' : member.mtype })
     return render(request, 'cyka/member_edit.html', {'project' : member.proj, 'member': member, 'priority_list':priority_list, 'ok_form' : ok_form, 'form' : member_form })
 
 @login_required
@@ -199,7 +199,7 @@ def agenda(request, project_id):
         project = Project.objects.get(pk=project_id)
     except Project.DoesNotExist:
         raise Http404("Project does not exist")
-    members = project.member_set.all()
+    members = project.member_set.all().filter(mtype='M')
     struct = Structure.factory(project.ptype)
     err_text = ""
     for m in members:
