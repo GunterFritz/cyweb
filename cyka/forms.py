@@ -2,7 +2,6 @@ from django import forms
 from django.forms import ModelForm
 from .models import Project, Topic, Member
 from material import Layout, Row, Column, Fieldset, Span2, Span3, Span5, Span6, Span10
-from .workflow import Workflow
 
 #class ProjectForm(ModelForm):
 #    class Meta:
@@ -47,12 +46,18 @@ class MemberForm(forms.Form):
 
         return member
 
+class WorkflowElementFormProgress(forms.Form):
+    status = forms.ChoiceField(choices=(('O', 'Offen'), ('S', 'Starten'), ('B', 'Beendet')), label='Fortschritt', widget=forms.RadioSelect)
+
+    def save(self, wf):
+        wf.status = self.cleaned_data['status']
+        return wf
+
 class WorkflowElementForm(forms.Form):
     done = forms.BooleanField(label='erledigt', required=False)
 
     def save(self, wf):
         wf.done = self.cleaned_data['done']
-        wf.elem.done = self.cleaned_data['done']
         return wf
 
 class MemberOkForm(ModelForm):

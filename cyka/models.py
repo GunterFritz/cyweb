@@ -77,4 +77,5 @@ class WorkflowElement(models.Model):
     proj = models.ForeignKey(Project, on_delete=models.CASCADE)
     step = models.IntegerField(default=0)
     done = models.BooleanField(default=False)
+    status = models.CharField(max_length=16,choices=(('O', 'OPEN'),('S', 'STARTED'), ('B', 'FINISHED')), default='O')
 

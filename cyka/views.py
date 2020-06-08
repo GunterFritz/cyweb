@@ -12,6 +12,7 @@ from random import randrange
 from . import helpers
 from .helpers import Agenda
 from .workflow import Workflow
+from .config import Jitsi
 
 # Create your views here.
 
@@ -31,8 +32,7 @@ def project(request):
 @login_required
 def project_details(request, project_id):
     proj = get_project(request, project_id)
-    step = Workflow.getStep(proj, 10)
-    wf_form = None
+    step = Workflow.getStep(proj, 10, request)
     
     if request.method == 'POST':
         if 'workshop' in request.POST:
@@ -40,18 +40,11 @@ def project_details(request, project_id):
             if form.is_valid():
                 form.save(proj)
                 proj.save()
-            wf_form = WorkflowElementForm(initial={'done': step.done})
-        
-        if 'step' in request.POST:
-            wf_form = WorkflowElementForm(request.POST)
-            if wf_form.is_valid():
-                wf_form.save(step)
-                step.save()
+        else:
             form = ProjectForm(initial={'name': proj.name, 'question' : proj.question, 'ptype' : proj.ptype })
     else:
         form = ProjectForm(initial={'name': proj.name, 'question' : proj.question, 'ptype' : proj.ptype })
-        wf_form = WorkflowElementForm(initial={'done': step.done})
-    return render(request, 'cyka/project_details.html', {'project' : proj, 'form': form, 'step': step, 'wf_form': wf_form })
+    return render(request, 'cyka/project_details.html', {'project' : proj, 'form': form, 'step': step, 'wf_form': step.form })
 
 @login_required
 def member_new(request, project_id):
@@ -221,20 +214,10 @@ def agenda(request, project_id):
 @login_required
 def project_team(request, project_id):
     proj = get_project(request, project_id)
-    step = Workflow.getStep(proj, 20)
+    step = Workflow.getStep(proj, 20, request)
     struct = Structure.factory(proj.ptype)
-    wf_form = None
     
-    if request.method == 'POST':
-        if 'step' in request.POST:
-            wf_form = WorkflowElementForm(request.POST)
-            if wf_form.is_valid():
-                wf_form.save(step)
-                step.save()
-    else:
-        wf_form = WorkflowElementForm(initial={'done': step.done})
-
-    return render(request, 'cyka/project_team.html', {'project' : proj, 'min' : struct.getMinPersons(), 'max' : struct.getMaxPersons(), 'step' : step, 'wf_form' : wf_form })
+    return render(request, 'cyka/project_team.html', {'project' : proj, 'min' : struct.getMinPersons(), 'max' : struct.getMaxPersons(), 'step' : step, 'wf_form' : step.form })
 
 @login_required
 def project_topics(request, project_id):
@@ -369,13 +352,35 @@ def personal_edit_up(request, uuid, priority):
 
     return redirect('cyka:personal_edit', uuid)
 
-def personal_agenda(request, uuid):
+def personal_plenum(request, uuid):
     try:
         member = Member.objects.all().filter(uuid=uuid)[0]
 
     except Member.DoesNotExist:
         raise Http404("Member does not exist")
-    return render(request, 'cyka/personal_agenda.html', {'project' : member.proj, 'member': member})
+    return render(request, 'cyka/personal_plenum.html', {'project' : member.proj, 'member': member})
+
+def test(request, uuid):
+    member = Member.objects.all().filter(uuid=uuid)[0]
+    return render(request, 'cyka/test2.html', {'project' : member.proj, 'member': member})
+
+def get_more_agenda(request, uuid):
+    try:
+        member = Member.objects.all().filter(uuid=uuid)[0]
+
+    except Member.DoesNotExist:
+        raise Http404("Member does not exist")
+    wf = Workflow.get(member.proj, False)
+    return render(request, 'cyka/get_more_agenda.html', {'project' : member.proj, 'member': member, 'workflow': wf})
+
+def personal_workflow(request, uuid):
+    try:
+        member = Member.objects.all().filter(uuid=uuid)[0]
+
+    except Member.DoesNotExist:
+        raise Http404("Member does not exist")
+    wf = Workflow.get(member.proj, False)
+    return render(request, 'cyka/personal_agenda.html', {'project' : member.proj, 'member': member, 'workflow': wf})
 
 def personal_edit(request, uuid):
     try:
@@ -402,19 +407,16 @@ def personal_edit(request, uuid):
 @login_required
 def jostle_welcome(request, project_id):
     proj = get_project(request, project_id)
-    step = Workflow.getStep(proj, 30)
-    wf_form = None
+    step = Workflow.getStep(proj, 30, request)
     
-    if request.method == 'POST':
-        if 'step' in request.POST:
-            wf_form = WorkflowElementForm(request.POST)
-            if wf_form.is_valid():
-                wf_form.save(step)
-                step.save()
-    else:
-        wf_form = WorkflowElementForm(initial={'done': step.done})
-    return render(request, 'cyka/jostle_welcome.html', {'project' : proj, 'step': step, 'wf_form': wf_form })
+    return render(request, 'cyka/jostle_welcome.html', {'project' : proj, 'step': step, 'wf_form': step.form })
 
+
+@login_required
+def plenum(request, project_id):
+    proj = get_project(request, project_id)
+    
+    return render(request, 'cyka/project_plenum.html', {'project' : proj})
 
 @login_required
 def workflow(request, project_id):
@@ -464,9 +466,38 @@ join room as common function
 @login_required
 def join_room(request, uuid):
     project_id = request.GET.get('project', '')
-    name = request.user.get_username
-    return render(request, 'cyka/room.html', {'room' : uuid, 'name' : name, 'moderator' : True , 'param' : project_id})
+    proj = get_project(request,project_id)
+    subject = None
+    if str(proj.uuid) == str(uuid):
+        subject = "Plenum"
+    jitsi = Jitsi(uuid, subject, request.user.get_username)
+    return render(request, 'cyka/room.html', {'jitsi' : jitsi, 'moderator' : True , 'param' : project_id})
 
+"""
+join room as common function without login
+"""
+def join_room_member(request, uuid):
+    project_id = request.GET.get('project', '')
+    muuid = request.GET.get('muuid', '')
+    proj = get_project(request, project_id, False)
+    member = proj.member_set.all().filter(uuid=muuid)
+    if len(member) < 1:
+        raise Http404("No such member")
+    
+    subject = get_subject(proj, uuid)
+    jitsi = Jitsi(uuid, subject, member[0].name)
+    return render(request, 'cyka/room.html', {'jitsi' : jitsi, 'moderator' : False , 'param' : project_id})
+
+def get_subject(proj, uuid):
+    subject = None
+    if str(proj.uuid) == str(uuid):
+        subject = "Plenum"
+    else:
+        topics = proj.topic_set.all().filter(uuid=uuid)
+        if len(topics) > 0:
+            subject = topics[0].name
+
+    return subject
 
 """
 returns member to an id and checks, if user has authorization
@@ -503,13 +534,13 @@ return
 ------
 Models.Project
 """
-def get_project(request, pid):
+def get_project(request, pid, auth = True):
     try:
         project = Project.objects.get(pk=pid)
     except Project.DoesNotExist:
         raise Http404("No workshop")
     
-    if (project.admin != request.user):
+    if (auth and project.admin != request.user):
         raise Http404("No workshop")
     
     return project

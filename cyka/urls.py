@@ -10,6 +10,8 @@ urlpatterns = [
 	url(r'^$', views.project, name="project"),
 	# ex: /cyka/project/new
 	url(r'^project/new/$', views.project_new, name="project_new"),
+	# ex: /cyka/project/5/jostle/welcome/
+	url(r'^(?P<uuid>[0-9A-Za-z\-]+)/test/$', views.test, name="test"),
 	# ex: /cyka/project/list
 	url(r'^project/list/$', views.project_list, name="project_list"),
 	# ex: /cyka/project/5/jostle/welcome/
@@ -18,6 +20,8 @@ urlpatterns = [
 	url(r'^(?P<project_id>[0-9]+)/delete/$', views.project_delete, name="project_delete"),
 	# ex: /cyka/project/5/details/
 	url(r'^(?P<project_id>[0-9]+)/details/$', views.project_details, name="project_details"),
+	# ex: /cyka/project/5/plenum/
+	url(r'^(?P<project_id>[0-9]+)/plenum/$', views.plenum, name="plenum"),
 	# ex: /cyka/project/5/workflow/
 	url(r'^(?P<project_id>[0-9]+)/workflow/$', views.workflow, name="workflow"),
 	# ex: /cyka/project/5/topics/
@@ -43,8 +47,14 @@ urlpatterns = [
 	# ex: /cyka/project/5/member/edit
 	url(r'^(?P<member_id>[0-9]+)/member/edit/up/(?P<priority>[0-9]+)$', views.member_edit_up, name="member_edit_up"),
 	url(r'^(?P<member_id>[0-9]+)/member/edit/up/(?P<priority>-[0-9]+)$', views.member_edit_up, name="member_edit_up"),
+	# ex: /cyka/personal_plenum/uuid
+        url(r'^get_more_agenda/(?P<uuid>[0-9A-Za-z\-]+)$', views.get_more_agenda, name="get_more_agenda"),
+	# ex: /cyka/personal_plenum/uuid
+        url(r'^personal_plenum/(?P<uuid>[0-9A-Za-z\-]+)$', views.personal_plenum, name="personal_plenum"),
 	# ex: /cyka/personal_agenda/uuid
-        url(r'^personal_agenda/(?P<uuid>[0-9A-Za-z\-]+)$', views.personal_agenda, name="personal_agenda"),
+        url(r'^personal_workflow/(?P<uuid>[0-9A-Za-z\-]+)$', views.personal_workflow, name="personal_workflow"),
+	# ex: /cyka/join_meeting/uuid
+        url(r'^join_meeting/(?P<uuid>[0-9A-Za-z\-]+)$', views.join_room_member, name="join_room_member"),
 	# ex: /cyka/join_room/uuid
         url(r'^join_room/(?P<uuid>[0-9A-Za-z\-]+)$', views.join_room, name="join_room"),
 	# ex: /cyka/personal_edit/uuid
