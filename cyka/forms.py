@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from .models import Project, Topic, Member
+from .models import Project, Topic, Member, Card
 from material import Layout, Row, Column, Fieldset, Span2, Span3, Span5, Span6, Span10
 
 #class ProjectForm(ModelForm):
@@ -64,3 +64,16 @@ class MemberOkForm(ModelForm):
     class Meta:
         model = Member
         fields = ('status',)
+
+class CardForm(forms.Form):
+    heading = forms.CharField(label='Stichwort')
+    desc = forms.CharField(label='Beschreibung', max_length=500, widget=forms.Textarea(attrs={"style": "resize: none"}))
+
+    def save(self, card = None):
+        if card == None:
+            card = Card()
+        card.heading = self.cleaned_data['heading']
+        card.desc = self.cleaned_data['desc']
+
+        return card
+

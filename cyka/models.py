@@ -79,3 +79,8 @@ class WorkflowElement(models.Model):
     done = models.BooleanField(default=False)
     status = models.CharField(max_length=16,choices=(('O', 'OPEN'),('S', 'STARTED'), ('B', 'FINISHED')), default='O')
 
+class Card(models.Model):
+    proj = models.ForeignKey(Project, on_delete=models.CASCADE)
+    member = models.ForeignKey(Member, on_delete=models.CASCADE)
+    heading = models.CharField(max_length=128)
+    desc = models.TextField()
