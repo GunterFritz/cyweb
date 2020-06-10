@@ -50,11 +50,11 @@
 		</td>
 		<td>
 			{% if a.0.topic.is_active %}
-			    <a href="{% url 'cyka:topic_toggle' a.0.topic.id  %}"><button>Stoppen</button></a>
-			    <a href="{% url 'cyka:join_room' a.0.topic.uuid  %}?project={{project.id}}"><button>Teilnehmen</button></a>
+			    <a href="{% url 'cyka:topic_toggle' a.1.topic.id  %}"><button>Stoppen</button></a>
+			    <a href="{% url 'cyka:join_room' a.1.topic.uuid  %}?project={{project.id}}"><button>Teilnehmen</button></a>
 			{% else %}
-			    <a href="{% url 'cyka:topic_toggle' a.0.topic.id  %}"><button>Starten</button></a>
-			    <a href="{% url 'cyka:join_room' a.0.topic.uuid  %}?project={{project.id}}"><button disabled>Teilnehmen</button></a>
+			    <a href="{% url 'cyka:topic_toggle' a.1.topic.id  %}"><button>Starten</button></a>
+			    <a href="{% url 'cyka:join_room' a.1.topic.uuid  %}?project={{project.id}}"><button disabled>Teilnehmen</button></a>
 			{% endif %}
 		</td>
 	      </tr>

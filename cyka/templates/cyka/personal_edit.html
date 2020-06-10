@@ -1,40 +1,52 @@
 {% extends 'cyka/personal_base.html' %}
 
 {% block content %}
-    <div class="project">
-    <form method="POST" class="post-form">{% csrf_token %}
-        	<div class="app-polls module">
-        		<table style=width:100%>
-	<caption>
-             <p class="section" title="Daten">Persönliche Daten</p>
-        </caption>
-	<tr><td>Name:</td><td>{{member.name}}</td>
-	<tr><td>Email:</td><td>{{member.email}}</td>
-        </table>
+<div class="row valign change-form">
+    <div class="col s12 m8 offset-m2 l8 offset-l2">
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title grey-text text-darken-2">Workshop</span>
+                <div class="row">
+   		    <form class="col s12">
+      	                <div class="row">
+                            <div class="input-field col s12">
+                                <i class="material-icons prefix">home</i>
+	                        <input disabled value="{{project.name}}" id="icon_prefix" type="text" class="validate">
+                                <label for="icon_prefix">Name</label>
+                            </div>
+                        </div>
+      	                <div class="row">
+                            <div class="input-field col s12">
+                                <i class="material-icons prefix">chat_bubble_outline</i>
+				<textarea disabled id="textarea1" class="materialize-textarea">{{project.question}}</textarea>
+				<label for="textarea1">Ausgangsfrage</label>
+                            </div>
+                        </div>
+                   </form>
+                </div>
+            </div>
         </div>
-	<div id="content-main">
-        	<div class="app-polls module">
-        		<table style=width:100%>
-		        <caption>
-            			<p class="section" title="Themen sortiert nach Priorität">Themen</p>
-        		</caption>
-        
-			{% for prio in priority_list %}
-   			        <tr class="model-question">
-                		<th scope="row"><p>{{prio.priority}}</p></th>
-                		<td><p>{{prio.topic.number}}</p></td>
-                		<td><p>{{prio.topic.name}}</p></td>
-                                <td><a href="{% url 'cyka:personal_edit_up' member.uuid prio.priority%}"><span class="glyphicon glyphicon-arrow-up"></span></a></td>
-            			</tr>
-	{% endfor %}
-        </table>
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title grey-text text-darken-2">Meine Daten</span>
+                <div class="row">
+   		    <form class="col s12">
+      	                <div class="row">
+                            <div class="input-field col s6">
+                                <i class="material-icons prefix">account_circle</i>
+	                        <input disabled value="{{member.name}}" id="icon_prefix" type="text" class="validate">
+                                <label for="icon_prefix">Name</label>
+                            </div>
+                            <div class="input-field col s6">
+                                <i class="material-icons prefix">email</i>
+	                        <input disabled value="{{member.email}}" id="icon_email" type="tel" class="validate">
+                                <label for="icon_email">Email</label>
+                            </div>
+                        </div>
+                   </form>
+                </div>
+            </div>
         </div>
     </div>
-      <table>
-        {{ ok_form.as_table }}
-      </table>
-      <button type="submit" class="save btn btn-primary">Save</button>
-      <br><br>
-    </form>
-  </div>
+</div>
 {% endblock %}
