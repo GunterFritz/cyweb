@@ -14,7 +14,7 @@
             {% for section in workflow %}
             <div class="card">
                 <div class="card-content"><script>var counter = 0;</script>
-			<span class="card-title grey-text text-darken-2">{{section.name}}</span>
+		    <span class="card-title grey-text text-darken-2">{{section.name}}</span>
 		    <div class="collection">
                     {% for step in section.steps %}
 		      <a href="{% url step.link project.id %}" class="collection-item avatar">

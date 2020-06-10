@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% load staticfiles %}
+
 <html lang="en">
 
 <head>
@@ -8,33 +8,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
+    <script src="https://saturn2/external_api.js"></script>
 
-    <title>openTeamCybernetics</title>
+    <title>Cyiko Meet</title>
 
 </head>
-
-    <div class="project">
-        <div id="content-main">
-            <div class="app-polls module">
-		    {% if moderator is True %}
-		    <a href="{% url 'cyka:workflow' param  %}"><button>Zurück zur Agenda</button></a>
-		    {% else %}
-		    <a href="{% url 'cyka:personal_agenda' param  %}"><button>Zurück zur Agenda</button></a>
-		    {% endif %}
-		<script src="https://saturn2/external_api.js"></script>
-                <script>
-                  var domain = "saturn2";
-                  var options = {
-	            roomName: "{{room}}",
-                    height: 700,
-                    parentNode: undefined,
-                  }
-                  var api = new JitsiMeetExternalAPI(domain, options);
-                  api.executeCommand ('displayName', '{{name}}'); 
-               </script>
-            </div>
-        </div>
-  </div>
+<body>
+    <div id="jitsi-container">
+    </div>
+    <script>
+	var container = document.querySelector('#jitsi-container');
+	var domain = "{{jitsi.domain}}";
+            var options = {
+	    roomName: "{{jitsi.room}}",
+            height: 700,
+            parentNode: container,
+        };
+        var api = new JitsiMeetExternalAPI(domain, options);
+        api.executeCommand ('displayName', '{{jitsi.name}}'); 
+        api.executeCommand ('subject', '{{jitsi.subject}}'); 
+    </script>
 </body>
 
 </html>
