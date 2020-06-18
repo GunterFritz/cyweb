@@ -1,0 +1,14 @@
+{% extends 'cyka/personal_base.html' %}
+
+{% block content %}
+<div class="row valign change-form">
+    <div class="col s12 m8 offset-m2 l8 offset-l2">
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title grey-text text-darken-2">Plenum</span>
+			    <a href="{% url 'cyka:join_room_member' project.uuid %}?project={{project.id}}&muuid={{member.uuid}}" target="_blank" class="collapsible-header" data-turbolinks="false"><i class="material-icons">videocam</i>Zum Plenum</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
