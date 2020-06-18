@@ -1,0 +1,44 @@
+{% extends 'cyka/personal_base.html' %}
+{% block extrahead %}
+{% endblock %}
+{% block javascript %}
+<script>
+    setInterval(function() {
+        $.ajax({
+            type: "GET",
+            url: '{% url 'cyka:get_more_agenda' member.uuid %}',
+        })
+        .done(function(response) {
+            $('#_appendHere').html(response);
+        }); 
+    }, 7000);
+</script>
+{% endblock %}
+{% block content %}
+<div class="row valign change-form">
+    <div id="_appendHere" class="col s12 m8 offset-m2 l8 offset-l2">
+            {% for section in workflow %}
+            <div class="card">
+                <div class="card-content">
+		    <span class="card-title grey-text text-darken-2">{{section.name}}</span>
+		    <div class="collection">
+                    {% for step in section.steps %}
+		      <a {% if step.status == 'S' %}href="{% url step.memberlink member.uuid %}"{% endif %} class="collection-item avatar">
+			 <i class="material-icons circle {% if step.status == 'S' %}blue{% endif %}">{{step.icon}}</i>
+                         <span class="title">{{step.short}}</span>
+                         <p class="listel">{{step.desc}}</p>
+			 </i><i class="material-icons right secondary-content">{% if step.done %}done{% else %}close{% endif %}</i>
+		      </a>
+		      {% endfor %}
+                    </div>
+                </div>
+                <div class="card-action">
+                {% block actions %}
+                {% endblock %}
+                </div>
+            </div>
+	   {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

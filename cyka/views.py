@@ -6,8 +6,8 @@ from django.http import HttpResponseRedirect,HttpResponse,HttpResponseForbidden,
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-from .forms import ProjectForm, TopicForm, MemberForm, MemberOkForm, WorkflowElementForm
-from .models import Project, Topic, Member, Assignment
+from .forms import CardForm, ProjectForm, TopicForm, MemberForm, MemberOkForm, WorkflowElementForm
+from .models import Project, Topic, Member, Assignment, Card
 from random import randrange 
 from . import helpers
 from .helpers import Agenda
@@ -364,22 +364,60 @@ def test(request, uuid):
     member = Member.objects.all().filter(uuid=uuid)[0]
     return render(request, 'cyka/test2.html', {'project' : member.proj, 'member': member})
 
-def get_more_agenda(request, uuid):
-    try:
-        member = Member.objects.all().filter(uuid=uuid)[0]
+"""
+get_more_agenda reloads the agenda, called for ajax
 
-    except Member.DoesNotExist:
-        raise Http404("Member does not exist")
+params
+-------
+uuid: uuid from member
+"""
+def get_more_agenda(request, uuid):
+    member = get_member_by_uuid(uuid)
     wf = Workflow.get(member.proj, False)
     return render(request, 'cyka/get_more_agenda.html', {'project' : member.proj, 'member': member, 'workflow': wf})
 
-def personal_workflow(request, uuid):
-    try:
-        member = Member.objects.all().filter(uuid=uuid)[0]
+def personal_card(request, uuid):
+    member = get_member_by_uuid(uuid)
+        
+    #delete action
+    if request.method == 'GET':
+        card_id = request.GET.get('cardid', '')
+        delete = request.GET.get('delete', 'false')
+        
+        if delete == 'true' and card_id != '':
+            card = get_card(card_id, member)
+            card.delete()
+    print('personal')
+    #save or new action
+    if request.method == 'POST':
+        print('personal post')
+        card_id = request.POST.get('cardid', '')
+        delete = request.POST.get('delete', 'false')
+        card = None
+        if card_id != '':
+            card = get_card(card_id, member)
+        
+        if delete == 'true' and card != None:
+            card.delete()
+        else:
+            form = CardForm(request.POST)
+            if form.is_valid():
+                card = form.save(card)
+                card.proj = member.proj
+                card.member = member
+                card.save()
+            else:
+                print("not valid")
+        #return redirect('cyka:personal_card', uuid)
+    
+    cards = member.card_set.all()
+    form = CardForm()
+    return render(request, 'cyka/personal_cards.html', {'project' : member.proj, 'member': member, 'cards': cards, 'form': form})
 
-    except Member.DoesNotExist:
-        raise Http404("Member does not exist")
+def personal_workflow(request, uuid):
+    member = get_member_by_uuid(uuid)
     wf = Workflow.get(member.proj, False)
+    
     return render(request, 'cyka/personal_agenda.html', {'project' : member.proj, 'member': member, 'workflow': wf})
 
 def personal_edit(request, uuid):
@@ -487,7 +525,9 @@ def join_room_member(request, uuid):
     subject = get_subject(proj, uuid)
     jitsi = Jitsi(uuid, subject, member[0].name)
     return render(request, 'cyka/room.html', {'jitsi' : jitsi, 'moderator' : False , 'param' : project_id})
-
+"""
+calculates the subject of jitsi meet room (display name for room)
+"""
 def get_subject(proj, uuid):
     subject = None
     if str(proj.uuid) == str(uuid):
@@ -522,6 +562,32 @@ def get_member(request, mid):
     
     return member
 
+def get_card(card_id, member):
+    card = Card.objects.get(pk=card_id)
+    if card.member == member:
+        return card
+    else:
+        raise Http404("No such card")
+
+"""
+returns member to an id 
+
+params
+------
+uuid: uuid of member
+proj_id (optional, not used)
+
+return
+------
+Models.Member
+"""
+def get_member_by_uuid(uuid, proj_id = None):
+    try:
+        member = Member.objects.all().filter(uuid=uuid)[0]
+    except Member.DoesNotExist:
+        raise Http404("No such member")
+
+    return member
 """
 returns project to an id and checks, if user has authorization
 

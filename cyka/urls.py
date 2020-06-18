@@ -47,6 +47,8 @@ urlpatterns = [
 	# ex: /cyka/project/5/member/edit
 	url(r'^(?P<member_id>[0-9]+)/member/edit/up/(?P<priority>[0-9]+)$', views.member_edit_up, name="member_edit_up"),
 	url(r'^(?P<member_id>[0-9]+)/member/edit/up/(?P<priority>-[0-9]+)$', views.member_edit_up, name="member_edit_up"),
+	# ex: /cyka/cards/uuid
+        url(r'^cards/(?P<uuid>[0-9A-Za-z\-]+)$', views.personal_card, name="personal_card"),
 	# ex: /cyka/personal_plenum/uuid
         url(r'^get_more_agenda/(?P<uuid>[0-9A-Za-z\-]+)$', views.get_more_agenda, name="get_more_agenda"),
 	# ex: /cyka/personal_plenum/uuid

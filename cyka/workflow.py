@@ -39,7 +39,7 @@ workflow = [
             'short': 'Begrüßung',
             'desc' : 'Begrüßen Sie die Teilnehmer, führen Sie in den Workshop ein und stellen Sie die Ausgangsfrage vor', 
             'link' : 'cyka:jostle_welcome',
-            'memberlink' : 'cyka:personal_workflow',
+            'memberlink' : 'cyka:personal_plenum',
             'icon' : 'mediation',
             'todo' : 'Begrüßen Sie die Teilnehmer, führen Sie in den Workshop ein und lassen Sie durch den Auftraggeber die Ausgangsfrage vorstellen', 
             'formtype' : 'radio'
@@ -49,8 +49,8 @@ workflow = [
             'short': 'Brainwriting',
             'desc' : 'Die Teilnehmer schreiben Ihre Gedanken zur Ausgangsfrage auf', 
             'link' : 'cyka:jostle_welcome',
-            'memberlink' : 'cyka:personal_workflow',
-            'icon' : 'mediation',
+            'memberlink' : 'cyka:personal_card',
+            'icon' : 'create',
             'todo' : 'Die Teilnehmer schreiben Ihre Gedanken zur Ausgangsfrage auf', 
             'formtype' : 'radio'
         },

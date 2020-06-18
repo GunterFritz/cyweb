@@ -1,0 +1,36 @@
+{% extends 'cyka/project_base.html' %}
+{% load material_form %}
+
+{% block extrahead %}
+<style type="text/css">
+  @media only screen and (min-width : 601px) {
+      #id_card_type_container {
+          margin-top: 40px;
+          margin-left: 50px;
+      }
+}
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="row valign change-form">
+    <div class="{% block formclass %}col s12 m8 offset-m2 l8 offset-l2{% endblock %}">
+        <div class="card">
+                <div class="card-content">
+                    <span class="card-title grey-text text-darken-2">{% block formtitle %}Plenum{% endblock %}</span>
+                </div>
+                <div class="card-action">
+                    {% block actions %}
+                    <div class="right-align">
+	    		<form method="GET" action="{% url 'cyka:join_room' project.uuid %}" target="_blank">
+			    <input type="hidden" name="project" value="{{project.id}}" /> 
+                            <button class="btn btn-primary" name='workshop' type="submit">Beitreten</button>
+			</form>
+                    </div>
+                    {% endblock %}
+                </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
