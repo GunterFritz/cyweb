@@ -23,7 +23,7 @@
 		    <span class="card-title grey-text text-darken-2">{{section.name}}</span>
 		    <div class="collection">
                     {% for step in section.steps %}
-		      <a {% if step.status == 'S' %}href="{% url step.memberlink member.uuid %}"{% endif %} class="collection-item avatar">
+		      <a {% if step.status == 'S' %}href="{% url step.memberlink member.uuid %}?project={{project.id}}"{% endif %} data-turbolinks="false" class="collection-item avatar">
 			 <i class="material-icons circle {% if step.status == 'S' %}blue{% endif %}">{{step.icon}}</i>
                          <span class="title">{{step.short}}</span>
                          <p class="listel">{{step.desc}}</p>
