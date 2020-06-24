@@ -66,8 +66,8 @@ class MemberOkForm(ModelForm):
         fields = ('status',)
 
 class CardForm(forms.Form):
-    heading = forms.CharField(label='Stichwort', max_length=80, widget=forms.Textarea(attrs={"style": "resize: none"}))
-    desc = forms.CharField(label='Beschreibung', max_length=250, widget=forms.Textarea(attrs={"style": "resize: none", "class": "active"}))
+    heading = forms.CharField(label='Stichwort', max_length=60, widget=forms.Textarea(attrs={"style": "resize: none"}))
+    desc = forms.CharField(label='Beschreibung', max_length=200, widget=forms.Textarea(attrs={"style": "resize: none", "class": "active"}))
     cardid = forms.CharField(widget=forms.HiddenInput(), required=False)
     delete = forms.CharField(widget=forms.HiddenInput(), required=False)
 
