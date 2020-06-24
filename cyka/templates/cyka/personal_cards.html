@@ -62,7 +62,7 @@ function delete_card(){
         {% for c in cards %}
 	    <a href="#modal2" class="modal-trigger">
 		<div class="col card yellow mplan" onclick="return open_modal('{{c.heading}}', '{{c.desc}}', '{% url 'cyka:personal_card' member.uuid %}?project={{project.id}}','{{c.id}}');">
-                    <div class="card-content">
+                    <div class="card-content black-text">
 		        <span class="card-title grey-text text-darken-2">{{c.heading}}</span>
 		        <p>{{c.desc}}</p>
                     </div>
