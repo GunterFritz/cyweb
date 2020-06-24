@@ -84,3 +84,8 @@ class Card(models.Model):
     member = models.ForeignKey(Member, on_delete=models.CASCADE)
     heading = models.CharField(max_length=128)
     desc = models.TextField()
+
+class CardVotes(models.Model):
+    member = models.ForeignKey(Member, on_delete=models.CASCADE)
+    card = models.ForeignKey(Card, on_delete=models.CASCADE)
+

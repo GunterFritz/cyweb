@@ -48,7 +48,7 @@ workflow = [
             'step' : 40,
             'short': 'Brainwriting',
             'desc' : 'Die Teilnehmer schreiben Ihre Gedanken zur Ausgangsfrage auf', 
-            'link' : 'cyka:jostle_welcome',
+            'link' : 'cyka:admin_brainwriting',
             'memberlink' : 'cyka:personal_card',
             'icon' : 'create',
             'todo' : 'Die Teilnehmer schreiben Ihre Gedanken zur Ausgangsfrage auf', 

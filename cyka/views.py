@@ -10,7 +10,7 @@ from .forms import CardForm, ProjectForm, TopicForm, MemberForm, MemberOkForm, W
 from .models import Project, Topic, Member, Assignment, Card
 from random import randrange 
 from . import helpers
-from .helpers import Agenda
+from .helpers import Agenda, HtmlCard
 from .workflow import Workflow
 from .config import Jitsi
 
@@ -141,7 +141,7 @@ def member_ok(request, member_id, ok):
 @login_required
 def project_delete(request, project_id):
     try:
-        proj = Project.objects.get(pk=project_id)
+        proj = get_project(request, project_id)
 
         if (proj.admin != request.user):
             return HttpResponseForbidden('Access Denied')
@@ -376,21 +376,37 @@ def get_more_agenda(request, uuid):
     wf = Workflow.get(member.proj, False)
     return render(request, 'cyka/get_more_agenda.html', {'project' : member.proj, 'member': member, 'workflow': wf})
 
+def personal_votes(request, uuid):
+    member = get_member_by_uuid(uuid)
+    page = int(request.GET.get('page', 1))
+
+    cards = member.proj.card_set.all()
+    #ceil (instead of math.ceil)
+    pages = int(len(cards)/6) + 1
+    if len(cards) % 6 > 0:
+        pages = pages + 1
+    
+    vote = request.GET.get('vote', None)
+    if vote != None:
+        # check if card exists
+        try:
+            card = Card.objects.get(pk=vote)
+        except Card.DoesNotExist:
+            raise Http404("No such card")
+        HtmlCard(card, member).vote()
+
+    hcards = []
+    for c in cards[(page-1)*6:page*6]:
+        hcards.append(HtmlCard(c, member))
+
+    return render(request, 'cyka/personal_votes.html', {'project' : member.proj, 'member': member, 'cards': hcards, 'pages': range(1, pages)})
+
 def personal_card(request, uuid):
     member = get_member_by_uuid(uuid)
         
-    #delete action
-    if request.method == 'GET':
-        card_id = request.GET.get('cardid', '')
-        delete = request.GET.get('delete', 'false')
-        
-        if delete == 'true' and card_id != '':
-            card = get_card(card_id, member)
-            card.delete()
-    print('personal')
     #save or new action
     if request.method == 'POST':
-        print('personal post')
+  
         card_id = request.POST.get('cardid', '')
         delete = request.POST.get('delete', 'false')
         card = None
@@ -441,6 +457,20 @@ def personal_edit(request, uuid):
     else:
         ok_form = MemberOkForm(instance=member)
     return render(request, 'cyka/personal_edit.html', {'project' : member.proj, 'member': member, 'priority_list':priority_list, 'ok_form' : ok_form})
+
+@login_required
+def admin_votes(request, project_id):
+    proj = get_project(request, project_id)
+    step = Workflow.getStep(proj, 50, request)
+    
+    return render(request, 'cyka/admin_brainwriting.html', {'project' : proj, 'step': step, 'wf_form': step.form })
+
+@login_required
+def admin_brainwriting(request, project_id):
+    proj = get_project(request, project_id)
+    step = Workflow.getStep(proj, 40, request)
+    
+    return render(request, 'cyka/admin_brainwriting.html', {'project' : proj, 'step': step, 'wf_form': step.form })
 
 @login_required
 def jostle_welcome(request, project_id):

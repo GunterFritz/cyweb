@@ -1,0 +1,98 @@
+{% extends 'cyka/personal_base.html' %}
+{% load material_form %}
+{% block extrahead %}
+      <style>
+	.voted-color {
+          color: blue;
+        }
+	.unvoted-color {
+          color: grey;
+        }
+	.ccontent {
+          height: 80%;
+        }
+	.mplan {
+	  margin-left: 1%;
+	  margin-right: 1%;
+          width: 48%;
+          height: 220px;
+        }
+	.inline-link {
+	   margin-right: 0px;
+        }
+	.inline-text {
+	   margin-left: 5px;
+           vertical-align: top;
+           font-size: 14px;
+           line-height:24px;
+        }
+	.inline-icon {
+	   display: inline-flex;
+           vertical-align: top;
+        }
+      </style>
+{% endblock %}
+{% block javascript %}
+<script>
+  $(document).ready(function(){
+    queryString = window.location.search;
+    urlParams = new URLSearchParams(queryString);
+    var page = parseInt(1);
+    if(urlParams.has('page')){
+        page = parseInt(urlParams.get('page'));
+    }
+    document.getElementById("page_" + page).classList.add('class', "active");
+    if(page == 1){
+      document.getElementById("page_left").classList.add('class', "disabled");
+      //document.getElementById("page_left_link").setAttribute('href', "#!") 
+    } else {
+      var left = (page.valueOf() - 1).valueOf();
+      var url = "{% url 'cyka:personal_votes' member.uuid %}?project={{project.id}}&page=" + left.toString();
+      document.getElementById("page_left_link").setAttribute('href', url);
+    }
+    if(page == {{ pages|length }}){
+      document.getElementById("page_right").classList.add('class', "disabled");
+      //document.getElementById("page_left_right").setAttribute('href', "#!") 
+    } else {
+      var right = (page.valueOf() + 1).valueOf();
+      var url = "{% url 'cyka:personal_votes' member.uuid %}?project={{project.id}}&page=" + right.toString();
+      document.getElementById("page_right_link").setAttribute('href', url);
+    }
+    $(document).ready(function(){
+      $('.tooltipped').tooltip();
+    });
+    //$(".card-content").matchHeight();
+  });
+</script>
+{% endblock %}
+{% block content %}
+<div class="row valign change-form">
+    <div class="col s12 m8 offset-m2 l8 offset-l2">
+        
+      <ul class="pagination center">
+        <li id="page_left"><a id="page_left_link"><i class="material-icons waves-effect">chevron_left</i></a></li>
+          {% for p in pages %}	
+	    <li id="page_{{ p }}"><a href="{% url 'cyka:personal_votes' member.uuid %}?project={{project.id}}&page={{ p }}">{{ p }}</a></li>
+	  {% endfor %}
+        <li id="page_right" class="waves-effect"><a id="page_right_link"><i class="material-icons">chevron_right</i></a></li>
+      </ul>
+	{% for c in cards %}
+		<div class="col card yellow mplan">
+                    <div class="card-content ccontent">
+		        <span class="card-title grey-text text-darken-2">{{c.model.heading}}</span>
+		        <p>{{c.model.desc}}</p>
+                    </div>
+		    <div class="card-action">
+                        <div class="left">
+			    {% if c.voted %}
+			    <a class="inline-link" href="{% url 'cyka:personal_votes' member.uuid %}?project={{project.id}}&page=1&vote={{c.model.id}}" class="tooltipped" data-tooltip="Nicht mehr zustimmen"><i class="material-icons voted-color">thumb_up</i><span class="grey-text inline-text">({{c.votes}})</span></a>
+			    {% else %}
+			    <a href="{% url 'cyka:personal_votes' member.uuid %}?project={{project.id}}&page=1&vote={{c.model.id}}" class="tooltipped" data-tooltip="Zustimmen"><i class="material-icons unvoted-color inline-icon">thumb_up</i><span class="grey-text inline-text">({{c.votes}})</span></a>
+			    {% endif %}
+                        </div>
+                    </div>
+                </div>
+	{% endfor %}
+    </div>
+</div>
+{% endblock %}

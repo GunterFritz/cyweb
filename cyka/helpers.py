@@ -1,18 +1,26 @@
 from lib.structure import Structure2 as Structure
-from .models import Project, Topic, Member, Assignment
+from .models import Project, Topic, Member, Assignment, Card
 
 def MemberDelete(member):
     member.priority_set.all().delete()
     member.assignment_set.all().delete()
+    member.cardvotes_set.all().delete()
     member.delete()
 
+def CardDelete(card):
+    card.cardvotes_set.all().delete()
+
 def ProjectDelete(project):
+    for c in card.card_set.all():
+        CardDelete(m)
     for m in project.member_set.all():
         MemberDelete(m)
     project.topic_set.all().delete()
     project.workflowelement_set.all().delete()
     project.delete()
 
+#obsolete?
+"""
 class HtmlPerson:
     def __init__(self, db):
         self.ty = db.atype
@@ -28,6 +36,7 @@ class HtmlTopic:
 
         for a in assignments:
             self.person.append(HtmlPerson(a))
+"""
 
 class Agenda:
     def __init__(self, proj):
@@ -98,4 +107,43 @@ class Agenda:
             i = i + 2
 
         return agenda
+
+"""
+html wrapper a card for a specific person
+checks if voted, can vote or unvote a card
+"""
+class HtmlCard:
+    def __init__(self, mc, member):
+        self.model = mc
+        self.member = member
+        self.voted = False
+       
+        #check if member has voted a card
+        v = self.member.cardvotes_set.filter(card=self.model.id)
+        if len(v) == 0:
+            #not voted
+            self.voted = False
+        else:
+            #voted
+            self.voted = True
+        
+        #count votes
+        self.votes = len(self.model.cardvotes_set.all())
+
+    """
+    votes a card if unvoted, unvote it voted 
+    """
+    def vote(self):
+        v = self.member.cardvotes_set.filter(card=self.model.id)
+        
+        if len(v) == 0:
+            #create a vote
+            self.member.cardvotes_set.create(card=self.model)
+            self.voted = True
+        else:
+            #delete vote
+            v[0].delete()
+            self.voted = False
+        
+        self.votes = len(self.model.cardvotes_set.all())
 
