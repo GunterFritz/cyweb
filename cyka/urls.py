@@ -18,8 +18,10 @@ urlpatterns = [
 	url(r'^(?P<project_id>[0-9]+)/jostle/welcome/$', views.jostle_welcome, name="jostle_welcome"),
 	# ex: /cyka/project/5/delete/
 	url(r'^(?P<project_id>[0-9]+)/delete/$', views.project_delete, name="project_delete"),
-	# ex: /cyka/project/5/brainwriting/
+	# ex: /cyka/project/5/votes/
 	url(r'^(?P<project_id>[0-9]+)/brainwriting/$', views.admin_brainwriting, name="admin_brainwriting"),
+	# ex: /cyka/project/5/votes/
+	url(r'^(?P<project_id>[0-9]+)/votes/$', views.admin_votes, name="admin_votes"),
 	# ex: /cyka/project/5/details/
 	url(r'^(?P<project_id>[0-9]+)/details/$', views.project_details, name="project_details"),
 	# ex: /cyka/project/5/plenum/
@@ -49,6 +51,8 @@ urlpatterns = [
 	# ex: /cyka/project/5/member/edit
 	url(r'^(?P<member_id>[0-9]+)/member/edit/up/(?P<priority>[0-9]+)$', views.member_edit_up, name="member_edit_up"),
 	url(r'^(?P<member_id>[0-9]+)/member/edit/up/(?P<priority>-[0-9]+)$', views.member_edit_up, name="member_edit_up"),
+	# ex: /cyka/votes/uuid
+        url(r'^votes/(?P<uuid>[0-9A-Za-z\-]+)$', views.personal_votes, name="personal_votes"),
 	# ex: /cyka/cards/uuid
         url(r'^cards/(?P<uuid>[0-9A-Za-z\-]+)$', views.personal_card, name="personal_card"),
 	# ex: /cyka/personal_plenum/uuid
