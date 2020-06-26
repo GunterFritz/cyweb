@@ -34,10 +34,10 @@
 {% endblock %}
 {% block javascript %}
 <script>
+  var page = parseInt(1);
   $(document).ready(function(){
     queryString = window.location.search;
     urlParams = new URLSearchParams(queryString);
-    var page = parseInt(1);
     if(urlParams.has('page')){
         page = parseInt(urlParams.get('page'));
     }
@@ -63,6 +63,10 @@
     });
     //$(".card-content").matchHeight();
   });
+  function set_href(id){
+    url = "{% url 'cyka:personal_votes' member.uuid %}?project={{project.id}}&vote=" + id + "&page=" + page.toString();
+    document.getElementById("card_" + id).setAttribute('href', url) 
+  }
 </script>
 {% endblock %}
 {% block content %}
@@ -85,13 +89,14 @@
 		    <div class="card-action">
                         <div class="left">
 			    {% if c.voted %}
-			    <a class="inline-link" href="{% url 'cyka:personal_votes' member.uuid %}?project={{project.id}}&page=1&vote={{c.model.id}}" class="tooltipped" data-tooltip="Nicht mehr zustimmen"><i class="material-icons voted-color">thumb_up</i><span class="grey-text inline-text">({{c.votes}})</span></a>
+			    <a id="card_{{c.model.id}}" class="tooltipped" data-tooltip="Nicht mehr zustimmen"><i class="material-icons voted-color inline-icon">thumb_up</i><span class="grey-text inline-text">({{c.votes}})</span></a>
 			    {% else %}
-			    <a href="{% url 'cyka:personal_votes' member.uuid %}?project={{project.id}}&page=1&vote={{c.model.id}}" class="tooltipped" data-tooltip="Zustimmen"><i class="material-icons unvoted-color inline-icon">thumb_up</i><span class="grey-text inline-text">({{c.votes}})</span></a>
+			    <a id="card_{{c.model.id}}" class="tooltipped" data-tooltip="Zustimmen"><i class="material-icons unvoted-color inline-icon">thumb_up</i><span class="grey-text inline-text">({{c.votes}})</span></a>
 			    {% endif %}
                         </div>
                     </div>
                 </div>
+		<script type="text/javascript">set_href({{c.model.id}});</script>
 	{% endfor %}
     </div>
 </div>
