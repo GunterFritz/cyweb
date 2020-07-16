@@ -1,0 +1,59 @@
+{% load material_form %}
+{% block javascript %}
+<script>
+    function submit(del){
+      $.ajax({
+          type: "POST",
+	  url: '{% url 'cyka:personal_card' member.uuid %}?project={{project.id}}',
+	  data:{
+              delete:del,
+              heading:$('#id_heading').val(),
+              desc:$('#id_desc').val(),
+              cardid:$('#id_cardid').val(),
+              csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+              action: 'post'
+          },
+      })
+      .done(function(response) {
+          $('#_appendHere').html(response);
+      });
+    }
+
+function delete_card(){
+	if (confirm("Möchten Sie die Karte {{ form.cardid }} löschen?")){
+		submit('true');
+	}
+  }
+</script>
+{% endblock %}
+{% block content %}
+<!-- Modal Structure -->
+    <div class="card">
+        <dmc-form><form method="POST" enctype="multipart/form-data" id="post-form">
+            <div class="card-content">
+                {% csrf_token %}
+                {% block formbody %}
+                    <div class="right-align">
+                        {% form %}
+                        {% endform %}
+                    </div>
+                {% endblock %}
+            </div>
+        </form></dmc-form>
+            <div class="card-action">
+                {% block actions %}
+                <div class="right-align">
+                    {% block formbuttons %}
+      		    <a onclick="aurl('{% url 'cyka:personal_card' member.uuid %}?project={{project.id}}')" class="btn modal-action modal-close waves-effect waves-blue btn-primary">Abbrechen</a>
+		    {% if form.cardid != '' %}
+		    <span onclick="return delete_card();">
+		        <button class="btn modal-action modal-close btn-primary" type="submit">Löschen</button>
+		    </span>
+		    {% endif %}
+		    <button onclick="submit('false')" class="btn modal-action modal-close btn-primary">Speichern</button>
+		    {% endblock %}
+                </div>
+                {% endblock %}
+            </div>
+    </div>
+{% endblock %}

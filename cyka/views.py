@@ -399,7 +399,7 @@ def personal_votes(request, uuid):
     for c in cards[(page-1)*6:page*6]:
         hcards.append(HtmlCard(c, member))
 
-    return render(request, 'cyka/personal_votes.html', {'project' : member.proj, 'member': member, 'cards': hcards, 'pages': range(1, pages)})
+    return render(request, 'cyka/personal_votes.html', {'project' : member.proj, 'member': member, 'cards': hcards, 'pages': range(1, pages), 'page':page})
 
 def personal_card(request, uuid):
     member = get_member_by_uuid(uuid)
@@ -423,18 +423,32 @@ def personal_card(request, uuid):
                 card.member = member
                 card.save()
             else:
-                print("not valid")
-        #return redirect('cyka:personal_card', uuid)
+                #input fields not valid
+                return render(request, 'cyka/add_card.html', {'project' : member.proj, 'member': member, 'form': form})
+        cards = member.card_set.all()
+        #return to overview
+        return render(request, 'cyka/personal_cards.html', {'project' : member.proj, 'member': member, 'cards': cards})
+
+    card_id = request.GET.get('card', '')
+    if card_id == 'new':
+        form = CardForm()
+        return render(request, 'cyka/add_card.html', {'project' : member.proj, 'member': member, 'form': form})
+    if card_id == '':
+        cards = member.card_set.all()
+
+        return render(request, 'cyka/personal_cards.html', {'project' : member.proj, 'member': member, 'cards': cards})
     
-    cards = member.card_set.all()
-    form = CardForm()
-    return render(request, 'cyka/personal_cards.html', {'project' : member.proj, 'member': member, 'cards': cards, 'form': form})
+    card = get_card(card_id, member)
+    form = CardForm(initial={'heading': card.heading, 'desc' : card.desc, 'cardid': card.id })
+    return render(request, 'cyka/add_card.html', {'project' : member.proj, 'member': member, 'form': form})
 
 def personal_workflow(request, uuid):
     member = get_member_by_uuid(uuid)
     wf = Workflow.get(member.proj, False)
     
-    return render(request, 'cyka/personal_agenda.html', {'project' : member.proj, 'member': member, 'workflow': wf})
+    jitsi = Jitsi(member.proj.uuid, "Plenum", request.user.get_username)
+    
+    return render(request, 'cyka/personal_agenda.html', {'project' : member.proj, 'member': member, 'workflow': wf, 'jitsi': jitsi })
 
 def personal_edit(request, uuid):
     try:
@@ -478,6 +492,30 @@ def jostle_welcome(request, project_id):
     step = Workflow.getStep(proj, 30, request)
     
     return render(request, 'cyka/jostle_welcome.html', {'project' : proj, 'step': step, 'wf_form': step.form })
+
+@login_required
+def rand_session(request, project_id):
+    proj = get_project(request, project_id)
+    step = Workflow.getStep(proj, 60, request)
+    
+    members = proj.member_set.all().filter(mtype='M')
+    
+    if request.method == 'POST':
+        #session started
+        username = request.POST['play']
+        step.toggleState()
+        return render(request, 'cyka/play.html', {'project' : proj, 'step': step})
+
+    #assign each member to a group
+    num = int(len(members)/4) 
+    groups = [[] for _ in range (num)]
+    i=0
+    for i in range(len(members)):
+        groups[i % num].append(members[i])
+
+    jitsi = Jitsi(proj.uuid, "Plenum", request.user.get_username)
+    
+    return render(request, 'cyka/admin_rand_sessions.html', {'project' : proj, 'step': step, 'wf_form': step.form, 'groups': groups, 'jitsi': jitsi })
 
 
 @login_required

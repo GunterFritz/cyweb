@@ -1,9 +1,29 @@
 {% extends 'cyka/personal_base.html' %}
 {% block extrahead %}
+<style type="text/css">
+  @media only screen and (min-width : 601px) {
+      #id_card_type_container {
+          margin-top: 40px;
+          margin-left: 50px;
+      }
+      .groups {
+	  width:25%
+      }
+      .wbut {
+	  width:100%
+      }
+      .meet {
+	  width:75%
+      }
+}
+</style>
 {% endblock %}
 {% block javascript %}
+<script src="https://meet.cyiko.org/external_api.js"></script>
 <script>
-    setInterval(function() {
+  var interval = null;
+  function refreshAgenda(){
+    interval = setInterval(function() {
         $.ajax({
             type: "GET",
             url: '{% url 'cyka:get_more_agenda' member.uuid %}',
@@ -12,21 +32,113 @@
             $('#_appendHere').html(response);
         }); 
     }, 7000);
+  }
+  $(document).ready(function(){
+    var container = document.querySelector('#jitsi-container');
+    var domain = "{{jitsi.domain}}";
+    var options = {
+	roomName: "{{jitsi.room}}",
+        height: 700,
+        parentNode: container,
+    };
+    var api = new JitsiMeetExternalAPI(domain, options);
+    api.executeCommand ('displayName', '{{jitsi.name}}'); 
+    api.executeCommand ('subject', '{{jitsi.subject}}');
+  });
+    refreshAgenda();
+    //resize
+    var size = 0;
+    function small() {
+        $("#meetcontent").width('25%');
+        $("#stepcontent").width('70%');
+        size = 1;
+    } 
+    function resize() {
+	if (size == 0) {
+            $("#meetcontent").width('25%');
+            $("#stepcontent").width('70%');
+	    size = 1;
+	} else {
+            $("#meetcontent").width('75%');
+            $("#stepcontent").width('20%');
+	    size = 0;
+	}
+    }
+    function get_agenda() {
+	clearInterval(interval)
+	$('.tooltipped').tooltip('close');
+        $.ajax({
+            type: "GET",
+		url: "{% url 'cyka:get_more_agenda' member.uuid %}?project={{project.uuid}}",
+        })
+        .done(function(response) {
+            $('#_appendHere').html(response);
+            refreshAgenda();
+  	    $('.modal').modal();
+        }); 
+    }
+    function aurl(myurl) {
+	clearInterval(interval)
+	$('.tooltipped').tooltip('close');
+        $.ajax({
+            type: "GET",
+		url: myurl,
+        })
+        .done(function(response) {
+            $('#_appendHere').html(response);
+        }); 
+    }
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+    }
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+            }
+        }
+    });
 </script>
 {% endblock %}
 {% block content %}
 <div class="row valign change-form">
-    <div id="_appendHere" class="col s12 m8 offset-m2 l8 offset-l2">
+    <div id="meetcontent" class="col meet">
+        <div id="jitsi-container">
+        </div>
+    </div>
+    <div id="stepcontent" class="col groups">
+            <div class="card">
+                <div class="card-content">
+        <a class="btn-flat waves-effect waves-light" onclick="resize()"><i class="left material-icons">keyboard_arrow_left</i><i class="left material-icons">keyboard_arrow_right</i></a>
+        <a class="btn-flat waves-effect waves-light right" onclick="get_agenda()"><i class="right material-icons">group_work</i>Agenda</a>
+        </div>
+    </div>
+        <div id="_appendHere">
             {% for section in workflow %}
             <div class="card">
                 <div class="card-content">
 		    <span class="card-title grey-text text-darken-2">{{section.name}}</span>
 		    <div class="collection">
                     {% for step in section.steps %}
-		      <a {% if step.status == 'S' %}href="{% url step.memberlink member.uuid %}?project={{project.id}}"{% endif %} data-turbolinks="false" class="collection-item avatar">
+		      <a {% if step.status == 'S' %} onclick="aurl('{% url step.memberlink member.uuid %}?project={{project.id}}');"{% endif %} data-turbolinks="false" class="collection-item avatar">
 			 <i class="material-icons circle {% if step.status == 'S' %}blue{% endif %}">{{step.icon}}</i>
                          <span class="title">{{step.short}}</span>
-                         <p class="listel">{{step.desc}}</p>
 			 </i><i class="material-icons right secondary-content">{% if step.done %}done{% else %}close{% endif %}</i>
 		      </a>
 		      {% endfor %}
@@ -39,6 +151,7 @@
             </div>
 	   {% endfor %}
         </div>
+    </div>
     </div>
 </div>
 {% endblock %}

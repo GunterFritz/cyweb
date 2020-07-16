@@ -1,4 +1,3 @@
-{% extends 'cyka/personal_base.html' %}
 {% load material_form %}
 {% block extrahead %}
       <style>
@@ -33,50 +32,49 @@
       </style>
 {% endblock %}
 {% block javascript %}
+<script src="https://meet.cyiko.org/external_api.js"></script>
 <script>
-  var page = parseInt(1);
+  var page = parseInt({{page}});
   $(document).ready(function(){
+    small();
     queryString = window.location.search;
-    urlParams = new URLSearchParams(queryString);
-    if(urlParams.has('page')){
-        page = parseInt(urlParams.get('page'));
-    }
     document.getElementById("page_" + page).classList.add('class', "active");
     if(page == 1){
+      //disable page left
       document.getElementById("page_left").classList.add('class', "disabled");
-      //document.getElementById("page_left_link").setAttribute('href', "#!") 
     } else {
+      //set url to page left
       var left = (page.valueOf() - 1).valueOf();
       var url = "{% url 'cyka:personal_votes' member.uuid %}?project={{project.id}}&page=" + left.toString();
-      document.getElementById("page_left_link").setAttribute('href', url);
+      document.getElementById("page_left_link").setAttribute('onclick', "aurl('" + url + "')");
     }
     if(page == {{ pages|length }}){
+      //disable page right
       document.getElementById("page_right").classList.add('class', "disabled");
-      //document.getElementById("page_left_right").setAttribute('href', "#!") 
     } else {
+      //set url to page right
       var right = (page.valueOf() + 1).valueOf();
       var url = "{% url 'cyka:personal_votes' member.uuid %}?project={{project.id}}&page=" + right.toString();
-      document.getElementById("page_right_link").setAttribute('href', url);
+      document.getElementById("page_right_link").setAttribute('onclick', "aurl('" + url + "')");
+      //document.getElementById("page_right_link").setAttribute('href', url);
     }
-    $(document).ready(function(){
-      $('.tooltipped').tooltip();
-    });
+    $('.tooltipped').tooltip();
     //$(".card-content").matchHeight();
   });
   function set_href(id){
     url = "{% url 'cyka:personal_votes' member.uuid %}?project={{project.id}}&vote=" + id + "&page=" + page.toString();
-    document.getElementById("card_" + id).setAttribute('href', url) 
+    document.getElementById("card_" + id).setAttribute('onclick', "aurl('" + url + "')") 
   }
 </script>
 {% endblock %}
 {% block content %}
 <div class="row valign change-form">
-    <div class="col s12 m8 offset-m2 l8 offset-l2">
+    <div class="col">
         
       <ul class="pagination center">
         <li id="page_left"><a id="page_left_link"><i class="material-icons waves-effect">chevron_left</i></a></li>
           {% for p in pages %}	
-	    <li id="page_{{ p }}"><a href="{% url 'cyka:personal_votes' member.uuid %}?project={{project.id}}&page={{ p }}">{{ p }}</a></li>
+	    <li id="page_{{ p }}"><a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:personal_votes' member.uuid %}?project={{project.id}}&page={{ p }}')">{{ p }}</a></li>
 	  {% endfor %}
         <li id="page_right" class="waves-effect"><a id="page_right_link"><i class="material-icons">chevron_right</i></a></li>
       </ul>
@@ -89,9 +87,9 @@
 		    <div class="card-action">
                         <div class="left">
 			    {% if c.voted %}
-			    <a id="card_{{c.model.id}}" class="tooltipped" data-tooltip="Nicht mehr zustimmen"><i class="material-icons voted-color inline-icon">thumb_up</i><span class="grey-text inline-text">({{c.votes}})</span></a>
+			    <a id="card_{{c.model.id}}" onmouseover="this.style.cursor='pointer'" class="tooltipped" data-tooltip="Nicht mehr zustimmen"><i class="material-icons voted-color inline-icon">thumb_up</i><span class="grey-text inline-text">({{c.votes}})</span></a>
 			    {% else %}
-			    <a id="card_{{c.model.id}}" class="tooltipped" data-tooltip="Zustimmen"><i class="material-icons unvoted-color inline-icon">thumb_up</i><span class="grey-text inline-text">({{c.votes}})</span></a>
+			    <a id="card_{{c.model.id}}" onmouseover="this.style.cursor='pointer'" class="tooltipped" data-tooltip="Zustimmen"><i class="material-icons unvoted-color inline-icon">thumb_up</i><span class="grey-text inline-text">({{c.votes}})</span></a>
 			    {% endif %}
                         </div>
                     </div>

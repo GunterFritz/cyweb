@@ -30,8 +30,7 @@
           margin-left: 5px;
         }
 	.content {
-	  padding-left: 250px;
-          overflow: auto;
+	  overflow: auto;
           height: 100%;
           width: 100%;
         }
@@ -65,6 +64,12 @@
                     <div>
                     {% block topbar_links %}
                         <ul id="nav-mobile" class="right hright hide-on-med-and-down">
+                    <li>
+                        <a href="{% url 'cyka:personal_workflow' member.uuid %}?project={{project.uuid}}" data-turbolinks="false"><i class="left material-icons">group_work</i>Agenda</a>
+                    </li>
+                    <li>
+			    <a href="{% url 'cyka:personal_edit' member.uuid %}?project={{project.uuid}}" data-turbolinks="false"><i class="left material-icons">account_circle</i>Meine Daten</a>
+                    </li>
 				<li>Hallo {{member.name}}</li>
                         </ul>
                     {% endblock %}
@@ -78,37 +83,13 @@
 
       <main>
       {% block main %}
-      {% block sidebar %}
       <div class="row">
         <div class="">
-            <dmc-sidenav>
-                <ul id="slide-out" class="sidenav sidenav-fixed">
-                    {% block sidenav_items %}
-                    <li>
-			    <a href="{% url 'cyka:personal_edit' member.uuid %}?project={{project.uuid}}"  class="collapsible-header" data-turbolinks="false"><i class="material-icons">account_circle</i>Meine Daten</a>
-                    </li>
-                    <li>
-                        <a href="{% url 'cyka:personal_workflow' member.uuid %}?project={{project.uuid}}" class="collapsible-header" data-turbolinks="false"><i class="material-icons">group_work</i>Agenda</a>
-                    </li>
-                    <li>
-			    <a href="{% url 'cyka:personal_plenum' member.uuid %}?project={{project.id}}&muuid={{member.uuid}}" class="collapsible-header" data-turbolinks="false"><i class="material-icons">videocam</i>Zum Plenum</a>
-                    </li>
-                    <li>
-			    <a href="{% url 'cyka:personal_card' member.uuid %}?project={{project.id}}" class="collapsible-header" data-turbolinks="false"><i class="material-icons">create</i>Brainwriting</a>
-                    </li>
-                    <li>
-			    <a href="{% url 'cyka:test' member.uuid %}?project={{project.id}}&muuid={{member.uuid}}" class="collapsible-header" data-turbolinks="false"><i class="material-icons">code</i>Test</a>
-                    </li>
-                    {% endblock sidenav_items %}
-		</ul>
-            </dmc-sidenav>
-
-            {% endblock %}
             {% block main_content %}
             <div class="content">
               {% block content %}{% endblock %}
             </div>
-               {% endblock main_content %}
+            {% endblock main_content %}
           </div>
       </div>
       {% endblock main %}

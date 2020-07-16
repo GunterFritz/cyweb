@@ -1,0 +1,108 @@
+{% extends 'cyka/project_base.html' %}
+{% load material_form %}
+
+{% block extrahead %}
+<style type="text/css">
+  @media only screen and (min-width : 601px) {
+      #id_card_type_container {
+          margin-top: 40px;
+          margin-left: 50px;
+      }
+      .groups {
+	  width:25%
+      }
+      .wbut {
+	  width:100%
+      }
+      .meet {
+	  width:75%
+      }
+}
+</style>
+{% endblock %}
+    			
+{% block javascript %}
+<script src="https://meet.cyiko.org/external_api.js"></script>
+<script>
+  $(document).ready(function(){
+    var container = document.querySelector('#jitsi-container');
+    var domain = "{{jitsi.domain}}";
+    var options = {
+	roomName: "{{jitsi.room}}",
+        height: 700,
+        parentNode: container,
+    };
+    var api = new JitsiMeetExternalAPI(domain, options);
+    api.executeCommand ('displayName', '{{jitsi.name}}'); 
+    api.executeCommand ('subject', '{{jitsi.subject}}');
+    console.log("Jitsi loaded")
+  });
+
+    function play() {
+        $.ajax({
+            type: "POST",
+		url: '{% url 'cyka:randsession' project.id %}',
+	        data: { 
+                'play': 'play',
+		},
+        })
+        .done(function(response) {
+            $('#_appendHere').html(response);
+        }); 
+    }
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+    }
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+            }
+        }
+    });
+</script>
+{% endblock %}
+
+
+{% block content %}
+<div class="row valign change-form">
+    <div class="col meet">
+        <div id="jitsi-container">
+        </div>
+    </div>
+    <div class="col groups">
+	
+    <div class="card" id="_appendHere">
+	<a class="btn waves-effect waves-light wbut" onclick="play()"><i class="left material-icons">{% if step.done %}stop</i>Beenden{% else %}play_arrow</i>Starten{% endif %}</a>
+    </div>
+	{% for group in groups %}
+        <div class="card">
+            <div class="card-content">
+            <span class="card-title grey-text text-darken-2"><i class="right material-icons">free_breakfast</i>Tisch</span>
+		<ul class="collection">
+		{% for member in group %}
+		<li class="collection-item">{{member.name}}</li>
+		{% endfor %}
+            	</ul>
+            </div>
+        </div>
+	{% endfor %}
+    </div>
+</div>
+{% endblock %}

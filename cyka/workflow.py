@@ -40,7 +40,7 @@ workflow = [
             'desc' : 'Begrüßen Sie die Teilnehmer, führen Sie in den Workshop ein und stellen Sie die Ausgangsfrage vor', 
             'link' : 'cyka:jostle_welcome',
             'memberlink' : 'cyka:personal_plenum',
-            'icon' : 'mediation',
+            'icon' : 'personal_video',
             'todo' : 'Begrüßen Sie die Teilnehmer, führen Sie in den Workshop ein und lassen Sie durch den Auftraggeber die Ausgangsfrage vorstellen', 
             'formtype' : 'radio'
         },
@@ -60,7 +60,7 @@ workflow = [
             'desc' : 'Die Teilnehmer können besonders wichtigen Gedanken zustimmen', 
             'link' : 'cyka:admin_votes',
             'memberlink' : 'cyka:personal_votes',
-            'icon' : 'create',
+            'icon' : 'thumb_up',
             'todo' : 'Die Teilnehmer können nun alle Karten sehen. Lassen Sie den Teilnehmern 5 - 15 Minuten Zeit, um diese durchzusehen. Gedanken, die besonders wichtig sind können markiert weden.', 
             'formtype' : 'radio'
         },
@@ -68,9 +68,9 @@ workflow = [
             'step' : 60,
             'short': 'Tagungscafe',
             'desc' : 'Die Teilnehmer tauschen sich in zufälligen Gruppen zur Ausgangsfrage aus', 
-            'link' : 'cyka:jostle_welcome',
+            'link' : 'cyka:randsession',
             'memberlink' : 'cyka:personal_workflow',
-            'icon' : 'mediation',
+            'icon' : 'free_breakfast',
             'todo' : 'Die Teilnehmer tauschen sich in zufälligen Gruppen zur Ausgangsfrage aus', 
             'formtype' : 'radio'
         }
@@ -115,6 +115,17 @@ class Step:
                 self.elem.done = False
         self.elem.save()
 
+    def toggleState(self):
+        self.elem.done = not self.elem.done
+        self.done = self.elem.done
+
+        if self.elem.status == 'S':
+            self.elem.status = 'B'
+        else:
+            self.elem.status = 'S'
+        self.status = self.elem.status
+        self.elem.save()
+
 class Section:
     def __init__(self, d, proj):
         self.name = d['name']
@@ -126,6 +137,9 @@ class Section:
         self.steps = sorted(steps, key=lambda step: step.step)
 
 class Workflow:
+    """
+    get a sorted list with all steps
+    """
     @staticmethod
     def get(proj, admin = True):
         sections = []
@@ -134,6 +148,9 @@ class Workflow:
                 sections.append(Section(d, proj))
         return sorted(sections, key=attrgetter('order'))
 
+    """
+    returns a single step
+    """
     @staticmethod
     def getStep(proj, num, request):
         step = None
@@ -161,4 +178,8 @@ class Workflow:
             else:
                 step.form = WorkflowElementFormProgress(initial={'status': step.status})
         return step
+
+    @staticmethod
+    def getActive():
+        return None
 
