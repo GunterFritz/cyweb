@@ -10,10 +10,12 @@ urlpatterns = [
 	url(r'^$', views.project, name="project"),
 	# ex: /cyka/project/new
 	url(r'^project/new/$', views.project_new, name="project_new"),
-	# ex: /cyka/project/5/jostle/welcome/
+	# ex: /cyka/project/5/test/
 	url(r'^(?P<uuid>[0-9A-Za-z\-]+)/test/$', views.test, name="test"),
 	# ex: /cyka/project/list
 	url(r'^project/list/$', views.project_list, name="project_list"),
+	# ex: /cyka/project/5/jostle/randsession/
+	url(r'^(?P<project_id>[0-9]+)/jostle/randsession/$', views.rand_session, name="randsession"),
 	# ex: /cyka/project/5/jostle/welcome/
 	url(r'^(?P<project_id>[0-9]+)/jostle/welcome/$', views.jostle_welcome, name="jostle_welcome"),
 	# ex: /cyka/project/5/delete/

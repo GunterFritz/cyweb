@@ -17,7 +17,7 @@
 		    <span class="card-title grey-text text-darken-2">{{section.name}}</span>
 		    <div class="collection">
                     {% for step in section.steps %}
-		      <a href="{% url step.link project.id %}" class="collection-item avatar">
+		      <a href="{% url step.link project.id %}" data-turbolinks="false" class="collection-item avatar">
 			 <i class="material-icons circle {% if step.done %}blue{% endif %}">{{step.icon}}</i>
                          <span class="title">{{step.short}}</span>
                          <p class="listel">{{step.desc}}</p>
