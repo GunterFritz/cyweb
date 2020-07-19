@@ -6,7 +6,7 @@
           type: "POST",
 	  url: '{% url 'cyka:personal_card' member.uuid %}?project={{project.id}}',
 	  data:{
-              delete:del,
+	      delete:del,
               heading:$('#id_heading').val(),
               desc:$('#id_desc').val(),
               cardid:$('#id_cardid').val(),
@@ -20,7 +20,7 @@
     }
 
 function delete_card(){
-	if (confirm("Möchten Sie die Karte {{ form.cardid }} löschen?")){
+	if (confirm("Möchten Sie die Karte löschen?")){
 		submit('true');
 	}
   }

@@ -446,7 +446,7 @@ def personal_workflow(request, uuid):
     member = get_member_by_uuid(uuid)
     wf = Workflow.get(member.proj, False)
     
-    jitsi = Jitsi(member.proj.uuid, "Plenum", request.user.get_username)
+    jitsi = Jitsi(member.proj.uuid, "Plenum", member.name)
     
     return render(request, 'cyka/personal_agenda.html', {'project' : member.proj, 'member': member, 'workflow': wf, 'jitsi': jitsi })
 
