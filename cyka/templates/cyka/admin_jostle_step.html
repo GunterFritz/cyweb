@@ -1,16 +1,35 @@
 {% load material_form %}
-        <div class="card">
-	    <dmc-form><form method="POST" enctype="multipart/form-data">
-                <div class="card-content">
-                    <span class="card-title grey-text text-darken-2">Was ist zu tun</span>
-		    <p>{{step.todo}}</p>
-                    {% csrf_token %}
-                        {% form form=wf_form %}{% endform %}
-                </div>
-                <div class="card-action">
-                    <div class="right-align">
-                        <button class="btn btn-primary" name='step' type="submit">Speichern</button>
-                    </div>
-                </div>
-            </form></dmc-form>
+{% block javascript %}
+<script>
+    function submit(){
+      $.ajax({
+          type: "POST",
+	  url: '{% url 'cyka:personal_card' project.id %}?step={{step.step}}',
+	  data:{
+              status:$('#id_status').val(),
+              csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+              action: 'post'
+          },
+      })
+      .done(function(response) {
+          $('#_appendHere').html(response);
+      });
+    }
+</script>
+{% endblock %}
+
+<div class="card">
+    <dmc-form><form method="POST" enctype="multipart/form-data">
+        <div class="card-content">
+            <span class="card-title grey-text text-darken-2">Was ist zu tun</span>
+ 	    <p>{{step.todo}}</p>
+            {% csrf_token %}
+            {% form form=wf_form %}{% endform %}
         </div>
+    </form></dmc-form>
+        <div class="card-action">
+            <div class="right-align">
+		<button onclick="submit()" class="btn modal-action modal-close btn-primary">Speichern</button>
+            </div>
+        </div>
+</div>

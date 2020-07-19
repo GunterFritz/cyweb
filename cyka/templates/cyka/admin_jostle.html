@@ -32,6 +32,7 @@
     var api = new JitsiMeetExternalAPI(domain, options);
     api.executeCommand ('displayName', '{{jitsi.name}}'); 
     api.executeCommand ('subject', '{{jitsi.subject}}');
+    aurl('{% url 'cyka:admin_jostle' project.id %}?function=agenda');
   });
     //resize
     var size = 0;
@@ -98,8 +99,8 @@
         <div class="row valign change-form">
             <div class="card">
                 <div class="card-content">
-                    <a class="btn-flat waves-effect waves-light" onclick="resize()"><i class="left material-icons">keyboard_arrow_left</i><i class="left material-icons">keyboard_arrow_right</i></a>
-                    <a class="btn-flat waves-effect waves-light right" onclick="aurl('{% url 'cyka:admin_jostle' project.id %}?function=agenda')"><i class="right material-icons">group_work</i>Agenda</a>
+                    <a class="waves-effect waves-light" onclick="resize()"><i class="left material-icons">keyboard_arrow_left</i><i class="left material-icons">keyboard_arrow_right</i></a>
+                    <a class="waves-effect waves-light right" onclick="aurl('{% url 'cyka:admin_jostle' project.id %}?function=agenda')"><i class="right material-icons">group_work</i>Agenda</a>
                 </div>
             </div>
         </div>
