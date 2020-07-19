@@ -97,6 +97,9 @@
                         <a href="{% url 'cyka:project_team' project.id %}" class="collapsible-header" data-turbolinks="false"><i class="material-icons">supervisor_account</i>Teilnehmer</a>
                     </li>
                     <li>
+			    <a href="{% url 'cyka:admin_jostle' project.id %}" class="collapsible-header" data-turbolinks="false"><i class="material-icons">videocam</i>Problem Jostle</a>
+                    </li>
+                    <li>
 			    <a href="{% url 'cyka:plenum' project.id %}" class="collapsible-header" data-turbolinks="false"><i class="material-icons">videocam</i>Zum Plenum</a>
                     </li>
                     {% endblock sidenav_items %}

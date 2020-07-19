@@ -1,4 +1,4 @@
-{% extends 'cyka/personal_base.html' %}
+{% extends 'cyka/project_base.html' %}
 {% block extrahead %}
 <style type="text/css">
   @media only screen and (min-width : 601px) {
@@ -21,18 +21,6 @@
 {% block javascript %}
 <script src="https://meet.cyiko.org/external_api.js"></script>
 <script>
-  var interval = null;
-  function refreshAgenda(){
-    interval = setInterval(function() {
-        $.ajax({
-            type: "GET",
-            url: '{% url 'cyka:get_more_agenda' member.uuid %}',
-        })
-        .done(function(response) {
-            $('#_appendHere').html(response);
-        }); 
-    }, 7000);
-  }
   $(document).ready(function(){
     var container = document.querySelector('#jitsi-container');
     var domain = "{{jitsi.domain}}";
@@ -45,7 +33,6 @@
     api.executeCommand ('displayName', '{{jitsi.name}}'); 
     api.executeCommand ('subject', '{{jitsi.subject}}');
   });
-    refreshAgenda();
     //resize
     var size = 0;
     function small() {
@@ -64,22 +51,7 @@
 	    size = 0;
 	}
     }
-    function get_agenda() {
-	clearInterval(interval)
-	$('.tooltipped').tooltip('close');
-        $.ajax({
-            type: "GET",
-		url: "{% url 'cyka:get_more_agenda' member.uuid %}?project={{project.uuid}}",
-        })
-        .done(function(response) {
-            $('#_appendHere').html(response);
-            refreshAgenda();
-  	    $('.modal').modal();
-        }); 
-    }
     function aurl(myurl) {
-	clearInterval(interval)
-	$('.tooltipped').tooltip('close');
         $.ajax({
             type: "GET",
 		url: myurl,
@@ -123,33 +95,17 @@
         </div>
     </div>
     <div id="stepcontent" class="col groups">
+        <div class="row valign change-form">
             <div class="card">
                 <div class="card-content">
-        <a class="waves-effect waves-light" onclick="resize()"><i class="left material-icons">keyboard_arrow_left</i><i class="left material-icons">keyboard_arrow_right</i></a>
-        <a class="waves-effect waves-light right" onclick="get_agenda()"><i class="right material-icons">group_work</i>Agenda</a>
-        </div>
-    </div>
-        <div id="_appendHere">
-            {% for section in workflow %}
-            <div class="card">
-                <div class="card-content">
-		    <span class="card-title grey-text text-darken-2">{{section.name}}</span>
-		    <div class="collection">
-                    {% for step in section.steps %}
-		      <a {% if step.status == 'S' %} onclick="aurl('{% url step.memberlink member.uuid %}?project={{project.id}}');"{% endif %} data-turbolinks="false" class="collection-item avatar">
-			 <i class="material-icons circle {% if step.status == 'S' %}blue{% endif %}">{{step.icon}}</i>
-                         <span class="title">{{step.short}}</span>
-			 </i><i class="material-icons right secondary-content">{% if step.done %}done{% else %}close{% endif %}</i>
-		      </a>
-		      {% endfor %}
-                    </div>
-                </div>
-                <div class="card-action">
-                {% block actions %}
-                {% endblock %}
+                    <a class="btn-flat waves-effect waves-light" onclick="resize()"><i class="left material-icons">keyboard_arrow_left</i><i class="left material-icons">keyboard_arrow_right</i></a>
+                    <a class="btn-flat waves-effect waves-light right" onclick="aurl('{% url 'cyka:admin_jostle' project.id %}?function=agenda')"><i class="right material-icons">group_work</i>Agenda</a>
                 </div>
             </div>
-	   {% endfor %}
+        </div>
+        <div class="row valign change-form">
+          <div id="_appendHere">
+          </div>
         </div>
     </div>
     </div>
