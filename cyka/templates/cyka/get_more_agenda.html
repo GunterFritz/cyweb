@@ -4,22 +4,22 @@
 	<span class="card-title grey-text text-darken-2">{{section.name}}</span>
 	    <div class="collection">
             {% for step in section.steps %}
-	    <a onmouseover="this.style.cursor='pointer'" {% if step.status == 'S' %}onclick="aurl('{% url step.memberlink member.uuid %}?project={{project.id}}');"{% endif %} class="collection-item avatar">
-		{% if step.status == 'B' %}
+	    {% if step.status == 'B' %}
+	    <a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url step.memberlink member.uuid %}?project={{project.id}}');" class="collection-item avatar">
 	        <i class="material-icons circle green left">{{step.icon}}</i>
-		{% elif step.status == 'S' %}
-	        <i class="material-icons circle blue left">{{step.icon}}</i>
-		{% else %}
-	        <i class="material-icons circle grey left">{{step.icon}}</i>
-		{% endif %}
                 <span class="title icon-black">{{step.short}}</span>
-		{% if step.status == 'B' %}
 		</i><i class="material-icons right secondary-content icon-green">check_circle</i>
-		{% elif step.status == 'S' %}
+	    {% elif step.status == 'S' %}
+	    <a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url step.memberlink member.uuid %}?project={{project.id}}');" class="collection-item avatar">
+	        <i class="material-icons circle blue left">{{step.icon}}</i>
+                <span class="title icon-black">{{step.short}}</span>
 		</i><i class="material-icons right secondary-content">play_circle_outline</i>
-		{% else %}
+	    {% else %}
+	    <a class="collection-item avatar">
+	        <i class="material-icons circle grey left">{{step.icon}}</i>
+                <span class="title icon-black">{{step.short}}</span>
 		</i><i class="material-icons right secondary-content icon-grey">highlight_off</i>
-		{% endif %}
+	    {% endif %}
 	    </a>
 	    {% endfor %}
             </div>
