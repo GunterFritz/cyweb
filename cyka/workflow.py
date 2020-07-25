@@ -1,3 +1,4 @@
+#TODO refactor
 from .models import Project, WorkflowElement
 from .forms import WorkflowElementFormProgress, WorkflowElementForm
 from operator import attrgetter
@@ -101,6 +102,7 @@ class Step:
         self.done = elem.done
         self.status = elem.status
         elem.step = self.step
+        self.before = None
         elem.save()
 
     def save(self):
@@ -154,13 +156,22 @@ class Workflow:
     @staticmethod
     def getStep(proj, num, request):
         step = None
+        step_before = None
         for d in workflow:
             for st in d['steps']:
                 if st['step'] == num:
                     step = Step(st, proj)
+                elif st['step'] < num:
+                    if step_before == None:
+                        step_before = Step(st, proj)
+                    elif step_before.step < st['step']: 
+                        step_before = Step(st, proj)
 
         if step == None:
             return None
+
+        if step_before != None:
+            step.before = step_before
         
         step.form = None
         if request.method == 'POST':

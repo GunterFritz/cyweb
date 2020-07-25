@@ -44,8 +44,8 @@
     var api = new JitsiMeetExternalAPI(domain, options);
     api.executeCommand ('displayName', '{{jitsi.name}}'); 
     api.executeCommand ('subject', '{{jitsi.subject}}');
+    get_agenda();
   });
-    refreshAgenda();
     //resize
     var size = 0;
     function small() {
@@ -74,7 +74,6 @@
         .done(function(response) {
             $('#_appendHere').html(response);
             refreshAgenda();
-  	    $('.modal').modal();
         }); 
     }
     function aurl(myurl) {
@@ -130,26 +129,6 @@
         </div>
     </div>
         <div id="_appendHere">
-            {% for section in workflow %}
-            <div class="card">
-                <div class="card-content">
-		    <span class="card-title grey-text text-darken-2">{{section.name}}</span>
-		    <div class="collection">
-                    {% for step in section.steps %}
-		      <a {% if step.status == 'S' %} onclick="aurl('{% url step.memberlink member.uuid %}?project={{project.id}}');"{% endif %} data-turbolinks="false" class="collection-item avatar">
-			 <i class="material-icons circle {% if step.status == 'S' %}blue{% endif %}">{{step.icon}}</i>
-                         <span class="title">{{step.short}}</span>
-			 </i><i class="material-icons right secondary-content">{% if step.done %}done{% else %}close{% endif %}</i>
-		      </a>
-		      {% endfor %}
-                    </div>
-                </div>
-                <div class="card-action">
-                {% block actions %}
-                {% endblock %}
-                </div>
-            </div>
-	   {% endfor %}
         </div>
     </div>
     </div>

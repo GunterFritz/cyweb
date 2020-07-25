@@ -483,19 +483,29 @@ def admin_votes(request, project_id):
 @login_required
 def admin_jostle(request, project_id):
     proj = get_project(request, project_id)
-    
-    function = request.GET.get('function', '')
-    if function == 'agenda':
-        jostle_section = Workflow.get(proj)[1]
-        return render(request, 'cyka/admin_jostle_agenda.html', {'project' : proj, 'section': jostle_section })
-    
-    if function == 'step':
-        jostle_section = Workflow.get(proj)[1]
-        step_id = request.GET.get('stepid', '')
+   
+    #change status of step
+    if request.method == 'POST':
+        step_id = request.POST['step']
         step = Workflow.getStep(proj, int(step_id), request)
     
         return render(request, 'cyka/admin_jostle_step.html', {'project' : proj, 'step': step, 'wf_form': step.form })
     
+    
+    function = request.GET.get('function', '')
+    #agenda page requested
+    if function == 'agenda':
+        jostle_section = Workflow.get(proj)[1]
+        return render(request, 'cyka/admin_jostle_agenda.html', {'project' : proj, 'section': jostle_section })
+    
+    #step details requested
+    if function == 'step':
+        step_id = request.GET.get('stepid', '')
+        step = Workflow.getStep(proj, int(step_id), request)
+    
+        return render(request, 'cyka/admin_jostle_step.html', {'project' : proj, 'step': step })
+    
+    #initalization
     jitsi = Jitsi(proj.uuid, "Plenum", request.user.get_username)
     
     return render(request, 'cyka/admin_jostle.html', {'project' : proj, 'jitsi': jitsi })

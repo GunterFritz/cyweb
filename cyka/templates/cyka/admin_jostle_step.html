@@ -1,12 +1,20 @@
 {% load material_form %}
 {% block javascript %}
 <script>
-    function submit(){
+    function submit(stat){
+      console.log("A")
+      console.log("{{step.before}}")
+      console.log("B")
+	      
+      if ("{{step.before.done}}" == "False"){
+	      return alert("Bitte beenden Sie erst den Agendapunkt {{step.before.short}}")
+      }
       $.ajax({
           type: "POST",
-	  url: '{% url 'cyka:personal_card' project.id %}?step={{step.step}}',
+	  url: '{% url 'cyka:admin_jostle' project.id %}',
 	  data:{
-              status:$('#id_status').val(),
+              status:stat,
+	      step:'{{step.step}}',
               csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
               action: 'post'
           },
@@ -19,17 +27,19 @@
 {% endblock %}
 
 <div class="card">
-    <dmc-form><form method="POST" enctype="multipart/form-data">
-        <div class="card-content">
-            <span class="card-title grey-text text-darken-2">Was ist zu tun</span>
- 	    <p>{{step.todo}}</p>
-            {% csrf_token %}
-            {% form form=wf_form %}{% endform %}
+    <div class="card-content">
+        <span class="card-title grey-text text-darken-2">Was ist zu tun</span>
+ 	<p>{{step.todo}}</p>
+        {% csrf_token %}
+	<div class="collection">
+	    <a onmouseover="this.style.cursor='pointer'" onclick="submit('O')" class="collection-item {% if step.status == 'O' %}active{% endif %}">Offen<i class="material-icons left">{% if step.status == 'O' %}radio_button_checked{% else %}radio_button_unchecked{% endif %}</i></a>
+	    <a onmouseover="this.style.cursor='pointer'" onclick="submit('S')" class="collection-item {% if step.status == 'S' %}active{% endif %}">Gestartet<i class="material-icons left">{% if step.status == 'S' %}radio_button_checked{% else %}radio_button_unchecked{% endif %}</i></a>
+            <a onmouseover="this.style.cursor='pointer'" onclick="submit('B')" class="collection-item {% if step.status == 'B' %}active{% endif %}">Beendet<i class="material-icons left">{% if step.status == 'B' %}radio_button_checked{% else %}radio_button_unchecked{% endif %}</i></a>
         </div>
-    </form></dmc-form>
-        <div class="card-action">
-            <div class="right-align">
-		<button onclick="submit()" class="btn modal-action modal-close btn-primary">Speichern</button>
-            </div>
+    </div>
+    <div class="card-action">
+        <div class="right-align">
+            <button onclick="aurl('{% url 'cyka:admin_jostle' project.id %}?function=agenda')" class="btn modal-action modal-close btn-primary"><i class="left material-icons">keyboard_arrow_left</i>Zurück</button>
         </div>
+    </div>
 </div>
