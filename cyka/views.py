@@ -379,6 +379,7 @@ def get_more_agenda(request, uuid):
 def personal_votes(request, uuid):
     member = get_member_by_uuid(uuid)
     page = int(request.GET.get('page', 1))
+    step = Workflow.getStep(member.proj, 50, request)
 
     cards = member.proj.card_set.all()
     #ceil (instead of math.ceil)
@@ -399,22 +400,24 @@ def personal_votes(request, uuid):
     for c in cards[(page-1)*6:page*6]:
         hcards.append(HtmlCard(c, member))
 
-    return render(request, 'cyka/personal_votes.html', {'project' : member.proj, 'member': member, 'cards': hcards, 'pages': range(1, pages), 'page':page})
+    return render(request, 'cyka/personal_votes.html', {'project' : member.proj, 'member': member, 'cards': hcards, 'pages': range(1, pages), 'page':page, 'step': step})
 
 def personal_card(request, uuid):
     member = get_member_by_uuid(uuid)
+    step = Workflow.getStep(member.proj, 40, request)
         
-    #save or new action
+    #card added, deleted or changed 
     if request.method == 'POST':
-  
+        #get action
         card_id = request.POST.get('cardid', '')
         delete = request.POST.get('delete', 'false')
         card = None
         if card_id != '':
             card = get_card(card_id, member)
-        
+        #delete action
         if delete == 'true' and card != None:
             card.delete()
+        #new and save actions
         else:
             form = CardForm(request.POST)
             if form.is_valid():
@@ -427,7 +430,7 @@ def personal_card(request, uuid):
                 return render(request, 'cyka/add_card.html', {'project' : member.proj, 'member': member, 'form': form})
         cards = member.card_set.all()
         #return to overview
-        return render(request, 'cyka/personal_cards.html', {'project' : member.proj, 'member': member, 'cards': cards})
+        return render(request, 'cyka/personal_cards.html', {'project' : member.proj, 'member': member, 'cards': cards, 'step': step})
 
     card_id = request.GET.get('card', '')
     if card_id == 'new':
@@ -436,7 +439,7 @@ def personal_card(request, uuid):
     if card_id == '':
         cards = member.card_set.all()
 
-        return render(request, 'cyka/personal_cards.html', {'project' : member.proj, 'member': member, 'cards': cards})
+        return render(request, 'cyka/personal_cards.html', {'project' : member.proj, 'member': member, 'cards': cards, 'step': step})
     
     card = get_card(card_id, member)
     form = CardForm(initial={'heading': card.heading, 'desc' : card.desc, 'cardid': card.id })

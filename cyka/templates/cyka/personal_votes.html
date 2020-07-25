@@ -87,14 +87,16 @@
 		    <div class="card-action">
                         <div class="left">
 			    {% if c.voted %}
-			    <a id="card_{{c.model.id}}" onmouseover="this.style.cursor='pointer'" class="tooltipped" data-tooltip="Nicht mehr zustimmen"><i class="material-icons voted-color inline-icon">thumb_up</i><span class="grey-text inline-text">({{c.votes}})</span></a>
+			    <a id="card_{{c.model.id}}" onmouseover="this.style.cursor='pointer'" {% if step.done == False %}class="tooltipped" data-tooltip="Nicht mehr zustimmen"{% endif %}><i class="material-icons voted-color inline-icon">thumb_up</i><span class="grey-text inline-text">({{c.votes}})</span></a>
 			    {% else %}
-			    <a id="card_{{c.model.id}}" onmouseover="this.style.cursor='pointer'" class="tooltipped" data-tooltip="Zustimmen"><i class="material-icons unvoted-color inline-icon">thumb_up</i><span class="grey-text inline-text">({{c.votes}})</span></a>
+			    <a id="card_{{c.model.id}}" onmouseover="this.style.cursor='pointer'" {% if step.done == False %}class="tooltipped" data-tooltip="Zustimmen"{% endif %}><i class="material-icons unvoted-color inline-icon">thumb_up</i><span class="grey-text inline-text">({{c.votes}})</span></a>
 			    {% endif %}
                         </div>
                     </div>
                 </div>
+		{% if step.done == False %}
 		<script type="text/javascript">set_href({{c.model.id}});</script>
+		{% endif %}
 	{% endfor %}
     </div>
 </div>
