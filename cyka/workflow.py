@@ -74,6 +74,16 @@ workflow = [
             'icon' : 'free_breakfast',
             'todo' : 'Die Teilnehmer tauschen sich in zufälligen Gruppen zur Ausgangsfrage aus', 
             'formtype' : 'radio'
+        },
+        {
+            'step' : 70,
+            'short': 'Themenvorschläge',
+            'desc' : 'Die Teilnehmer erarbeiten selbständig Themenvorschläge', 
+            'link' : 'cyka:personal_workflow',
+            'memberlink' : 'cyka:personal_table',
+            'icon' : 'explore',
+            'todo' : 'Die Teilnehmer erarbeiten selbständig Themenvorschläge', 
+            'formtype' : 'radio'
         }
         ]
     }

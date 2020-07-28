@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from .models import Project, Topic, Member, Card
+from .models import Project, Topic, Member, Card, Table
 from material import Layout, Row, Column, Fieldset, Span2, Span3, Span5, Span6, Span10
 
 #class ProjectForm(ModelForm):
@@ -31,6 +31,16 @@ class TopicForm(ModelForm):
     class Meta:
         model = Topic
         fields = ('name', 'desc',)
+
+class TableForm(forms.Form):
+    name = forms.CharField()
+
+    def save(self, table = None):
+        if member == None:
+            member = Table()
+        table.name = self.cleaned_data['name']
+
+        return table
 
 class MemberForm(forms.Form):
     name = forms.CharField()

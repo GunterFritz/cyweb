@@ -6,8 +6,8 @@ from django.http import HttpResponseRedirect,HttpResponse,HttpResponseForbidden,
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-from .forms import CardForm, ProjectForm, TopicForm, MemberForm, MemberOkForm, WorkflowElementForm
-from .models import Project, Topic, Member, Assignment, Card
+from .forms import CardForm, ProjectForm, TopicForm, MemberForm, MemberOkForm, WorkflowElementForm, TableForm
+from .models import Project, Topic, Member, Assignment, Card, Table
 from random import randrange 
 from . import helpers
 from .helpers import Agenda, HtmlCard
@@ -381,7 +381,14 @@ def personal_votes(request, uuid):
     page = int(request.GET.get('page', 1))
     step = Workflow.getStep(member.proj, 50, request)
 
-    cards = member.proj.card_set.all()
+    cards = []
+    for c in member.proj.card_set.all():
+        cards.append(HtmlCard(c, member))
+    
+    #sort by votes if step is finished
+    if step.done:
+        cards = sorted(cards, key=lambda HtmlCard : HtmlCard.votes, reverse=True)
+    
     #ceil (instead of math.ceil)
     pages = int(len(cards)/6) + 1
     if len(cards) % 6 > 0:
@@ -396,11 +403,7 @@ def personal_votes(request, uuid):
             raise Http404("No such card")
         HtmlCard(card, member).vote()
 
-    hcards = []
-    for c in cards[(page-1)*6:page*6]:
-        hcards.append(HtmlCard(c, member))
-
-    return render(request, 'cyka/personal_votes.html', {'project' : member.proj, 'member': member, 'cards': hcards, 'pages': range(1, pages), 'page':page, 'step': step})
+    return render(request, 'cyka/personal_votes.html', {'project' : member.proj, 'member': member, 'cards': cards[(page-1)*6:page*6], 'pages': range(1, pages), 'page':page, 'step': step})
 
 def personal_card(request, uuid):
     member = get_member_by_uuid(uuid)
@@ -444,6 +447,44 @@ def personal_card(request, uuid):
     card = get_card(card_id, member)
     form = CardForm(initial={'heading': card.heading, 'desc' : card.desc, 'cardid': card.id })
     return render(request, 'cyka/add_card.html', {'project' : member.proj, 'member': member, 'form': form})
+
+def personal_table(request, uuid):
+    member = get_member_by_uuid(uuid)
+    step = Workflow.getStep(member.proj, 70, request)
+        
+    #card added, deleted or changed 
+    if request.method == 'POST':
+        #get action
+        table_id = request.POST.get('tableid', '')
+        table = None
+        if table_id != '':
+            table = Table.objects.get(pk=table_id)
+        
+        #new and save actions
+        else:
+            form = TableForm(request.POST)
+            if form.is_valid():
+                table = form.save(table)
+                table.proj = member.proj
+                table.save()
+            else:
+                #input fields not valid
+                return render(request, 'cyka/add_table.html', {'project' : member.proj, 'member': member, 'form': form})
+        tables = member.proj.table_set.all()
+        #return to overview
+        return render(request, 'cyka/personal_tables.html', {'project' : member.proj, 'member': member, 'tables': tables, 'step': step})
+    
+    table_id = request.GET.get('tableid', '')
+    
+    if table_id == 'new':
+        form = TableForm()
+        return render(request, 'cyka/add_table.html', {'project' : member.proj, 'member': member, 'form': form})
+    if table_id == '':
+        tables = member.proj.table_set.all()
+
+        return render(request, 'cyka/personal_table.html', {'project' : member.proj, 'member': member, 'tables': tables, 'step': step})
+
+    return render(request, 'cyka/personal_table.html', {'project' : member.proj, 'member': member, 'table': tables, 'step': step})
 
 def personal_workflow(request, uuid):
     member = get_member_by_uuid(uuid)

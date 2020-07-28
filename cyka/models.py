@@ -37,14 +37,14 @@ class Topic(models.Model):
     def __str__(self):
         return self.name
 
-#class Table(models.Model):
-#    name = models.CharField(max_length=128)
-#    desc = models.TextField()
-#    proj = models.ForeignKey(Project, on_delete=models.CASCADE)
-#    uuid = models.UUIDField( 
-#         primary_key = False, 
-#         default = uuid.uuid4, 
-#         editable = False) 
+class Table(models.Model):
+    name = models.CharField(max_length=128)
+    desc = models.TextField()
+    proj = models.ForeignKey(Project, on_delete=models.CASCADE)
+    uuid = models.UUIDField( 
+         primary_key = False, 
+         default = uuid.uuid4, 
+         editable = False) 
 
 class Member(models.Model):
     name = models.CharField(max_length=128)

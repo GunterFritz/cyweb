@@ -1,0 +1,53 @@
+{% load material_form %}
+{% block extrahead %}
+      <style>
+	.mplan {
+	  margin-left: 1%;
+	  margin-right: 1%;
+          width: 48%;
+          height: 180px;
+        }
+      </style>
+{% endblock %}
+{% block javascript %}
+<script>
+  $(document).ready(function(){
+    small();
+  });
+</script>
+{% endblock %}
+<div class="row valign change-form">
+    {% if step.done %}
+    <div class="col wbut">
+            <div class="card">
+                <div class="card-content">
+        <p>Das Brainwriting wurde beendet. Sie können keine Änderungen vornehmen</p>
+        </div>
+    </div>
+    </div>
+    {% else %}
+    <div class="col right">
+        <div class="card">
+	    <a  onclick="aurl('{% url 'cyka:personal_table' member.uuid %}?project={{project.id}}&table=new')" class="btn-floating btn-large red right"><i class="material-icons">edit</i></a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+<div class="row valign change-form">
+    <div class="col">
+        {% for t in tables %}
+    {% if step.done %}
+	    <a>
+    {% else %}
+	    <a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:personal_table' member.uuid %}?project={{project.id}}&table={{t.id}}')">
+    {% endif %}
+		    <div class="col card mplan">
+                    <div class="card-content black-text">
+		        <span class="card-title grey-text text-darken-2">{{t.heading}}</span>
+		        <p>{{t.desc}}</p>
+                    </div>
+                </div>
+	    </a>
+	{% endfor %}
+    </div>
+</div>
