@@ -12,7 +12,7 @@ from random import randrange
 from . import helpers
 from .helpers import Agenda, HtmlCard
 from .workflow import Workflow
-from .config import Jitsi
+from .config import Jitsi, Pad
 
 # Create your views here.
 
@@ -448,6 +448,26 @@ def personal_card(request, uuid):
     form = CardForm(initial={'heading': card.heading, 'desc' : card.desc, 'cardid': card.id })
     return render(request, 'cyka/add_card.html', {'project' : member.proj, 'member': member, 'form': form})
 
+
+def join_table(request, uuid):
+    member = get_member_by_uuid(uuid)
+    table_id = request.GET.get('table', '')
+    table = None
+    if table_id != '':
+        table = Table.objects.get(pk=table_id)
+    if table == None:
+        raise("No such table")
+    jitsi = Jitsi(table.uuid, table.name, member.name)
+    pad = Pad(table.uuid)
+    
+    return render(request, 'cyka/personal_join_table.html', {'project' : member.proj, 'member': member, 'table': table, 'jitsi': jitsi, "etherpad": pad})
+
+"""
+renders the table step of problem jostle
+GET: render page with all tables
+GET: + table='new' -> render create page
+POST: add table
+"""
 def personal_table(request, uuid):
     member = get_member_by_uuid(uuid)
     step = Workflow.getStep(member.proj, 70, request)
@@ -461,20 +481,19 @@ def personal_table(request, uuid):
             table = Table.objects.get(pk=table_id)
         
         #new and save actions
+        form = TableForm(request.POST)
+        if form.is_valid():
+            table = form.save(table)
+            table.proj = member.proj
+            table.save()
         else:
-            form = TableForm(request.POST)
-            if form.is_valid():
-                table = form.save(table)
-                table.proj = member.proj
-                table.save()
-            else:
-                #input fields not valid
-                return render(request, 'cyka/add_table.html', {'project' : member.proj, 'member': member, 'form': form})
+            #input fields not valid
+            return render(request, 'cyka/add_table.html', {'project' : member.proj, 'member': member, 'form': form})
         tables = member.proj.table_set.all()
         #return to overview
-        return render(request, 'cyka/personal_tables.html', {'project' : member.proj, 'member': member, 'tables': tables, 'step': step})
+        return render(request, 'cyka/personal_table.html', {'project' : member.proj, 'member': member, 'tables': tables, 'step': step})
     
-    table_id = request.GET.get('tableid', '')
+    table_id = request.GET.get('table', '')
     
     if table_id == 'new':
         form = TableForm()
@@ -703,6 +722,7 @@ def get_member(request, mid):
         raise Http404("No such member")
     
     return member
+
 
 def get_card(card_id, member):
     card = Card.objects.get(pk=card_id)

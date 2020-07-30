@@ -1,0 +1,89 @@
+{% extends 'cyka/personal_base.html' %}
+{% block extrahead %}
+<style type="text/css">
+  @media only screen and (min-width : 601px) {
+      #id_card_type_container {
+          margin-top: 40px;
+          margin-left: 50px;
+      }
+      .groups {
+	  width:25%
+      }
+      .wbut {
+	  width:100%
+      }
+      .meet {
+	  width:75%
+      }
+}
+</style>
+{% endblock %}
+{% block javascript %}
+<script src="https://meet.cyiko.org/external_api.js"></script>
+<script>
+  $(document).ready(function(){
+    var container = document.querySelector('#jitsi-container');
+    var domain = "{{jitsi.domain}}";
+    var options = {
+	roomName: "{{jitsi.room}}",
+        height: 700,
+        parentNode: container,
+    };
+    var api = new JitsiMeetExternalAPI(domain, options);
+    api.executeCommand ('displayName', '{{jitsi.name}}'); 
+    api.executeCommand ('subject', '{{jitsi.subject}}');
+    small();
+  });
+    //resize
+    var size = 0;
+    function small() {
+        $("#meetcontent").width('25%');
+        $("#stepcontent").width('70%');
+        size = 1;
+    } 
+    function resize() {
+	if (size == 0) {
+            $("#meetcontent").width('25%');
+            $("#stepcontent").width('70%');
+	    size = 1;
+	} else {
+            $("#meetcontent").width('75%');
+            $("#stepcontent").width('20%');
+	    size = 0;
+	}
+    }
+    function aurl(myurl) {
+        $.ajax({
+            type: "GET",
+		url: myurl,
+        })
+        .done(function(response) {
+            $('#_appendHere').html(response);
+        }); 
+    }
+</script>
+{% endblock %}
+{% block content %}
+<div class="row valign change-form">
+    <div id="meetcontent" class="col meet">
+        <div id="jitsi-container">
+        </div>
+    </div>
+    <div id="stepcontent" class="col groups">
+            <div class="card">
+                <div class="card-content">
+                    <a class="waves-effect waves-light" onclick="resize()"><i class="left material-icons">code</i></a>
+	            <a class="waves-effect waves-light right btn" href="{% url 'cyka:personal_workflow' member.uuid %}?project={{project.uuid}}" data-turbolinks="false"><i class="right material-icons">group_work</i>Verlassen</a>
+                </div>
+            </div>
+        <div class="card">
+            <div class="card-content black-text">
+	        <span class="card-title grey-text text-darken-2">{{table.name}}</span>
+            </div>
+        </div>
+            <div>
+		<iframe name={{etherpad.name}} src='{{etherpad.domain}}/{{etherpad.pad}}?showChat=false&showLineNumbers=false' width=100% height=100%></iframe>
+            </div>
+    </div>
+</div>
+{% endblock %}

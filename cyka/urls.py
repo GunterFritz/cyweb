@@ -55,7 +55,9 @@ urlpatterns = [
 	url(r'^(?P<member_id>[0-9]+)/member/edit/up/(?P<priority>-[0-9]+)$', views.member_edit_up, name="member_edit_up"),
 	# ex: /cyka/votes/uuid
         url(r'^votes/(?P<uuid>[0-9A-Za-z\-]+)$', views.personal_votes, name="personal_votes"),
-	# ex: /cyka/project/5/table/new/
+	# ex: /cyka/project/5/jointable
+        url(r'^jointable/(?P<uuid>[0-9A-Za-z\-]+)$', views.join_table, name="personal_join_table"),
+	# ex: /cyka/project/5/table
         url(r'^table/(?P<uuid>[0-9A-Za-z\-]+)$', views.personal_table, name="personal_table"),
 	# ex: /cyka/cards/uuid
         url(r'^cards/(?P<uuid>[0-9A-Za-z\-]+)$', views.personal_card, name="personal_card"),

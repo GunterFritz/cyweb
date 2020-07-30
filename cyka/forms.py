@@ -33,11 +33,11 @@ class TopicForm(ModelForm):
         fields = ('name', 'desc',)
 
 class TableForm(forms.Form):
-    name = forms.CharField()
+    name = forms.CharField(label="Themenvorschlag")
 
     def save(self, table = None):
-        if member == None:
-            member = Table()
+        if table == None:
+            table = Table()
         table.name = self.cleaned_data['name']
 
         return table

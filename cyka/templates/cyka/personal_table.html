@@ -13,25 +13,16 @@
 <script>
   $(document).ready(function(){
     small();
+    $('.tooltipped').tooltip();
   });
 </script>
 {% endblock %}
 <div class="row valign change-form">
-    {% if step.done %}
-    <div class="col wbut">
-            <div class="card">
-                <div class="card-content">
-        <p>Das Brainwriting wurde beendet. Sie können keine Änderungen vornehmen</p>
-        </div>
-    </div>
-    </div>
-    {% else %}
     <div class="col right">
         <div class="card">
-	    <a  onclick="aurl('{% url 'cyka:personal_table' member.uuid %}?project={{project.id}}&table=new')" class="btn-floating btn-large red right"><i class="material-icons">edit</i></a>
+	    <a  onclick="aurl('{% url 'cyka:personal_table' member.uuid %}?table=new')" class="btn-floating btn-large red right"><i class="material-icons">edit</i></a>
         </div>
     </div>
-    {% endif %}
 </div>
 <div class="row valign change-form">
     <div class="col">
@@ -39,12 +30,11 @@
     {% if step.done %}
 	    <a>
     {% else %}
-	    <a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:personal_table' member.uuid %}?project={{project.id}}&table={{t.id}}')">
+	    <a class="tooltipped" data-tooltip="Beitreten" href="{% url 'cyka:personal_join_table' member.uuid %}?table={{t.id}}">
     {% endif %}
 		    <div class="col card mplan">
                     <div class="card-content black-text">
-		        <span class="card-title grey-text text-darken-2">{{t.heading}}</span>
-		        <p>{{t.desc}}</p>
+		        <span class="card-title grey-text text-darken-2">{{t.name}}</span>
                     </div>
                 </div>
 	    </a>
