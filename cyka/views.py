@@ -466,6 +466,29 @@ def join_table(request, uuid):
         if func == 'edit':
             form = TableForm(initial={'name': table.name, 'tableid': table.id })
             return render(request, 'cyka/edit_table.html', {'project' : member.proj, 'member': member, 'form': form, 'table': table})
+    
+    #table name changed 
+    if request.method == 'POST':
+        #get action
+        table_id = request.POST.get('tableid', '')
+        table = None
+        if table_id != '':
+            table = Table.objects.get(pk=table_id)
+        if table == None:
+            raise("No such table")
+        
+        #new and save actions
+        form = TableForm(request.POST)
+        if form.is_valid():
+            table = form.save(table)
+            table.proj = member.proj
+            table.save()
+        else:
+            #input fields not valid
+            return render(request, 'cyka/edit_table.html', {'project' : member.proj, 'member': member, 'form': form, 'table': table})
+        #saved, back to pad
+        pad = Pad(table.uuid, member.name)
+        return render(request, 'cyka/table_editor.html', {'table': table, "etherpad": pad})
 
     #main page
     jitsi = Jitsi(table.uuid, table.name, member.name)
