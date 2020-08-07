@@ -14,8 +14,8 @@
 
 
 {% block content %}
-<div class="row valign change-form">
-    <div class="{% block formclass %}col s12 m8 offset-m2 l8 offset-l2{% endblock %}">
+<div class="row valign change-form" style="height: 100%">
+    <div class="{% block formclass %}col s12 m8 offset-m2 l8 offset-l2{% endblock %}" style="height: 100%">
         <div class="card">
                 <div class="card-content">
                     <span class="card-title grey-text text-darken-2">{% block formtitle %}Plenum{% endblock %}</span>
@@ -30,6 +30,9 @@
                     </div>
                     {% endblock %}
                 </div>
+        </div>
+        <div style="height:100%">
+		<iframe src='http://localhost:9001/p/123?showChat=false&showLineNumbers=false' style="height: 100%; width: 100%; border: none"></iframe>
         </div>
     </div>
 </div>
