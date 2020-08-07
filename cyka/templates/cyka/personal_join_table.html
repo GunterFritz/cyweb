@@ -6,6 +6,7 @@
           margin-top: 40px;
           margin-left: 50px;
       }
+      }
       .groups {
 	  width:25%
       }
@@ -15,13 +16,26 @@
       .meet {
 	  width:75%
       }
-}
+      .fullh {
+        height: 100%
+      }
+      .derow .decol {
+        border: 1px dotted #0313fc
+      }
+      .editarea {
+          margin-top: 5px;
+          width: 8%;
+      }
+      .tablearea {
+          width: 92%;
+      }
 </style>
 {% endblock %}
 {% block javascript %}
 <script src="https://meet.cyiko.org/external_api.js"></script>
 <script>
   $(document).ready(function(){
+    small();
     var container = document.querySelector('#jitsi-container');
     var domain = "{{jitsi.domain}}";
     var options = {
@@ -32,7 +46,8 @@
     var api = new JitsiMeetExternalAPI(domain, options);
     api.executeCommand ('displayName', '{{jitsi.name}}'); 
     api.executeCommand ('subject', '{{jitsi.subject}}');
-    small();
+    aurl('{% url 'cyka:personal_join_table' member.uuid %}?table={{table.id}}&function=pad');
+    $('.tooltipped').tooltip();
   });
     //resize
     var size = 0;
@@ -69,21 +84,20 @@
         <div id="jitsi-container">
         </div>
     </div>
-    <div id="stepcontent" class="col groups">
-            <div class="card">
-                <div class="card-content">
-                    <a class="waves-effect waves-light" onclick="resize()"><i class="left material-icons">code</i></a>
-	            <a class="waves-effect waves-light right btn" href="{% url 'cyka:personal_workflow' member.uuid %}?project={{project.uuid}}" data-turbolinks="false"><i class="right material-icons">group_work</i>Verlassen</a>
-                </div>
+    <div id="stepcontent" class="col groups fullh">
+        <div class="col editarea right">
+            <div class="row">
+                <a class="btn-floating btn-large white waves-effect waves-light right" onclick="resize()"><i class="left material-icons secondary-content blue icon-grey">code</i></a>
             </div>
-        <div class="card">
-            <div class="card-content black-text">
-	        <span class="card-title grey-text text-darken-2">{{table.name}}</span>
+            <div class="row">
+	        <a class="btn-floating btn-large red right" href="{% url 'cyka:personal_workflow' member.uuid %}?start=table&project={{project.uuid}}"><i class="right material-icons tooltipped" data-tooltip="Verlassen">exit_to_app</i></a>
+            </div>
+            <div class="row">
+		    <a  onclick="aurl('{% url 'cyka:personal_join_table' member.uuid %}?table={{table.id}}&function=edit')" class="btn-floating btn-large red right"><i class="material-icons tooltipped" data-tooltip="Kurzbeschreibung editieren">edit</i></a>
             </div>
         </div>
-            <div>
-		<iframe name={{etherpad.name}} src='{{etherpad.domain}}/{{etherpad.pad}}?showChat=false&showLineNumbers=false' width=100% height=100%></iframe>
-            </div>
+        <div id="_appendHere" class="col tablearea right">
+        </div>
     </div>
 </div>
 {% endblock %}

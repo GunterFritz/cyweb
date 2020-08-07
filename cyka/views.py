@@ -448,22 +448,32 @@ def personal_card(request, uuid):
     form = CardForm(initial={'heading': card.heading, 'desc' : card.desc, 'cardid': card.id })
     return render(request, 'cyka/add_card.html', {'project' : member.proj, 'member': member, 'form': form})
 
-
 def join_table(request, uuid):
     member = get_member_by_uuid(uuid)
-    table_id = request.GET.get('table', '')
-    table = None
-    if table_id != '':
-        table = Table.objects.get(pk=table_id)
-    if table == None:
-        raise("No such table")
+    if request.method == 'GET':
+        table_id = request.GET.get('table', '')
+        func = request.GET.get('function', '')
+        table = None
+        if table_id != '':
+            table = Table.objects.get(pk=table_id)
+        if table == None:
+            raise("No such table")
+        #editor
+        if func == 'pad':
+            pad = Pad(table.uuid, member.name)
+            return render(request, 'cyka/table_editor.html', {'table': table, "etherpad": pad})
+        #edit name of table
+        if func == 'edit':
+            form = TableForm(initial={'name': table.name, 'tableid': table.id })
+            return render(request, 'cyka/edit_table.html', {'project' : member.proj, 'member': member, 'form': form, 'table': table})
+
+    #main page
     jitsi = Jitsi(table.uuid, table.name, member.name)
-    pad = Pad(table.uuid)
-    
-    return render(request, 'cyka/personal_join_table.html', {'project' : member.proj, 'member': member, 'table': table, 'jitsi': jitsi, "etherpad": pad})
+    return render(request, 'cyka/personal_join_table.html', {'project' : member.proj, 'member': member, 'table': table, 'jitsi': jitsi })
 
 """
 renders the table step of problem jostle
+the basic view shows all tables
 GET: render page with all tables
 GET: + table='new' -> render create page
 POST: add table
@@ -489,9 +499,11 @@ def personal_table(request, uuid):
         else:
             #input fields not valid
             return render(request, 'cyka/add_table.html', {'project' : member.proj, 'member': member, 'form': form})
-        tables = member.proj.table_set.all()
+        return render(request, 'cyka/table_added.html', {'project' : member.proj, 'member': member, 'table': table})
+        #return render_table(request, member, table)
+        #tables = member.proj.table_set.all()
         #return to overview
-        return render(request, 'cyka/personal_table.html', {'project' : member.proj, 'member': member, 'tables': tables, 'step': step})
+        #return render(request, 'cyka/personal_table.html', {'project' : member.proj, 'member': member, 'tables': tables, 'step': step})
     
     table_id = request.GET.get('table', '')
     
@@ -508,10 +520,12 @@ def personal_table(request, uuid):
 def personal_workflow(request, uuid):
     member = get_member_by_uuid(uuid)
     wf = Workflow.get(member.proj, False)
+    #load different start page
+    start = request.GET.get('start', '')
     
     jitsi = Jitsi(member.proj.uuid, "Plenum", member.name)
     
-    return render(request, 'cyka/personal_agenda.html', {'project' : member.proj, 'member': member, 'workflow': wf, 'jitsi': jitsi })
+    return render(request, 'cyka/personal_agenda.html', {'project' : member.proj, 'member': member, 'workflow': wf, 'jitsi': jitsi, 'start': start })
 
 def personal_edit(request, uuid):
     try:

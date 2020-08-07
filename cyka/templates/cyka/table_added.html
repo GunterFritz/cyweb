@@ -1,0 +1,45 @@
+{% load material_form %}
+{% block extrahead %}
+      <style>
+      .debugrow .debugcol {
+        border: 1px dotted #0313fc
+      }
+      .editarea {
+          width: 8%;
+      }
+      .tablearea {
+          width: 92%;
+      }
+	.mplan {
+	  margin-left: 1%;
+	  margin-right: 1%;
+          width: 31%;
+          height: 180px;
+        }
+      </style>
+{% endblock %}
+{% block javascript %}
+<script>
+  $(document).ready(function(){
+    small();
+  });
+</script>
+{% endblock %}
+    <div class="col _tablearea">
+      <div class="row valign change-form">
+	 <div class="col card">
+                <div class="card-content black-text">
+		<span class="card-title grey-text text-darken-2">{{table.name}}</span>
+		<p>Ihr Themenvorschlag wurde erstellt. Bitte arbeiten Sie sie den Vorschlag aus. Weitere Teilnehmer können sich jederzeit an Ihrem Vorschlag beteiligen.</p>
+           </div>
+           <div class="card-action">
+               <div class="right-align">
+	           <a  onclick="aurl('{% url 'cyka:personal_table' member.uuid %}')" class="btn">Zurück zur Übersicht</a>
+		       <a class="btn" href="{% url 'cyka:personal_join_table' member.uuid %}?table={{table.id}}">Thema bearbeiten</a>
+               </div>
+           </div>
+         </div>
+      </div>
+    </div>
+    <div class="col right _editarea">
+    </div>
