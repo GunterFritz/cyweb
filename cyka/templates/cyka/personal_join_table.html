@@ -87,13 +87,16 @@
     <div id="stepcontent" class="col groups fullh">
         <div class="col editarea right">
             <div class="row">
-                <a class="btn-floating btn-large white waves-effect waves-light right" onclick="resize()"><i class="left material-icons secondary-content blue icon-grey">code</i></a>
-            </div>
-            <div class="row">
 	        <a class="btn-floating btn-large red right" href="{% url 'cyka:personal_workflow' member.uuid %}?start=table&project={{project.uuid}}"><i class="right material-icons tooltipped" data-tooltip="Verlassen">exit_to_app</i></a>
             </div>
             <div class="row">
-		    <a  onclick="aurl('{% url 'cyka:personal_join_table' member.uuid %}?table={{table.id}}&function=edit')" class="btn-floating btn-large red right"><i class="material-icons tooltipped" data-tooltip="Kurzbeschreibung editieren">edit</i></a>
+                <a class="btn-floating btn-large white waves-effect waves-light right" onclick="resize()"><i class="left material-icons secondary-content blue icon-grey">code</i></a>
+            </div>
+            <div class="row">
+		    <a id="_editButton" onclick="aurl('{% url 'cyka:personal_join_table' member.uuid %}?table={{table.id}}&function=edit')" class="btn-floating btn-large right"><i class="material-icons tooltipped blue" data-tooltip="Kurzbeschreibung editieren">edit</i></a>
+            </div>
+            <div class="row">
+		    <a id="_thumbButton" onclick="aurl('{% url 'cyka:personal_join_table' member.uuid %}?table={{table.id}}&function=edit')" class="btn-floating btn-large right"><i class="material-icons tooltipped blue" data-tooltip="Thema unterstützen">thumb_up</i></a>
             </div>
         </div>
         <div id="_appendHere" class="col tablearea right">

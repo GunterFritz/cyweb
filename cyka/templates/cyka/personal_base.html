@@ -8,6 +8,7 @@
     <link href="https://unpkg.com/material-components-web@v4.0.0/dist/material-components-web.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="{% static 'css/icon-colors.css' %}">
+    <link rel="stylesheet" href="{% static 'css/iframe.css' %}">
     <script src="https://unpkg.com/material-components-web@v4.0.0/dist/material-components-web.min.js"></script>
 
     <title>{% block title %}Cyiko Workshops{% endblock %}</title>
@@ -31,7 +32,6 @@
           margin-left: 5px;
         }
 	.content {
-	  overflow: auto;
           height: 100%;
           width: 100%;
         }
@@ -85,13 +85,11 @@
       <main>
       {% block main %}
       <div class="row">
-        <div class="">
-            {% block main_content %}
-            <div class="content">
-              {% block content %}{% endblock %}
-            </div>
-            {% endblock main_content %}
+          {% block main_content %}
+          <div class="content">
+          {% block content %}{% endblock %}
           </div>
+          {% endblock main_content %}
       </div>
       {% endblock main %}
       </main>

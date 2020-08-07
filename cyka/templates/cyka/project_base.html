@@ -29,20 +29,19 @@
         }
 	.content {
 	  padding-left: 250px;
-          overflow: auto;
           height: 100%;
           width: 100%;
         }
 	.sidenav{
           top: 65px;
           width: 250px;
+          height: 100%;
         }
       </style>
 
     <style type="text/css">
       html, body {
           background: #FFF;
-          height: 100%;
       }
     </style>
     {% block extrahead %}{% endblock %}
@@ -80,11 +79,11 @@
             {% endblock header %}
       </header>
 
-      <main>
+      <main style="height: 100%">
       {% block main %}
       {% block sidebar %}
-      <div class="row">
-        <div class="">
+      <div class="row" style="height: 100%">
+        <div class="" style="height: 100%">
             <dmc-sidenav>
                 <ul id="slide-out" class="sidenav sidenav-fixed">
                     {% block sidenav_items %}

@@ -34,6 +34,7 @@ class TopicForm(ModelForm):
 
 class TableForm(forms.Form):
     name = forms.CharField(label="Themenvorschlag")
+    tableid = forms.CharField(widget=forms.HiddenInput(), required=False)
 
     def save(self, table = None):
         if table == None:
