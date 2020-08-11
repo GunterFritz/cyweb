@@ -13,6 +13,7 @@ from . import helpers
 from .helpers import Agenda, HtmlCard
 from .workflow import Workflow
 from .config import Jitsi, Pad
+from .problemjostle import AgreedStatementImportance, ASIOverview
 
 # Create your views here.
 
@@ -448,97 +449,17 @@ def personal_card(request, uuid):
     form = CardForm(initial={'heading': card.heading, 'desc' : card.desc, 'cardid': card.id })
     return render(request, 'cyka/add_card.html', {'project' : member.proj, 'member': member, 'form': form})
 
+#working on asi
 def join_table(request, uuid):
-    member = get_member_by_uuid(uuid)
-    if request.method == 'GET':
-        table_id = request.GET.get('table', '')
-        func = request.GET.get('function', '')
-        table = None
-        if table_id != '':
-            table = Table.objects.get(pk=table_id)
-        if table == None:
-            raise("No such table")
-        #editor
-        if func == 'pad':
-            pad = Pad(table.uuid, member.name)
-            return render(request, 'cyka/table_editor.html', {'table': table, "etherpad": pad})
-        #edit name of table
-        if func == 'edit':
-            form = TableForm(initial={'name': table.name, 'tableid': table.id })
-            return render(request, 'cyka/edit_table.html', {'project' : member.proj, 'member': member, 'form': form, 'table': table})
-    
-    #table name changed 
-    if request.method == 'POST':
-        #get action
-        table_id = request.POST.get('tableid', '')
-        table = None
-        if table_id != '':
-            table = Table.objects.get(pk=table_id)
-        if table == None:
-            raise("No such table")
-        
-        #new and save actions
-        form = TableForm(request.POST)
-        if form.is_valid():
-            table = form.save(table)
-            table.proj = member.proj
-            table.save()
-        else:
-            #input fields not valid
-            return render(request, 'cyka/edit_table.html', {'project' : member.proj, 'member': member, 'form': form, 'table': table})
-        #saved, back to pad
-        pad = Pad(table.uuid, member.name)
-        return render(request, 'cyka/table_editor.html', {'table': table, "etherpad": pad})
+    asi = AgreedStatementImportance(request, uuid)
 
-    #main page
-    jitsi = Jitsi(table.uuid, table.name, member.name)
-    return render(request, 'cyka/personal_join_table.html', {'project' : member.proj, 'member': member, 'table': table, 'jitsi': jitsi })
+    return asi.process()
 
-"""
-renders the table step of problem jostle
-the basic view shows all tables
-GET: render page with all tables
-GET: + table='new' -> render create page
-POST: add table
-"""
+#asi overview and creating
 def personal_table(request, uuid):
-    member = get_member_by_uuid(uuid)
-    step = Workflow.getStep(member.proj, 70, request)
-        
-    #card added, deleted or changed 
-    if request.method == 'POST':
-        #get action
-        table_id = request.POST.get('tableid', '')
-        table = None
-        if table_id != '':
-            table = Table.objects.get(pk=table_id)
-        
-        #new and save actions
-        form = TableForm(request.POST)
-        if form.is_valid():
-            table = form.save(table)
-            table.proj = member.proj
-            table.save()
-        else:
-            #input fields not valid
-            return render(request, 'cyka/add_table.html', {'project' : member.proj, 'member': member, 'form': form})
-        return render(request, 'cyka/table_added.html', {'project' : member.proj, 'member': member, 'table': table})
-        #return render_table(request, member, table)
-        #tables = member.proj.table_set.all()
-        #return to overview
-        #return render(request, 'cyka/personal_table.html', {'project' : member.proj, 'member': member, 'tables': tables, 'step': step})
-    
-    table_id = request.GET.get('table', '')
-    
-    if table_id == 'new':
-        form = TableForm()
-        return render(request, 'cyka/add_table.html', {'project' : member.proj, 'member': member, 'form': form})
-    if table_id == '':
-        tables = member.proj.table_set.all()
+    asio = ASIOverview(request, uuid)
 
-        return render(request, 'cyka/personal_table.html', {'project' : member.proj, 'member': member, 'tables': tables, 'step': step})
-
-    return render(request, 'cyka/personal_table.html', {'project' : member.proj, 'member': member, 'table': tables, 'step': step})
+    return asio.process()
 
 def personal_workflow(request, uuid):
     member = get_member_by_uuid(uuid)
