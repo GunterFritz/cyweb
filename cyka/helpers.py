@@ -19,6 +19,27 @@ def ProjectDelete(project):
     project.workflowelement_set.all().delete()
     project.delete()
 
+"""
+returns member to an id 
+
+params
+------
+uuid: uuid of member
+proj_id (optional, not used)
+
+return
+------
+Models.Member
+"""
+def get_member_by_uuid(uuid, proj_id = None):
+    try:
+        member = Member.objects.all().filter(uuid=uuid)[0]
+    except Member.DoesNotExist:
+        raise Http404("No such member")
+
+    return member
+
+
 #obsolete?
 """
 class HtmlPerson:
