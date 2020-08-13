@@ -22,13 +22,6 @@
       .derow .decol {
         border: 1px dotted #0313fc
       }
-      .editarea {
-          margin-top: 5px;
-          width: 8%;
-      }
-      .tablearea {
-          width: 92%;
-      }
 </style>
 {% endblock %}
 {% block javascript %}
@@ -85,7 +78,7 @@
         </div>
     </div>
     <div id="stepcontent" class="col groups fullh">
-        <div class="col editarea right">
+        <div class="col navarea right">
             <div class="row">
 	        <a class="btn-floating btn-large red right" href="{% url 'cyka:personal_workflow' member.uuid %}?start=table&project={{project.uuid}}"><i class="right material-icons tooltipped" data-tooltip="Verlassen">exit_to_app</i></a>
             </div>
@@ -96,10 +89,13 @@
 		    <a id="_editButton" onclick="aurl('{% url 'cyka:personal_join_table' member.uuid %}?table={{table.id}}&function=edit')" class="btn-floating btn-large right blue"><i class="material-icons tooltipped" data-tooltip="Kurzbeschreibung editieren">edit</i></a>
             </div>
             <div class="row">
+		    <a id="_thumbButton" onclick="aurl('{% url 'cyka:personal_join_table' member.uuid %}?table={{table.id}}&function=edit')" class="btn-floating btn-large right blue"><i class="material-icons tooltipped" data-tooltip="Verknüpfen">add_box</i></a>
+            </div>
+            <div class="row">
 		    <a id="_thumbButton" onclick="aurl('{% url 'cyka:personal_join_table' member.uuid %}?table={{table.id}}&function=edit')" class="btn-floating btn-large right blue"><i class="material-icons tooltipped" data-tooltip="Thema unterstützen">thumb_up</i></a>
             </div>
         </div>
-        <div id="_appendHere" class="col tablearea right">
+        <div id="_appendHere" class="col actionarea right">
         </div>
     </div>
 </div>

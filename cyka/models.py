@@ -37,15 +37,6 @@ class Topic(models.Model):
     def __str__(self):
         return self.name
 
-class Table(models.Model):
-    name = models.CharField(max_length=128)
-    desc = models.TextField()
-    proj = models.ForeignKey(Project, on_delete=models.CASCADE)
-    uuid = models.UUIDField( 
-         primary_key = False, 
-         default = uuid.uuid4, 
-         editable = False) 
-
 class Member(models.Model):
     name = models.CharField(max_length=128)
     email = models.EmailField(max_length=254,blank=True, null= True, default="")
@@ -79,11 +70,24 @@ class WorkflowElement(models.Model):
     done = models.BooleanField(default=False)
     status = models.CharField(max_length=16,choices=(('O', 'OPEN'),('S', 'STARTED'), ('B', 'FINISHED')), default='O')
 
+#Statement of importance
 class Card(models.Model):
     proj = models.ForeignKey(Project, on_delete=models.CASCADE)
     member = models.ForeignKey(Member, on_delete=models.CASCADE)
     heading = models.CharField(max_length=128)
     desc = models.TextField()
+
+#Agreed Statement of importance
+class Table(models.Model):
+    name = models.CharField(max_length=128)
+    desc = models.TextField()
+    proj = models.ForeignKey(Project, on_delete=models.CASCADE)
+    uuid = models.UUIDField( 
+         primary_key = False, 
+         default = uuid.uuid4, 
+         editable = False)
+    card = models.ForeignKey(Card, on_delete=models.CASCADE, default=None)
+
 
 class CardVotes(models.Model):
     member = models.ForeignKey(Member, on_delete=models.CASCADE)
