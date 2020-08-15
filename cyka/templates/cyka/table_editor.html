@@ -1,8 +1,5 @@
 {% block javascript %}
 <script>
-  $(document).ready(function(){
-    $( '#_editButton' ).removeClass( "disabled" );
-  });
 </script>
 {% endblock %}
 {% block content %}
@@ -11,6 +8,11 @@
         <div class="card-content black-text">
 	    <span class="card-title grey-text text-darken-2">{{table.card.heading}}</span>
 	    <p>{{table.card.desc}}<p>
+	    <div id="_supporter">
+	    {% for asi in sign %}
+	    <span class="badge blue">{{asi.member.name}}</span>
+	    {% endfor %}
+	    </div>
         </div>
     </div>
     <div class="row">

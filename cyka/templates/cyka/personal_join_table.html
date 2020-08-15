@@ -27,6 +27,12 @@
 {% block javascript %}
 <script src="https://meet.cyiko.org/external_api.js"></script>
 <script>
+  var interval = null;
+  function refreshSupporter(){
+    interval = setInterval(function() {
+	aurl('{% url 'cyka:personal_join_table' member.uuid %}?table={{table.id}}&function=supporter', '#_supporter')
+    }, 3000);
+  }
   $(document).ready(function(){
     small();
     var container = document.querySelector('#jitsi-container');
@@ -39,8 +45,9 @@
     var api = new JitsiMeetExternalAPI(domain, options);
     api.executeCommand ('displayName', '{{jitsi.name}}'); 
     api.executeCommand ('subject', '{{jitsi.subject}}');
-    aurl('{% url 'cyka:personal_join_table' member.uuid %}?table={{table.id}}&function=pad');
-        $('.tooltipped').tooltip({enterDelay: 1000});
+    aurl('{% url 'cyka:personal_join_table' member.uuid %}?table={{table.id}}&function=pad', '#_appendHere');
+    $('.tooltipped').tooltip({enterDelay: 1000});
+    refreshSupporter();
     });
     //resize
     var size = 0;
@@ -60,15 +67,19 @@
 	    size = 0;
 	}
     }
-    function aurl(myurl) {
+    function aurl(myurl, where) {
         $.ajax({
             type: "GET",
 		url: myurl,
         })
         .done(function(response) {
-            $('#_appendHere').html(response);
+            $(where).html(response);
         }); 
     }
+    function leave(url){
+        clearInterval(interval);
+        window.location.href = url;
+    }   
 </script>
 {% endblock %}
 {% block content %}
@@ -80,19 +91,13 @@
     <div id="stepcontent" class="col groups fullh">
         <div class="col navarea right">
             <div class="row">
-	        <a class="btn-floating btn-large red right" href="{% url 'cyka:personal_workflow' member.uuid %}?start=table&project={{project.uuid}}"><i class="right material-icons tooltipped" data-tooltip="Verlassen">exit_to_app</i></a>
+	        <a class="btn-floating btn-large red right" onclick="leave('{% url 'cyka:personal_workflow' member.uuid %}?start=table&project={{project.uuid}}')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">exit_to_app</i></a>
             </div>
             <div class="row">
                 <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
             </div>
             <div class="row">
-		    <a id="_editButton" onclick="aurl('{% url 'cyka:personal_join_table' member.uuid %}?table={{table.id}}&function=edit')" class="btn-floating btn-large right blue"><i class="material-icons tooltipped" data-tooltip="Kurzbeschreibung editieren">edit</i></a>
-            </div>
-            <div class="row">
-		    <a id="_thumbButton" onclick="aurl('{% url 'cyka:personal_join_table' member.uuid %}?table={{table.id}}&function=edit')" class="btn-floating btn-large right blue"><i class="material-icons tooltipped" data-tooltip="Verknüpfen">add_box</i></a>
-            </div>
-            <div class="row">
-		    <a id="_thumbButton" onclick="aurl('{% url 'cyka:personal_join_table' member.uuid %}?table={{table.id}}&function=edit')" class="btn-floating btn-large right blue"><i class="material-icons tooltipped" data-tooltip="Thema unterstützen">thumb_up</i></a>
+		    <a id="_thumbButton" onclick="aurl('{% url 'cyka:personal_join_table' member.uuid %}?table={{table.id}}&function=sign', '#_supporter')" class="btn-floating btn-large right blue"><i class="material-icons tooltipped" data-tooltip="Thema unterstützen">thumb_up</i></a>
             </div>
         </div>
         <div id="_appendHere" class="col actionarea right">

@@ -79,8 +79,8 @@ class Card(models.Model):
 
 #Agreed Statement of importance
 class Table(models.Model):
-    name = models.CharField(max_length=128)
-    desc = models.TextField()
+    #name = models.CharField(max_length=128)
+    #desc = models.TextField()
     proj = models.ForeignKey(Project, on_delete=models.CASCADE)
     uuid = models.UUIDField( 
          primary_key = False, 
@@ -93,3 +93,6 @@ class CardVotes(models.Model):
     member = models.ForeignKey(Member, on_delete=models.CASCADE)
     card = models.ForeignKey(Card, on_delete=models.CASCADE)
 
+class SIsign(models.Model):
+    member = models.ForeignKey(Member, on_delete=models.CASCADE)
+    table = models.ForeignKey(Table, on_delete=models.CASCADE)

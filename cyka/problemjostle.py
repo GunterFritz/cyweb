@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .forms import TableForm
-from .models import Member, Table, Card
+from .models import Member, Table, Card, SIsign
 from .config import Jitsi, Pad
 from . import helpers
 from .workflow import Workflow
@@ -57,13 +57,17 @@ class AgreedStatementImportance(MemberView):
         if self.table == None:
             raise("No such table")
         
+        #supporter
+        if func == 'supporter':
+            return self.supporter()
+        
         #editor
         if func == 'pad':
             return self.viewPad()
         
         #edit name of table
-        if func == 'edit':
-            return self.viewEdit()
+        if func == 'sign':
+            return self.sign()
         
         #main page
         jitsi = Jitsi(self.table.uuid, self.table.card.heading, self.member.name)
@@ -74,14 +78,29 @@ class AgreedStatementImportance(MemberView):
     """
     def viewPad(self):
         pad = Pad(self.table.uuid, self.member.name)
-        return render(self.request, 'cyka/table_editor.html', {'table': self.table, "etherpad": pad})
+        asis = self.table.sisign_set.all()
+        return render(self.request, 'cyka/table_editor.html', {'table': self.table, "etherpad": pad, "sign": asis, 'member' : self.member })
 
     """
     renders edit table name
     """
-    def viewEdit(self):
-        form = TableForm(initial={'name': self.table.name, 'tableid': self.table.id })
-        return render(self.request, 'cyka/edit_table.html', {'project' : self.member.proj, 'member': self.member, 'form': form, 'table': self.table})
+    def sign(self):
+        asis = self.table.sisign_set.all().filter(member=self.member)
+        #sign
+        if len(asis) == 0:
+            sign = SIsign()
+            sign.member = self.member
+            sign.table = self.table
+            sign.save()
+        #unsign
+        else:
+            asis[0].delete()
+
+        return self.supporter()
+    
+    def supporter(self):
+        asis = self.table.sisign_set.all()
+        return render(self.request, 'cyka/supporter.html', {"sign": asis})
 
 
     def post(self):
