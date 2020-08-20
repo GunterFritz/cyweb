@@ -1,3 +1,4 @@
+from lib.structure import Structure2 as Structure
 from django.shortcuts import render, redirect
 from .forms import TableForm
 from .models import Member, Table, Card, SIsign
@@ -5,6 +6,16 @@ from .config import Jitsi, Pad
 from . import helpers
 from .workflow import Workflow
 from django.db import transaction
+
+#wrapper
+class HTMLAsi:
+    def __init__(self, table, num):
+        self.table = table
+        self.supporter = len(self.table.sisign_set.all())
+        self.progress = 100
+        self.max = num
+        if self.supporter < num:
+            self.progress = int(self.supporter*100/num)
 
 """
 class to render the Topic creation step
@@ -150,6 +161,8 @@ class ASIOverview(MemberView):
     
     def get(self):
         table_id = self.request.GET.get('table', '')
+        page = int(self.request.GET.get('page', 1))
+        
         #render new page
         if table_id == 'new':
             cards = self.member.proj.card_set.all()
@@ -169,5 +182,22 @@ class ASIOverview(MemberView):
         #render tables overview
         step = Workflow.getStep(self.member.proj, 70, self.request)
         tables = self.member.proj.table_set.all()
-        return render(self.request, 'cyka/personal_table.html', {'project' : self.member.proj, 'member': self.member, 'tables': tables, 'step': step})
+        
+        #ceil (instead of math.ceil)
+        pages = int(len(tables)/6) + 1
+        if len(tables) % 6 > 0:
+            pages = pages + 1
+        
+        n = Structure.factory(self.member.proj.ptype).getMinAgreedPersons()
+        htables = []
+        for t in tables:
+            htables.append(HTMLAsi(t,n))
+        
+        return render(self.request, 'cyka/personal_table.html', {'project' : self.member.proj, 
+            'member': self.member, 
+            'tables': htables,
+            'tables': htables[(page-1)*6:page*6], 
+            'pages': range(1, pages), 
+            'page':page,
+            'step': step})
 

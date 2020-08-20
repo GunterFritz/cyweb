@@ -341,7 +341,21 @@ class Structure2:
         if t == "I" or t == "IKOSAEDER" or t == 12:
             return Ikosaeder()
 
-   
+    """
+    returns the number of required agreements that an SI becomes an ASI
+    """
+    def getMinAgreedPersons(self):
+        return 5
+    
+    """
+    returns the number of required agreements that an SI becomes an ASI
+    """
+    def getMinAgreedPersons(self):
+        if self.numPersons < 11:
+            return 3
+        else:
+            return 4
+    
     def getMinPersons(self):
         return self.minPersons
     

@@ -12,17 +12,54 @@
     small();
     $('.tooltipped').tooltip({enterDelay: 1000});
   });
+  var page = parseInt({{page}});
+  $(document).ready(function(){
+    small();
+    queryString = window.location.search;
+    document.getElementById("page_" + page).classList.add('class', "active");
+    if(page == 1){
+      //disable page left
+      document.getElementById("page_left").classList.add('class', "disabled");
+    } else {
+      //set url to page left
+      var left = (page.valueOf() - 1).valueOf();
+      var url = "{% url 'cyka:personal_table' member.uuid %}?project={{project.id}}&page=" + left.toString();
+      document.getElementById("page_left_link").setAttribute('onclick', "aurl('" + url + "')");
+    }
+    if(page == {{ pages|length }}){
+      //disable page right
+      document.getElementById("page_right").classList.add('class', "disabled");
+    } else {
+      //set url to page right
+      var right = (page.valueOf() + 1).valueOf();
+      var url = "{% url 'cyka:personal_table' member.uuid %}?project={{project.id}}&page=" + right.toString();
+      document.getElementById("page_right_link").setAttribute('onclick', "aurl('" + url + "')");
+      //document.getElementById("page_right_link").setAttribute('href', url);
+    }
+    $('.tooltipped').tooltip();
+    //$(".card-content").matchHeight();
+  });
 </script>
 {% endblock %}
 <div>
     <div class="col actionarea">
-      <div class="row valign change-form">
+      <ul class="pagination center">
+        <li id="page_left"><a id="page_left_link"><i class="material-icons waves-effect">chevron_left</i></a></li>
+          {% for p in pages %}	
+	    <li id="page_{{ p }}"><a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:personal_table' member.uuid %}?page={{ p }}')">{{ p }}</a></li>
+	  {% endfor %}
+        <li id="page_right" class="waves-effect"><a id="page_right_link"><i class="material-icons">chevron_right</i></a></li>
+      </ul>
+      <div class="row valign">
         {% for t in tables %}
-	    <a href="{% url 'cyka:personal_join_table' member.uuid %}?table={{t.id}}">
+	    <a href="{% url 'cyka:personal_join_table' member.uuid %}?table={{t.table.id}}">
 		<div class="col card mplan tooltipped" data-tooltip="Beitreten">
                     <div class="card-content black-text">
-		        <span class="card-title grey-text text-darken-2">{{t.card.heading}}</span>
-		        <p>{{t.card.desc}}</p>
+		      <div class="progress">
+			      <div class="determinate" style="width: {{t.progress}}%"></div>
+                      </div>
+		        <span class="card-title grey-text text-darken-2">{{t.table.card.heading}}</span>
+		        <p>{{t.table.card.desc}}</p>
                     </div>
                 </div>
 	    </a>
