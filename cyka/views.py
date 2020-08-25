@@ -13,7 +13,7 @@ from . import helpers
 from .helpers import Agenda, HtmlCard
 from .workflow import Workflow
 from .config import Jitsi, Pad
-from .problemjostle import AgreedStatementImportance, ASIOverview
+from .problemjostle import AgreedStatementImportance, ASIOverview, ModeratorASIOverview
 
 # Create your views here.
 
@@ -504,7 +504,6 @@ def admin_votes(request, project_id):
 @login_required
 def admin_jostle(request, project_id):
     proj = get_project(request, project_id)
-   
     #change status of step
     if request.method == 'POST':
         step_id = request.POST['step']
@@ -525,6 +524,11 @@ def admin_jostle(request, project_id):
         step = Workflow.getStep(proj, int(step_id), request)
     
         return render(request, 'cyka/admin_jostle_step.html', {'project' : proj, 'step': step })
+    
+    if function == '70':
+        m = ModeratorASIOverview(request, project_id)
+
+        return m.process()
     
     #initalization
     jitsi = Jitsi(proj.uuid, "Plenum", request.user.get_username)
@@ -708,6 +712,7 @@ def get_member_by_uuid(uuid, proj_id = None):
         raise Http404("No such member")
 
     return member
+
 """
 returns project to an id and checks, if user has authorization
 

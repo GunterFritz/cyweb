@@ -39,6 +39,29 @@ def get_member_by_uuid(uuid, proj_id = None):
 
     return member
 
+"""
+returns project to an id and checks, if user has authorization
+
+params
+------
+request: http request
+pid: privat key of project
+
+return
+------
+Models.Project
+"""
+def get_project(request, pid, auth = True):
+    try:
+        project = Project.objects.get(pk=pid)
+    except Project.DoesNotExist:
+        raise Http404("No workshop")
+    
+    if (auth and project.admin != request.user):
+        raise Http404("No workshop")
+    
+    return project
+
 
 #obsolete?
 """

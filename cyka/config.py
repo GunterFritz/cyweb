@@ -1,4 +1,4 @@
-jitsi = 'meet.cyiko.org'
+jitsi = 'meet.cyiko.ch'
 etherpad = "http://localhost:9001/p"
 
 class Jitsi:

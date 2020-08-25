@@ -23,10 +23,14 @@
           $('#_appendHere').html(response);
       });
     }
+  $(document).ready(function(){
+    $('.tooltipped').tooltip({enterDelay: 1000});
+  });
 </script>
 {% endblock %}
 
-<div class="card">
+<div class="col actionarea">
+    <div class="card">
     <div class="card-content">
         <span class="card-title grey-text text-darken-2">Was ist zu tun</span>
  	<p>{{step.todo}}</p>
@@ -37,9 +41,22 @@
             <a onmouseover="this.style.cursor='pointer'" onclick="submit('B')" class="collection-item {% if step.status == 'B' %}active{% endif %}">Beendet<i class="material-icons left">{% if step.status == 'B' %}radio_button_checked{% else %}radio_button_unchecked{% endif %}</i></a>
         </div>
     </div>
-    <div class="card-action">
-        <div class="right-align">
-            <button onclick="aurl('{% url 'cyka:admin_jostle' project.id %}?function=agenda')" class="btn modal-action modal-close btn-primary"><i class="left material-icons">keyboard_arrow_left</i>Zurück</button>
-        </div>
+</div>
+</div>
+<div class="col right navarea">
+    <div class="row">
+        <a class="btn-floating btn-large blue right" onclick="get_agenda()"><i class="right material-icons tooltipped" data-tooltip="Agenda">group_work</i></a>
+    </div>
+    <div class="row">
+        <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
+    </div>
+    <div class="row">
+	    <a class="btn-floating btn-large waves-effect waves-light right blue disabled" onclick="aurl('{% url 'cyka:admin_jostle' project.id %}?function=step&stepid={{step.step}}')"><i class="left material-icons secondary-content">schedule</i></a>
+    </div>
+    <div class="row">
+	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="aurl('{% url 'cyka:admin_jostle' project.id %}?function={{step.step}}')"><i class="left material-icons secondary-content">content_copy</i></a>
+    </div>
+    <div class="row">
+        <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="aurl('{% url 'cyka:admin_jostle' project.id %}?function={{step.step}}&agreed=true')"><i class="left material-icons secondary-content">star_border</i></a>
     </div>
 </div>

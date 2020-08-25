@@ -7,6 +7,18 @@ from . import helpers
 from .workflow import Workflow
 from django.db import transaction
 
+"""
+File to render the problem jostle
+Used html member:
+    cyka/personal_join_table.html
+    cyka/personal_table.html
+    cyka/table_editor.html
+    cyka/edit_table.html
+    cyka/add_table.html
+    cyka/table_added.html
+    cyka/supporter.html
+"""
+
 #wrapper
 class HTMLAsi:
     def __init__(self, table, num):
@@ -16,6 +28,24 @@ class HTMLAsi:
         self.max = num
         if self.supporter < num:
             self.progress = int(self.supporter*100/num)
+
+    @staticmethod
+    def getProjAsi(proj, agreed):
+        tables = proj.table_set.all()
+        n = Structure.factory(proj.ptype).getMinAgreedPersons()
+        htables = []
+        for t in tables:
+            if agreed == "true":
+                h = HTMLAsi(t,n)
+                if h.progress == 100:
+                    htables.append(h)
+            else:
+                htables.append(HTMLAsi(t,n))
+        
+        return htables
+        
+
+#Member pages
 
 """
 class to render the Topic creation step
@@ -162,6 +192,8 @@ class ASIOverview(MemberView):
     def get(self):
         table_id = self.request.GET.get('table', '')
         page = int(self.request.GET.get('page', 1))
+        #show only agreed
+        agreed = self.request.GET.get('agreed', 'false')
         
         #render new page
         if table_id == 'new':
@@ -181,23 +213,62 @@ class ASIOverview(MemberView):
     
         #render tables overview
         step = Workflow.getStep(self.member.proj, 70, self.request)
-        tables = self.member.proj.table_set.all()
+        
+        htables = HTMLAsi.getProjAsi(self.member.proj, agreed)
         
         #ceil (instead of math.ceil)
-        pages = int(len(tables)/6) + 1
-        if len(tables) % 6 > 0:
+        pages = int(len(htables)/6) + 1
+        if len(htables) % 6 > 0:
             pages = pages + 1
-        
-        n = Structure.factory(self.member.proj.ptype).getMinAgreedPersons()
-        htables = []
-        for t in tables:
-            htables.append(HTMLAsi(t,n))
         
         return render(self.request, 'cyka/personal_table.html', {'project' : self.member.proj, 
             'member': self.member, 
             'tables': htables,
             'tables': htables[(page-1)*6:page*6], 
+            'agreed': agreed,
             'pages': range(1, pages), 
             'page':page,
             'step': step})
 
+#moderator pages
+class ModeratorView:
+    def __init__(self, request, pid):
+        #TODO refactor: uuid as url param
+        self.proj = helpers.get_project(request, pid)
+        self.request = request
+
+    def process(self):
+        if self.request.method == 'GET':
+            return self.get()
+    
+        if self.request.method == 'POST':
+            return self.post()
+
+        return None
+
+class ModeratorASIOverview(MemberView):
+    def __init__(self, request, pid):
+        ModeratorView.__init__(self,request, pid)
+
+    def get(self):
+        #show only agreed
+        agreed = self.request.GET.get('agreed', 'false')
+        page = int(self.request.GET.get('page', 1))
+        
+        #render tables overview
+        step = Workflow.getStep(self.proj, 70, self.request)
+        
+        htables = HTMLAsi.getProjAsi(self.proj, agreed)
+        
+        #calculate paging ceil (instead of math.ceil)
+        pages = int(len(htables)/6) + 1
+        if len(htables) % 6 > 0:
+            pages = pages + 1
+        
+        return render(self.request, 'cyka/moderator_asi_overview.html', {'project' : self.proj, 
+            'tables': htables,
+            'tables': htables[(page-1)*6:page*6], 
+            'agreed': agreed,
+            'pages': range(1, pages), 
+            'page':page,
+            'step': step})
