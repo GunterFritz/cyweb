@@ -246,7 +246,7 @@ class ModeratorView:
 
         return None
 
-class ModeratorASIOverview(MemberView):
+class ModeratorASIOverview(ModeratorView):
     def __init__(self, request, pid):
         ModeratorView.__init__(self,request, pid)
 
@@ -265,10 +265,30 @@ class ModeratorASIOverview(MemberView):
         if len(htables) % 6 > 0:
             pages = pages + 1
         
-        return render(self.request, 'cyka/moderator_asi_overview.html', {'project' : self.proj, 
+        return render(self.request, 'problemjostle/moderator_asi_overview.html', {'project' : self.proj, 
             'tables': htables,
             'tables': htables[(page-1)*6:page*6], 
             'agreed': agreed,
             'pages': range(1, pages), 
             'page':page,
             'step': step})
+
+class ModeratorScheduler(ModeratorView):
+    def __init__(self, request, pid):
+        ModeratorView.__init__(self,request, pid)
+        self.step = Workflow.getStep(self.proj, 70, request)
+    
+    def post(self):
+        return render(self.request, 'problemjostle/moderator_scheduler.html', {'project' : self.proj, 'step': self.step })
+    
+    def get(self):
+        function = self.request.GET.get('function', '')
+    
+        if function == 'asi':
+            #ASI page requested
+            m = ModeratorASIOverview(self.request, self.proj.id)
+            return m.process()
+        
+        #scheduling page requested
+        return render(self.request, 'problemjostle/moderator_scheduler.html', {'project' : self.proj, 'step': self.step })
+    

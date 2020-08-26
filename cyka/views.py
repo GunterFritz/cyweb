@@ -13,7 +13,7 @@ from . import helpers
 from .helpers import Agenda, HtmlCard
 from .workflow import Workflow
 from .config import Jitsi, Pad
-from .problemjostle import AgreedStatementImportance, ASIOverview, ModeratorASIOverview
+from .problemjostle import AgreedStatementImportance, ASIOverview, ModeratorASIOverview, ModeratorScheduler
 
 # Create your views here.
 
@@ -502,14 +502,20 @@ def admin_votes(request, project_id):
     return render(request, 'cyka/admin_jostle.html', {'project' : proj, 'step': step, 'wf_form': step.form })
 
 @login_required
+def moderator_problemjostle(request, project_id):
+    m = ModeratorScheduler(request, project_id)
+
+    return m.process()
+
+@login_required
 def admin_jostle(request, project_id):
     proj = get_project(request, project_id)
     #change status of step
-    if request.method == 'POST':
-        step_id = request.POST['step']
-        step = Workflow.getStep(proj, int(step_id), request)
+    #if request.method == 'POST':
+    #    step_id = request.POST['step']
+    #    step = Workflow.getStep(proj, int(step_id), request)
     
-        return render(request, 'cyka/admin_jostle_step.html', {'project' : proj, 'step': step, 'wf_form': step.form })
+    #    return render(request, 'cyka/admin_jostle_step.html', {'project' : proj, 'step': step })
     
     
     function = request.GET.get('function', '')
@@ -519,16 +525,11 @@ def admin_jostle(request, project_id):
         return render(request, 'cyka/admin_jostle_agenda.html', {'project' : proj, 'section': jostle_section })
     
     #step details requested
-    if function == 'step':
-        step_id = request.GET.get('stepid', '')
-        step = Workflow.getStep(proj, int(step_id), request)
+    #if function == 'step':
+    #    step_id = request.GET.get('stepid', '')
+    #    step = Workflow.getStep(proj, int(step_id), request)
     
-        return render(request, 'cyka/admin_jostle_step.html', {'project' : proj, 'step': step })
-    
-    if function == '70':
-        m = ModeratorASIOverview(request, project_id)
-
-        return m.process()
+    #    return render(request, 'cyka/admin_jostle_step.html', {'project' : proj, 'step': step })
     
     #initalization
     jitsi = Jitsi(proj.uuid, "Plenum", request.user.get_username)
