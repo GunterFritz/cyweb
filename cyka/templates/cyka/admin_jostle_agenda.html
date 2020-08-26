@@ -3,7 +3,7 @@
 	<span class="card-title grey-text text-darken-2">{{section.name}}</span>
 	    <div class="collection">
             {% for step in section.steps %}
-	    <a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:admin_jostle' project.id %}?function=step&stepid={{step.step}}');" class="collection-item avatar">
+	    <a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url step.link project.id %}');" class="collection-item avatar">
 		{% if step.status == 'B' %}
 	        <i class="material-icons circle green left">{{step.icon}}</i>
 		{% elif step.status == 'S' %}
