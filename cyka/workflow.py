@@ -79,7 +79,7 @@ workflow = [
             'step' : 70,
             'short': 'Themenvorschläge',
             'desc' : 'Die Teilnehmer erarbeiten selbständig Themenvorschläge', 
-            'link' : 'cyka:personal_workflow',
+            'link' : 'cyka:moderator_problemjostle',
             'memberlink' : 'cyka:personal_table',
             'icon' : 'explore',
             'todo' : 'Die Teilnehmer erarbeiten selbständig Themenvorschläge', 
