@@ -106,13 +106,13 @@ class AgreedStatementImportance(MemberView):
         if func == 'pad':
             return self.viewPad()
         
-        #edit name of table
+        #sign/ unsign an ASI
         if func == 'sign':
             return self.sign()
         
         #main page
         jitsi = Jitsi(self.table.uuid, self.table.card.heading, self.member.name)
-        return render(self.request, 'cyka/personal_join_table.html', {'project' : self.member.proj, 'member': self.member, 'table': self.table, 'jitsi': jitsi })
+        return render(self.request, 'problemjostle/member_join_asi.html', {'project' : self.member.proj, 'member': self.member, 'table': self.table, 'jitsi': jitsi })
 
     """
     Pad function, renders etherpad
@@ -120,10 +120,10 @@ class AgreedStatementImportance(MemberView):
     def viewPad(self):
         pad = Pad(self.table.uuid, self.member.name)
         asis = self.table.sisign_set.all()
-        return render(self.request, 'cyka/table_editor.html', {'table': self.table, "etherpad": pad, "sign": asis, 'member' : self.member })
+        return render(self.request, 'problemjostle/member_pad.html', {'table': self.table, "etherpad": pad, "sign": asis, 'member' : self.member })
 
     """
-    renders edit table name
+    function to sign/ support or unsign an asi
     """
     def sign(self):
         asis = self.table.sisign_set.all().filter(member=self.member)
@@ -141,28 +141,7 @@ class AgreedStatementImportance(MemberView):
     
     def supporter(self):
         asis = self.table.sisign_set.all()
-        return render(self.request, 'cyka/supporter.html', {"sign": asis})
-
-
-    def post(self):
-        table_id = self.request.POST.get('tableid', '')
-        if table_id != '':
-            self.table = Table.objects.get(pk=table_id)
-        if self.table == None:
-            raise("No such table")
-        
-        #new and save actions
-        form = TableForm(self.request.POST)
-        if form.is_valid():
-            table = form.save(self.table)
-            table.proj = self.member.proj
-            table.save()
-        else:
-            #input fields not valid
-            return render(self.request, 'cyka/edit_table.html', {'project' : self.member.proj, 'member': self.member, 'form': form, 'table': table})
-        #saved, back to pad
-        pad = Pad(self.table.uuid, self.member.name)
-        return render(self.request, 'cyka/table_editor.html', {'table': self.table, "etherpad": pad})
+        return render(self.request, 'problemjostle/supporter.html', {"sign": asis})
 
 
 """
@@ -176,26 +155,13 @@ class ASIOverview(MemberView):
     def __init__(self, request, uuid):
         MemberView.__init__(self,request, uuid)
 
-    #table created 
-    def post(self):
-        form = TableForm(self.request.POST)
-        if form.is_valid():
-            table = form.save()
-            table.proj = self.member.proj
-            table.save()
-        else:
-            #input fields not valid
-            return render(self.request, 'cyka/add_table.html', {'project' : self.member.proj, 'member': self.member, 'form': form})
-        return render(self.request, 'cyka/table_added.html', {'project' : self.member.proj, 'member': self.member, 'table': table})
-    
-    
     def get(self):
         table_id = self.request.GET.get('table', '')
         page = int(self.request.GET.get('page', 1))
         #show only agreed
         agreed = self.request.GET.get('agreed', 'false')
         
-        #render new page
+        #render new page, select an card to create an asi
         if table_id == 'new':
             cards = self.member.proj.card_set.all()
             page = int(self.request.GET.get('page', 1))
@@ -204,7 +170,7 @@ class ASIOverview(MemberView):
             if len(cards) % 6 > 0:
                 pages = pages + 1
             #form = TableForm()
-            return render(self.request, 'cyka/add_table.html', {'project' : self.member.proj, 
+            return render(self.request, 'problemjostle/member_select_si.html', {'project' : self.member.proj, 
                 'member': self.member, 
                 #'form': form, 
                 'cards': cards[(page-1)*6:page*6], 
@@ -221,7 +187,7 @@ class ASIOverview(MemberView):
         if len(htables) % 6 > 0:
             pages = pages + 1
         
-        return render(self.request, 'cyka/personal_table.html', {'project' : self.member.proj, 
+        return render(self.request, 'problemjostle/member_asi_overview.html', {'project' : self.member.proj, 
             'member': self.member, 
             'tables': htables,
             'tables': htables[(page-1)*6:page*6], 
