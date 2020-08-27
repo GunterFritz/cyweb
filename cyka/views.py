@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect,HttpResponse,HttpResponseForbidden,
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-from .forms import CardForm, ProjectForm, TopicForm, MemberForm, MemberOkForm, WorkflowElementForm, TableForm
+from .forms import CardForm, ProjectForm, TopicForm, MemberForm, MemberOkForm, WorkflowElementForm
 from .models import Project, Topic, Member, Assignment, Card, Table
 from random import randrange 
 from . import helpers
@@ -586,40 +586,6 @@ def workflow(request, project_id):
     wf = Workflow.get(proj)
     
     return render(request, 'cyka/workflow.html', {'project' : proj, 'workflow': wf})
-
-"""
-------------common requests-------------
-"""
-"""
-edit or create an table
-"""
-def table(request, project_id):
-    table = None
-    try:
-        project = Project.objects.get(pk=project_id)
-        table_id = request.GET.get('table', '')
-        #Todo check member
-        member = request.GET.get('table', '')
-        if table == '':
-            raise Http404("No table")
-        if table_id != 'new':
-            table = Topic.objects.get(pk=table_id)
-    except Project.DoesNotExist:
-        raise Http404("Project or table does not exist")
-
-
-    
-    if request.method == 'POST':
-        form = TableForm(request.POST)
-        if form.is_valid():
-            table = form.save(commit=False)
-            table.proj = project
-            table.save()
-        return redirect('cyka:project_team', project_id)
-    else:
-        table = MemberForm()
-    return render(request, 'cyka/member_add.html', {'project' : project, 'form' : form })
-
 
 """
 join room as common function

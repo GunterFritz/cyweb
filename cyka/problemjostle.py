@@ -1,6 +1,5 @@
 from lib.structure import Structure2 as Structure
 from django.shortcuts import render, redirect
-from .forms import TableForm
 from .models import Member, Table, Card, SIsign
 from .config import Jitsi, Pad
 from . import helpers
@@ -169,10 +168,8 @@ class ASIOverview(MemberView):
             pages = int(len(cards)/6) + 1
             if len(cards) % 6 > 0:
                 pages = pages + 1
-            #form = TableForm()
             return render(self.request, 'problemjostle/member_select_si.html', {'project' : self.member.proj, 
                 'member': self.member, 
-                #'form': form, 
                 'cards': cards[(page-1)*6:page*6], 
                 'pages': range(1, pages), 
                 'page':page})
