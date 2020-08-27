@@ -25,19 +25,20 @@
 </script>
 {% endblock %}
 
+<div>
 <div class="col actionarea">
     <div class="card">
-    <div class="card-content">
-        <span class="card-title grey-text text-darken-2">Was ist zu tun</span>
- 	<p>{{step.todo}}</p>
-        {% csrf_token %}
-	<div class="collection">
-	    <a onmouseover="this.style.cursor='pointer'" onclick="submit('O')" class="collection-item {% if step.status == 'O' %}active{% endif %}">Offen<i class="material-icons left">{% if step.status == 'O' %}radio_button_checked{% else %}radio_button_unchecked{% endif %}</i></a>
-	    <a onmouseover="this.style.cursor='pointer'" onclick="submit('S')" class="collection-item {% if step.status == 'S' %}active{% endif %}">Gestartet<i class="material-icons left">{% if step.status == 'S' %}radio_button_checked{% else %}radio_button_unchecked{% endif %}</i></a>
-            <a onmouseover="this.style.cursor='pointer'" onclick="submit('B')" class="collection-item {% if step.status == 'B' %}active{% endif %}">Beendet<i class="material-icons left">{% if step.status == 'B' %}radio_button_checked{% else %}radio_button_unchecked{% endif %}</i></a>
+        <div class="card-content">
+            <span class="card-title grey-text text-darken-2">Was ist zu tun</span>
+ 	    <p>{{step.todo}}</p>
+            {% csrf_token %}
+	    <div class="collection">
+	        <a onmouseover="this.style.cursor='pointer'" onclick="submit('O')" class="collection-item {% if step.status == 'O' %}active{% endif %}">Offen<i class="material-icons left">{% if step.status == 'O' %}radio_button_checked{% else %}radio_button_unchecked{% endif %}</i></a>
+	        <a onmouseover="this.style.cursor='pointer'" onclick="submit('S')" class="collection-item {% if step.status == 'S' %}active{% endif %}">Gestartet<i class="material-icons left">{% if step.status == 'S' %}radio_button_checked{% else %}radio_button_unchecked{% endif %}</i></a>
+                <a onmouseover="this.style.cursor='pointer'" onclick="submit('B')" class="collection-item {% if step.status == 'B' %}active{% endif %}">Beendet<i class="material-icons left">{% if step.status == 'B' %}radio_button_checked{% else %}radio_button_unchecked{% endif %}</i></a>
+            </div>
         </div>
     </div>
-</div>
 </div>
 <div class="col right navarea">
     <div class="row">
@@ -55,4 +56,5 @@
     <div class="row">
         <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="aurl('{% url 'cyka:moderator_problemjostle' project.id %}?function=asi&agreed=true')"><i class="left material-icons secondary-content">star_border</i></a>
     </div>
+</div>
 </div>

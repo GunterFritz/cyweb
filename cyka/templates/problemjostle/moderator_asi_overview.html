@@ -18,7 +18,7 @@
     } else {
       //set url to page left
       var left = (page.valueOf() - 1).valueOf();
-      var url = "{% url 'cyka:admin_jostle' project.id %}?function={{step.step}}&page=" + left.toString();
+      var url = "{% url 'cyka:moderator_problemjostle' project.id %}?function=asi&page=" + left.toString();
       document.getElementById("page_left_link").setAttribute('onclick', "aurl('" + url + "')");
     }
     if(page == {{ pages|length }}){
@@ -27,7 +27,7 @@
     } else {
       //set url to page right
       var right = (page.valueOf() + 1).valueOf();
-      var url = "{% url 'cyka:admin_jostle' project.id %}?function={{step.step}}&page=" + right.toString();
+      var url = "{% url 'cyka:moderator_problemjostle' project.id %}?function=asi&page=" + right.toString();
       document.getElementById("page_right_link").setAttribute('onclick', "aurl('" + url + "')");
       //document.getElementById("page_right_link").setAttribute('href', url);
     }
@@ -40,13 +40,13 @@
       <ul class="pagination center">
         <li id="page_left"><a id="page_left_link"><i class="material-icons waves-effect">chevron_left</i></a></li>
           {% for p in pages %}	
-	    <li id="page_{{ p }}"><a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:admin_jostle' project.id %}?function={{step.step}}&page={{ p }}')">{{ p }}</a></li>
+	    <li id="page_{{ p }}"><a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:moderator_problemjostle' project.id %}?function=asi&page={{ p }}')">{{ p }}</a></li>
 	  {% endfor %}
         <li id="page_right" class="waves-effect"><a id="page_right_link"><i class="material-icons">chevron_right</i></a></li>
       </ul>
       <div class="row valign">
         {% for t in tables %}
-	    <a href="{% url 'cyka:admin_jostle' project.id %}?table={{t.table.id}}">
+	    <a href="{% url 'cyka:moderator_problemjostle' project.id %}?table={{t.table.id}}&function=join">
 		<div class="col card mplan tooltipped" data-tooltip="Beitreten">
                     <div class="card-content black-text">
 		      <div class="progress">

@@ -6,7 +6,7 @@
           margin-top: 40px;
           margin-left: 50px;
       }
-  }
+      }
       .groups {
 	  width:25%
       }
@@ -16,12 +16,25 @@
       .meet {
 	  width:75%
       }
+      .fullh {
+        height: 100%
+      }
+      .derow .decol {
+        border: 1px dotted #0313fc
+      }
 </style>
 {% endblock %}
 {% block javascript %}
 <script src="https://meet.cyiko.org/external_api.js"></script>
 <script>
+  var interval = null;
+  function refreshSupporter(){
+    interval = setInterval(function() {
+	aurl('{% url 'cyka:moderator_problemjostle' project.id %}?table={{table.id}}&function=supporter', '#_supporter')
+    }, 3000);
+  }
   $(document).ready(function(){
+    small();
     var container = document.querySelector('#jitsi-container');
     var domain = "{{jitsi.domain}}";
     var options = {
@@ -32,13 +45,10 @@
     var api = new JitsiMeetExternalAPI(domain, options);
     api.executeCommand ('displayName', '{{jitsi.name}}'); 
     api.executeCommand ('subject', '{{jitsi.subject}}');
+    aurl('{% url 'cyka:moderator_problemjostle' project.id %}?table={{table.id}}&function=pad', '#_appendHere');
     $('.tooltipped').tooltip({enterDelay: 1000});
-    {% if start == "asi" %}
-    aurl('{% url 'cyka:moderator_problemjostle' project.id %}?function=asi');
-    {% else %}
-    aurl('{% url 'cyka:admin_jostle' project.id %}?function=agenda');
-    {% endif %}
-  });
+    refreshSupporter();
+    });
     //resize
     var size = 0;
     function small() {
@@ -57,45 +67,19 @@
 	    size = 0;
 	}
     }
-    function aurl(myurl) {
+    function aurl(myurl, where) {
         $.ajax({
             type: "GET",
 		url: myurl,
         })
         .done(function(response) {
-            $('#_appendHere').html(response);
+            $(where).html(response);
         }); 
     }
-    function get_agenda(){
-	$('.tooltipped').tooltip('close');
-        aurl('{% url 'cyka:admin_jostle' project.id %}?function={{step.step}}')
-    }
-    function csrfSafeMethod(method) {
-        // these HTTP methods do not require CSRF protection
-        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    }
-    function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-    }
-    $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-            }
-        }
-    });
+    function leave(url){
+        clearInterval(interval);
+        window.location.href = url;
+    }   
 </script>
 {% endblock %}
 {% block content %}
@@ -104,8 +88,16 @@
         <div id="jitsi-container">
         </div>
     </div>
-    <div id="stepcontent" class="col groups">
-        <div id="_appendHere">
+    <div id="stepcontent" class="col groups fullh">
+        <div class="col navarea right">
+            <div class="row">
+	        <a class="btn-floating btn-large red right" onclick="leave('{% url 'cyka:admin_jostle' project.id %}?start=asi')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">exit_to_app</i></a>
+            </div>
+            <div class="row">
+                <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
+            </div>
+        </div>
+        <div id="_appendHere" class="col actionarea right">
         </div>
     </div>
 </div>

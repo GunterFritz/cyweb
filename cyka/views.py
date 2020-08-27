@@ -531,10 +531,12 @@ def admin_jostle(request, project_id):
     
     #    return render(request, 'cyka/admin_jostle_step.html', {'project' : proj, 'step': step })
     
+    #load different start page
+    start = request.GET.get('start', '')
     #initalization
     jitsi = Jitsi(proj.uuid, "Plenum", request.user.get_username)
     
-    return render(request, 'cyka/admin_jostle.html', {'project' : proj, 'jitsi': jitsi })
+    return render(request, 'cyka/admin_jostle.html', {'project' : proj, 'jitsi': jitsi, 'start': start })
 
 @login_required
 def admin_brainwriting(request, project_id):

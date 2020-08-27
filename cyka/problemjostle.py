@@ -27,7 +27,7 @@ class HTMLAsi:
         self.max = num
         if self.supporter < num:
             self.progress = int(self.supporter*100/num)
-
+    
     @staticmethod
     def getProjAsi(proj, agreed):
         tables = proj.table_set.all()
@@ -119,7 +119,7 @@ class AgreedStatementImportance(MemberView):
     def viewPad(self):
         pad = Pad(self.table.uuid, self.member.name)
         asis = self.table.sisign_set.all()
-        return render(self.request, 'problemjostle/member_pad.html', {'table': self.table, "etherpad": pad, "sign": asis, 'member' : self.member })
+        return render(self.request, 'problemjostle/pad.html', {'table': self.table, "etherpad": pad, "sign": asis, 'member' : self.member })
 
     """
     function to sign/ support or unsign an asi
@@ -252,6 +252,43 @@ class ModeratorScheduler(ModeratorView):
             m = ModeratorASIOverview(self.request, self.proj.id)
             return m.process()
         
+        #supporter
+        if function == 'supporter':
+            m = ModeratorJoinASI(self.request, self.proj)
+            return m.supporter()
+        
+        #editor
+        if function == 'pad':
+            m = ModeratorJoinASI(self.request, self.proj)
+            return m.viewPad()
+        
+        #join
+        if function == 'join':
+            m = ModeratorJoinASI(self.request, self.proj)
+            return m.joinAsi()
+        
         #scheduling page requested
         return render(self.request, 'problemjostle/moderator_scheduler.html', {'project' : self.proj, 'step': self.step })
+
+class ModeratorJoinASI:
+    def __init__(self, request, proj):
+        self.request = request
+        table_id = self.request.GET.get('table', '')
+        self.table = Table.objects.get(pk=table_id)
+        self.name = self.request.user.get_username
+        self.proj = proj
+
+    def supporter(self):
+        asis = self.table.sisign_set.all()
+        return render(self.request, 'problemjostle/supporter.html', {"sign": asis})
+
+    def viewPad(self):
+        pad = Pad(self.table.uuid, self.name)
+        pad.setReadOnly()
+        asis = self.table.sisign_set.all()
+        return render(self.request, 'problemjostle/pad.html', {'table': self.table, "etherpad": pad, "sign": asis, 'project' : self.proj })
     
+    def joinAsi(self):
+        #main page
+        jitsi = Jitsi(self.table.uuid, self.table.card.heading, self.name)
+        return render(self.request, 'problemjostle/moderator_join_asi.html', {'project' : self.proj, 'table': self.table, 'jitsi': jitsi })

@@ -14,3 +14,6 @@ class Pad:
         self.domain = etherpad
         self.name = "embed_readwrite" #for readonly mode set to embed_readonly
         self.user = user
+
+    def setReadOnly(self):
+        self.name = "embed_readonly"

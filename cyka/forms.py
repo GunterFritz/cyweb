@@ -32,17 +32,6 @@ class TopicForm(ModelForm):
         model = Topic
         fields = ('name', 'desc',)
 
-class TableForm(forms.Form):
-    name = forms.CharField(label="Themenvorschlag")
-    tableid = forms.CharField(widget=forms.HiddenInput(), required=False)
-
-    def save(self, table = None):
-        if table == None:
-            table = Table()
-        table.name = self.cleaned_data['name']
-
-        return table
-
 class MemberForm(forms.Form):
     name = forms.CharField()
     email = forms.EmailField()
