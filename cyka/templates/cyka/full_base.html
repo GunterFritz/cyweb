@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://unpkg.com/material-components-web@v4.0.0/dist/material-components-web.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="{% static 'css/icon-colors.css' %}">
+    <script src="https://unpkg.com/material-components-web@v4.0.0/dist/material-components-web.min.js"></script>
+
+    <title>{% block title %}Cyiko Workshops{% endblock %}</title>
+
+    {% block head %}
+    {% include 'material/includes/material_css.html' %}
+      {% block js %}
+      <script src="{% static 'material/js/jquery.js' %}"></script>
+      {% include 'material/includes/material_js.html' %}
+      <script src="{% static 'material/js/turbolinks.js' %}"></script>
+      {% block extrajs %}{% endblock %}
+      {% endblock %}
+      <style type="text/css">
+	.vcenter {
+          vertical-align: middle;
+        }
+	.brand-logo {
+          margin-left: 5px;
+        }
+	.content {
+          height: 100%;
+          width: 100%;
+        }
+      </style>
+
+    <style type="text/css">
+      html, body {
+          background: #FFF;
+      }
+    </style>
+    {% block extrahead %}{% endblock %}
+    {% endblock %}
+  </head>
+  <body class="valign-wrapper2">
+      <header>
+            {% block header %}
+            {% block topbar %}
+	    <div class="navbar-fixed">
+              <nav class="topbar">
+                <div class="nav-wrapper">
+                    <dmc-sidenav-trigger><a href="#" data-target="slide-out" class="sidenav-trigger">Menu<i class="material-icons">menu</i></a></dmc-sidenav-trigger>
+                    <div class="brand-logo">
+			<a href="#" class="brand-logo">Cyiko</a>
+                        {% block page_title %}{% endblock %}
+                    </div>
+                    <div>
+                    {% block topbar_links %}
+                        <ul id="nav-mobile" class="right hide-on-med-and-down">
+                    <li>
+			    <a href="{% url 'cyka:workflow' project.id %}" data-turbolinks="false"><i class="material-icons right">group_work</i>{{project.name}}</a>
+                    </li>
+			    <li><a href="{% url 'cyka:project_list' %}" data-turbolinks="false">Workshops</a></li>
+			    <li><a href="{% url 'cyka:project_new' %}" data-turbolinks="false">Neuer Workshop</a></li>
+                            {% if user.is_authenticated %}
+                            <li><a href="{% url 'cyka:logout'%}" data-turbolinks="false"><i class="material-icons right">exit_to_app</i>Logout</a></li>
+                            {% else %}
+                            <li><a href="{% url 'cyka:login'%}" data-turbolinks="false"><i class="material-icons right">lock_open</i>Login</a></li>
+                            {% endif %}
+                        </ul>
+                    {% endblock %}
+                    </div>
+                </div>
+            </nav>
+            </div>
+            {% endblock topbar %}
+            {% endblock header %}
+      </header>
+
+      <main style="height: 100%">
+      {% block main %}
+      <div class="row" style="height: 100%">
+        <div class="" style="height: 100%">
+            {% block main_content %}
+            <div class="content">
+              {% block content %}{% endblock %}
+            </div>
+            {% endblock main_content %}
+         </div>
+      </div>
+      {% endblock main %}
+      </main>
+      {% block javascript %}{% endblock %}
+  </body>
+</html>
