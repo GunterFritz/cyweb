@@ -50,24 +50,9 @@ class HTMLAsi:
 class to render the Topic creation step
 
 """
-class MemberView:
+class AgreedStatementImportance(helpers.MemberRequest):
     def __init__(self, request, uuid):
-        #TODO refactor: uuid as url param
-        self.member = helpers.get_member_by_uuid(uuid)
-        self.request = request
-
-    def process(self):
-        if self.request.method == 'GET':
-            return self.get()
-    
-        if self.request.method == 'POST':
-            return self.post()
-
-        return None
-
-class AgreedStatementImportance(MemberView):
-    def __init__(self, request, uuid):
-        MemberView.__init__(self,request, uuid)
+        helpers.MemberRequest.__init__(self,request, uuid)
         self.table = None
     
     def get(self):
@@ -150,9 +135,9 @@ GET: render page with all tables
 GET: + table='new' -> render create page
 POST: add table
 """
-class ASIOverview(MemberView):
+class ASIOverview(helpers.MemberRequest):
     def __init__(self, request, uuid):
-        MemberView.__init__(self,request, uuid)
+        helpers.MemberRequest.__init__(self,request, uuid)
 
     def get(self):
         table_id = self.request.GET.get('table', '')
@@ -194,24 +179,9 @@ class ASIOverview(MemberView):
             'step': step})
 
 #moderator pages
-class ModeratorView:
+class ModeratorASIOverview(helpers.ModeratorRequest):
     def __init__(self, request, pid):
-        #TODO refactor: uuid as url param
-        self.proj = helpers.get_project(request, pid)
-        self.request = request
-
-    def process(self):
-        if self.request.method == 'GET':
-            return self.get()
-    
-        if self.request.method == 'POST':
-            return self.post()
-
-        return None
-
-class ModeratorASIOverview(ModeratorView):
-    def __init__(self, request, pid):
-        ModeratorView.__init__(self,request, pid)
+        helpers.ModeratorRequest.__init__(self,request, pid)
 
     def get(self):
         #show only agreed
@@ -236,9 +206,9 @@ class ModeratorASIOverview(ModeratorView):
             'page':page,
             'step': step})
 
-class ModeratorScheduler(ModeratorView):
+class ModeratorScheduler(helpers.ModeratorRequest):
     def __init__(self, request, pid):
-        ModeratorView.__init__(self,request, pid)
+        helpers.ModeratorRequest.__init__(self,request, pid)
         self.step = Workflow.getStep(self.proj, 70, request)
     
     def post(self):

@@ -191,3 +191,32 @@ class HtmlCard:
         
         self.votes = len(self.model.cardvotes_set.all())
 
+class MemberRequest:
+    def __init__(self, request, uuid):
+        #TODO refactor: uuid as url param
+        self.member = get_member_by_uuid(uuid)
+        self.request = request
+
+    def process(self):
+        if self.request.method == 'GET':
+            return self.get()
+    
+        if self.request.method == 'POST':
+            return self.post()
+
+        return None
+
+class ModeratorRequest:
+    def __init__(self, request, pid):
+        self.proj = get_project(request, pid)
+        self.request = request
+
+    def process(self):
+        if self.request.method == 'GET':
+            return self.get()
+    
+        if self.request.method == 'POST':
+            return self.post()
+
+        return None
+
