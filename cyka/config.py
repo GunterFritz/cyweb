@@ -1,5 +1,7 @@
 jitsi = 'meet.cyiko.ch'
+jitsi = 'meet.jit.si'
 etherpad = "http://localhost:9001/p"
+jitsi_api = "https://meet.jit.si/external_api.js"
 
 class Jitsi:
     def __init__(self, room, subject, name):
@@ -7,6 +9,7 @@ class Jitsi:
         self.room = room
         self.subject = subject
         self.name = name
+        self.api = jitsi_api
 
 class Pad:
     def __init__(self, pad, user):

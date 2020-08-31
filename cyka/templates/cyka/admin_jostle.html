@@ -19,7 +19,7 @@
 </style>
 {% endblock %}
 {% block javascript %}
-<script src="https://meet.cyiko.org/external_api.js"></script>
+<script src='{{jitsi.api}}'></script>
 <script>
   $(document).ready(function(){
     var container = document.querySelector('#jitsi-container');
