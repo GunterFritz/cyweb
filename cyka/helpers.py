@@ -220,3 +220,9 @@ class ModeratorRequest:
 
         return None
 
+def get_card(card_id, member):
+    card = Card.objects.get(pk=card_id)
+    if card.member == member:
+        return card
+    else:
+        raise Http404("No such card")

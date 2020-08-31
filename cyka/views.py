@@ -408,47 +408,9 @@ def personal_votes(request, uuid):
     return render(request, 'cyka/personal_votes.html', {'project' : member.proj, 'member': member, 'cards': cards[(page-1)*6:page*6], 'pages': range(1, pages), 'page':page, 'step': step})
 
 def personal_card(request, uuid):
-    member = get_member_by_uuid(uuid)
-    step = Workflow.getStep(member.proj, 40, request)
-        
-    #card added, deleted or changed 
-    if request.method == 'POST':
-        #get action
-        card_id = request.POST.get('cardid', '')
-        delete = request.POST.get('delete', 'false')
-        card = None
-        if card_id != '':
-            card = get_card(card_id, member)
-        #delete action
-        if delete == 'true' and card != None:
-            card.delete()
-        #new and save actions
-        else:
-            form = CardForm(request.POST)
-            if form.is_valid():
-                card = form.save(card)
-                card.proj = member.proj
-                card.member = member
-                card.save()
-            else:
-                #input fields not valid
-                return render(request, 'cyka/add_card.html', {'project' : member.proj, 'member': member, 'form': form})
-        cards = member.card_set.all()
-        #return to overview
-        return render(request, 'cyka/personal_cards.html', {'project' : member.proj, 'member': member, 'cards': cards, 'step': step})
+    brain = brainwriting.MemberBrainwriting(request, uuid)
 
-    card_id = request.GET.get('card', '')
-    if card_id == 'new':
-        form = CardForm()
-        return render(request, 'cyka/add_card.html', {'project' : member.proj, 'member': member, 'form': form})
-    if card_id == '':
-        cards = member.card_set.all()
-
-        return render(request, 'cyka/personal_cards.html', {'project' : member.proj, 'member': member, 'cards': cards, 'step': step})
-    
-    card = get_card(card_id, member)
-    form = CardForm(initial={'heading': card.heading, 'desc' : card.desc, 'cardid': card.id })
-    return render(request, 'cyka/add_card.html', {'project' : member.proj, 'member': member, 'form': form})
+    return brain.process()
 
 #working on asi
 def join_table(request, uuid):
@@ -659,12 +621,6 @@ def get_member(request, mid):
     return member
 
 
-def get_card(card_id, member):
-    card = Card.objects.get(pk=card_id)
-    if card.member == member:
-        return card
-    else:
-        raise Http404("No such card")
 
 """
 returns member to an id 
