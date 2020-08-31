@@ -10,6 +10,7 @@ from .forms import CardForm, ProjectForm, TopicForm, MemberForm, MemberOkForm, W
 from .models import Project, Topic, Member, Assignment, Card, Table
 from random import randrange 
 from . import helpers
+from . import brainwriting
 from .helpers import Agenda, HtmlCard
 from .workflow import Workflow
 from .config import Jitsi, Pad
@@ -539,11 +540,14 @@ def admin_jostle(request, project_id):
     return render(request, 'cyka/admin_jostle.html', {'project' : proj, 'jitsi': jitsi, 'start': start })
 
 @login_required
-def admin_brainwriting(request, project_id):
-    proj = get_project(request, project_id)
-    step = Workflow.getStep(proj, 40, request)
+def moderator_brainwriting(request, project_id):
+    m = brainwriting.ModeratorScheduler(request, project_id)
+
+    return m.process()
+    #proj = get_project(request, project_id)
+    #step = Workflow.getStep(proj, 40, request)
     
-    return render(request, 'cyka/admin_brainwriting.html', {'project' : proj, 'step': step, 'wf_form': step.form })
+    #return render(request, 'cyka/admin_brainwriting.html', {'project' : proj, 'step': step, 'wf_form': step.form })
 
 @login_required
 def jostle_welcome(request, project_id):

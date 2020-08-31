@@ -25,7 +25,7 @@ urlpatterns = [
 	# ex: /cyka/project/5/delete/
 	url(r'^(?P<project_id>[0-9]+)/delete/$', views.project_delete, name="project_delete"),
 	# ex: /cyka/project/5/votes/
-	url(r'^(?P<project_id>[0-9]+)/brainwriting/$', views.admin_brainwriting, name="admin_brainwriting"),
+	url(r'^(?P<project_id>[0-9]+)/brainwriting/$', views.moderator_brainwriting, name="moderator_brainwriting"),
 	# ex: /cyka/project/5/votes/
 	url(r'^(?P<project_id>[0-9]+)/votes/$', views.admin_votes, name="admin_votes"),
 	# ex: /cyka/project/5/details/
