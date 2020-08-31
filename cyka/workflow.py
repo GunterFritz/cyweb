@@ -49,7 +49,7 @@ workflow = [
             'step' : 40,
             'short': 'Brainwriting',
             'desc' : 'Die Teilnehmer schreiben Ihre Gedanken zur Ausgangsfrage auf', 
-            'link' : 'cyka:admin_brainwriting',
+            'link' : 'cyka:moderator_brainwriting',
             'memberlink' : 'cyka:personal_card',
             'icon' : 'create',
             'todo' : 'Lassen Sie den Teilnehmern 5 - 15 Minuten Zeit, um ihre Gedanken zur Ausgangsfrage aufzuschreiben. Die Teilnehmer sehen nur ihre eigenen Karten.', 
