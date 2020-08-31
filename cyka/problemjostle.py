@@ -188,9 +188,6 @@ class ModeratorASIOverview(helpers.ModeratorRequest):
         agreed = self.request.GET.get('agreed', 'false')
         page = int(self.request.GET.get('page', 1))
         
-        #render tables overview
-        step = Workflow.getStep(self.proj, 70, self.request)
-        
         htables = HTMLAsi.getProjAsi(self.proj, agreed)
         
         #calculate paging ceil (instead of math.ceil)
@@ -199,12 +196,11 @@ class ModeratorASIOverview(helpers.ModeratorRequest):
             pages = pages + 1
         
         return render(self.request, 'problemjostle/moderator_asi_overview.html', {'project' : self.proj, 
-            'tables': htables,
             'tables': htables[(page-1)*6:page*6], 
             'agreed': agreed,
             'pages': range(1, pages), 
-            'page':page,
-            'step': step})
+            'page':page
+            })
 
 class ModeratorScheduler(helpers.ModeratorRequest):
     def __init__(self, request, pid):
