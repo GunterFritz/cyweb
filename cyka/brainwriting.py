@@ -4,6 +4,15 @@ from . import helpers
 from .workflow import Workflow
 from .forms import CardForm
 
+def getIndex(l, e):
+    index = 0
+    for a in l:
+        if a == e:
+            return index
+        index = index + 1
+    return None
+
+
 class ModeratorScheduler(helpers.ModeratorRequest):
     def __init__(self, request, pid):
         helpers.ModeratorRequest.__init__(self,request, pid)
@@ -49,8 +58,11 @@ class MemberBrainwriting(helpers.MemberRequest):
         card_id = self.request.POST.get('cardid', '')
         delete = self.request.POST.get('delete', 'false')
         card = None
+        page = "last"
         if card_id != '':
             card = helpers.get_card(card_id, self.member)
+            cards = self.member.card_set.all()
+            page = int(getIndex(cards, card)/6)+1
         #delete action
         if delete == 'true' and card != None:
             card.delete()
@@ -67,6 +79,7 @@ class MemberBrainwriting(helpers.MemberRequest):
                 return render(self.request, 'brainwriting/member_si_edit.html', {'project' : self.member.proj, 'member': self.member, 'form': form})
         cards = self.member.card_set.all()
         #return to overview
+        return self.getOverviewMy(page)
         return render(self.request, 'brainwriting/member_si_overview.html', {'project' : self.member.proj, 'member': self.member, 'cards': cards, 'step': self.step})
 
     def get(self):
@@ -77,12 +90,50 @@ class MemberBrainwriting(helpers.MemberRequest):
             return render(self.request, 'brainwriting/member_si_edit.html', {'project' : self.member.proj, 'member': self.member, 'form': form})
         #render overview
         if card_id == '':
-            cards = self.member.card_set.all()
-    
-            return render(self.request, 'brainwriting/member_si_overview.html', {'project' : self.member.proj, 'member': self.member, 'cards': cards, 'step': self.step})
+            page = int(self.request.GET.get('page', 1))
+            return self.getOverviewMy(page)
         
         #render change card
         card = helpers.get_card(card_id, self.member)
         form = CardForm(initial={'heading': card.heading, 'desc' : card.desc, 'cardid': card.id })
         return render(self.request, 'brainwriting/member_si_edit.html', {'project' : self.member.proj, 'member': self.member, 'form': form})
 
+    def getOverviewAll(self, page):
+    
+        cards = self.member.proj.card_set.all()
+    
+        #calculate paging ceil (instead of math.ceil)
+        pages = int(len(cards)/6) + 1
+        if len(cards) % 6 > 0:
+            pages = pages + 1
+
+        if page == "last":
+            page = pages - 1
+    
+        return render(self.request, 'brainwriting/member_si_overview.html', {
+            'project' : self.member.proj, 
+            'member': self.member, 
+            'cards': cards[(page-1)*6:page*6], 
+            'pages': range(1, pages), 
+            'page':page,
+            'step': self.step
+            })
+    
+    def getOverviewMy(self, page):
+        cards = self.member.card_set.all()
+    
+        #calculate paging ceil (instead of math.ceil)
+        pages = int(len(cards)/6) + 1
+        if len(cards) % 6 > 0:
+            pages = pages + 1
+        if page == "last":
+            page = pages - 1
+    
+        return render(self.request, 'brainwriting/member_si_overview.html', {
+            'project' : self.member.proj, 
+            'member': self.member, 
+            'cards': cards[(page-1)*6:page*6], 
+            'pages': range(1, pages), 
+            'page':page,
+            'step': self.step
+            })
