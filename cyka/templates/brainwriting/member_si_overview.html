@@ -1,53 +1,82 @@
-{% load material_form %}
 {% block extrahead %}
       <style>
-	.mplan {
-	  margin-left: 1%;
-	  margin-right: 1%;
-          width: 48%;
-          height: 180px;
-        }
       </style>
 {% endblock %}
 {% block javascript %}
 <script>
   $(document).ready(function(){
     small();
+    $('.tooltipped').tooltip({enterDelay: 1000});
+  });
+  var page = parseInt({{page}});
+  $(document).ready(function(){
+    small();
+    queryString = window.location.search;
+    document.getElementById("page_" + page).classList.add('class', "active");
+    if(page == 1){
+      //disable page left
+      document.getElementById("page_left").classList.add('class', "disabled");
+    } else {
+      //set url to page left
+      var left = (page.valueOf() - 1).valueOf();
+      var url = "{% url 'cyka:personal_card' member.uuid %}?project={{project.id}}&page=" + left.toString();
+      document.getElementById("page_left_link").setAttribute('onclick', "aurl('" + url + "')");
+    }
+    if(page == {{ pages|length }}){
+      //disable page right
+      document.getElementById("page_right").classList.add('class', "disabled");
+    } else {
+      //set url to page right
+      var right = (page.valueOf() + 1).valueOf();
+      var url = "{% url 'cyka:personal_card' member.uuid %}?project={{project.id}}&page=" + right.toString();
+      document.getElementById("page_right_link").setAttribute('onclick', "aurl('" + url + "')");
+    }
+    $('.tooltipped').tooltip();
+    //$(".card-content").matchHeight();
   });
 </script>
 {% endblock %}
-<div class="row valign change-form">
-    {% if step.done %}
-    <div class="col wbut">
-            <div class="card">
-                <div class="card-content">
-        <p>Das Brainwriting wurde beendet. Sie können keine Änderungen vornehmen</p>
-        </div>
-    </div>
-    </div>
-    {% else %}
-    <div class="col right">
-        <div class="card">
-	    <a  onclick="aurl('{% url 'cyka:personal_card' member.uuid %}?project={{project.id}}&card=new')" class="btn-floating btn-large red right"><i class="material-icons">edit</i></a>
-        </div>
-    </div>
-    {% endif %}
-</div>
-<div class="row valign change-form">
-    <div class="col">
-        {% for c in cards %}
-    {% if step.done %}
+<div>
+    <div class="col actionarea">
+        <ul class="pagination center">
+            <li id="page_left"><a id="page_left_link"><i class="material-icons waves-effect">chevron_left</i></a></li>
+            {% for p in pages %}	
+	    <li id="page_{{ p }}"><a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:personal_card' member.uuid %}?page={{ p }}')">{{ p }}</a></li>
+	    {% endfor %}
+            <li id="page_right" class="waves-effect"><a id="page_right_link"><i class="material-icons">chevron_right</i></a></li>
+         </ul>
+      <div class="row valign">
+        {% for card in cards %}
+            {% if step.done %}
 	    <a>
-    {% else %}
-	    <a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:personal_card' member.uuid %}?project={{project.id}}&card={{c.id}}')">
-    {% endif %}
-		    <div class="col card yellow mplan">
-                    <div class="card-content black-text">
-		        <span class="card-title grey-text text-darken-2">{{c.heading}}</span>
-		        <p>{{c.desc}}</p>
-                    </div>
+            {% else %}
+	    <a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:personal_card' member.uuid %}?project={{project.id}}&card={{card.id}}')">
+            {% endif %}
+	    <div class="col card mplan tooltipped" data-tooltip="Bearbeiten">
+                <div class="card-content black-text">
+		    <span class="card-title grey-text text-darken-2">{{card.heading}}</span>
+		    <p>{{card.desc}}</p>
                 </div>
+            </div>
 	    </a>
 	{% endfor %}
+      </div>
+    </div>
+    <div class="col right navarea">
+        <div class="row">
+	    <a class="btn-floating btn-large blue right" onclick="get_agenda()"><i class="right material-icons tooltipped" data-tooltip="Agenda">group_work</i></a>
+        </div>
+        <div class="row">
+            <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
+        </div>
+        <div class="row">
+	    <a  onclick="aurl('{% url 'cyka:personal_card' member.uuid %}?card=new')" class="btn-floating btn-large blue right tooltipped" data-tooltip="Neuer Themenvorschlag"><i class="material-icons">add_box</i></a>
+        </div>
+        <div class="row">
+	    <a  onclick="aurl('{% url 'cyka:personal_card' member.uuid %}')" class="btn-floating btn-large blue right {%if agreed == 'false' %}disabled{% endif %}"><i class="material-icons">content_copy</i></a>
+        </div>
+        <div class="row">
+	    <a  onclick="aurl('{% url 'cyka:personal_card' member.uuid %}?cards=all')" class="btn-floating btn-large blue right {%if agreed == 'true' %}disabled{% endif %}"><i class="material-icons">star_border</i></a>
+        </div>
     </div>
 </div>
