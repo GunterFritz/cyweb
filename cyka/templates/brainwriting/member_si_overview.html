@@ -4,10 +4,6 @@
 {% endblock %}
 {% block javascript %}
 <script>
-  $(document).ready(function(){
-    small();
-    $('.tooltipped').tooltip({enterDelay: 1000});
-  });
   var page = parseInt({{page}});
   $(document).ready(function(){
     small();
@@ -31,8 +27,7 @@
       var url = "{% url 'cyka:personal_card' member.uuid %}?project={{project.id}}&page=" + right.toString();
       document.getElementById("page_right_link").setAttribute('onclick', "aurl('" + url + "')");
     }
-    $('.tooltipped').tooltip();
-    //$(".card-content").matchHeight();
+    $('.tooltipped').tooltip({enterDelay: 1000});
   });
 </script>
 {% endblock %}
@@ -47,12 +42,12 @@
          </ul>
       <div class="row valign">
         {% for card in cards %}
-            {% if step.done %}
+            {% if step.done or all %}
 	    <a>
             {% else %}
 	    <a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:personal_card' member.uuid %}?project={{project.id}}&card={{card.id}}')">
             {% endif %}
-	    <div class="col card mplan tooltipped" data-tooltip="Bearbeiten">
+	    <div class="col card mplan {% if not all %}tooltipped{% endif %}" data-tooltip="Bearbeiten">
                 <div class="card-content black-text">
 		    <span class="card-title grey-text text-darken-2">{{card.heading}}</span>
 		    <p>{{card.desc}}</p>
@@ -70,13 +65,13 @@
             <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
         </div>
         <div class="row">
-	    <a  onclick="aurl('{% url 'cyka:personal_card' member.uuid %}?card=new')" class="btn-floating btn-large blue right tooltipped" data-tooltip="Neuer Themenvorschlag"><i class="material-icons">add_box</i></a>
+	    <a  onclick="aurl('{% url 'cyka:personal_card' member.uuid %}?card=new')" class="btn-floating btn-large blue right"><i class="material-icons tooltipped" data-tooltip="Neu">add_box</i></a>
         </div>
         <div class="row">
-	    <a  onclick="aurl('{% url 'cyka:personal_card' member.uuid %}')" class="btn-floating btn-large blue right {%if agreed == 'false' %}disabled{% endif %}"><i class="material-icons">content_copy</i></a>
+	    <a  onclick="aurl('{% url 'cyka:personal_card' member.uuid %}')" class="btn-floating btn-large blue right {% if not all %}disabled{% endif %}"><i class="material-icons tooltipped" data-tooltip="Nur meine anzeigen">perm_identity</i></a>
         </div>
         <div class="row">
-	    <a  onclick="aurl('{% url 'cyka:personal_card' member.uuid %}?cards=all')" class="btn-floating btn-large blue right {%if agreed == 'true' %}disabled{% endif %}"><i class="material-icons">star_border</i></a>
+	    <a  onclick="aurl('{% url 'cyka:personal_card' member.uuid %}?cards=all')" class="btn-floating btn-large blue right {% if all %}disabled{% endif %}"><i class="material-icons tooltipped" data-tooltip="Alle anzeigen">people_outline</i></a>
         </div>
     </div>
 </div>

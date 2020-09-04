@@ -91,6 +91,10 @@ class MemberBrainwriting(helpers.MemberRequest):
         #render overview
         if card_id == '':
             page = int(self.request.GET.get('page', 1))
+            if self.request.GET.get('cards', '') == 'all':
+                #show all cards
+                return self.getOverviewAll(page)
+            #show only cards of user
             return self.getOverviewMy(page)
         
         #render change card
@@ -116,7 +120,8 @@ class MemberBrainwriting(helpers.MemberRequest):
             'cards': cards[(page-1)*6:page*6], 
             'pages': range(1, pages), 
             'page':page,
-            'step': self.step
+            'step': self.step,
+            'all' : True
             })
     
     def getOverviewMy(self, page):
@@ -135,5 +140,6 @@ class MemberBrainwriting(helpers.MemberRequest):
             'cards': cards[(page-1)*6:page*6], 
             'pages': range(1, pages), 
             'page':page,
-            'step': self.step
+            'step': self.step,
+            'all' : False
             })
