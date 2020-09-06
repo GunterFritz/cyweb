@@ -45,9 +45,9 @@ function delete_card(){
                 <div class="right-align">
                     {% block formbuttons %}
       		    <a onclick="aurl('{% url 'cyka:personal_card' member.uuid %}?project={{project.id}}')" class="btn modal-action modal-close waves-effect waves-blue btn-primary">Abbrechen</a>
-		    {% if form.cardid != '' %}
+		    {% if form.cardid.value != NONE %}
 		    <span onclick="return delete_card();">
-		        <button class="btn modal-action modal-close btn-primary" type="submit">Löschen</button>
+			<button class="btn modal-action modal-close btn-primary" type="submit">Löschen</button>
 		    </span>
 		    {% endif %}
 		    <button onclick="submit('false')" class="btn modal-action modal-close btn-primary">Speichern</button>
