@@ -84,7 +84,17 @@ workflow = [
             'icon' : 'explore',
             'todo' : 'Die Teilnehmer erarbeiten selbständig Themenvorschläge', 
             'formtype' : 'radio'
-        }
+        },
+        {
+            'step' : 80,
+            'short': 'Themenwahl',
+            'desc' : 'Die Teilnehmer wählen die zu bearbeiteten Themen', 
+            'link' : 'cyka:moderator_topicauction',
+            'memberlink' : 'cyka:personal_table',
+            'icon' : 'select_all',
+            'todo' : 'Die Teilnehmer wählen die zu bearbeiteten Themen', 
+            'formtype' : 'radio'
+        },
         ]
     }
 ]

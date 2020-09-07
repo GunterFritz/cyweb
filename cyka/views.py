@@ -10,6 +10,7 @@ from .forms import CardForm, ProjectForm, TopicForm, MemberForm, MemberOkForm, W
 from .models import Project, Topic, Member, Assignment, Card, Table
 from random import randrange 
 from . import helpers
+from . import topicauction as TopicAuction
 from . import brainwriting
 from .helpers import Agenda, HtmlCard
 from .workflow import Workflow
@@ -463,6 +464,12 @@ def admin_votes(request, project_id):
     
     
     return render(request, 'cyka/admin_jostle.html', {'project' : proj, 'step': step, 'wf_form': step.form })
+
+@login_required
+def moderator_topicauction(request, project_id):
+    m = TopicAuction.ModeratorScheduler(request, project_id)
+
+    return m.process()
 
 @login_required
 def moderator_problemjostle(request, project_id):
