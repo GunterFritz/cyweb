@@ -344,14 +344,14 @@ class Structure2:
     """
     returns the number of required agreements that an SI becomes an ASI
     """
-    def getMinAgreedPersons(self):
+    def getMinAgreedPersons(self, numPersons = None):
         return 5
     
     """
     returns the number of required agreements that an SI becomes an ASI
     """
-    def getMinAgreedPersons(self):
-        if self.numPersons < 11:
+    def getMinAgreedPersons(self, numPersons):
+        if numPersons < 11:
             return 3
         else:
             return 4

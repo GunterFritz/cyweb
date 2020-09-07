@@ -31,7 +31,7 @@ class HTMLAsi:
     @staticmethod
     def getProjAsi(proj, agreed):
         tables = proj.table_set.all()
-        n = Structure.factory(proj.ptype).getMinAgreedPersons()
+        n = Structure.factory(proj.ptype).getMinAgreedPersons(len(proj.member_set.all().filter(mtype='M')))
         htables = []
         for t in tables:
             if agreed == "true":
