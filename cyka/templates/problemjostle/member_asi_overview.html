@@ -7,10 +7,6 @@
 {% endblock %}
 {% block javascript %}
 <script>
-  $(document).ready(function(){
-    small();
-    $('.tooltipped').tooltip({enterDelay: 1000});
-  });
   var page = parseInt({{page}});
   $(document).ready(function(){
     small();
@@ -33,10 +29,8 @@
       var right = (page.valueOf() + 1).valueOf();
       var url = "{% url 'cyka:personal_table' member.uuid %}?project={{project.id}}&page=" + right.toString();
       document.getElementById("page_right_link").setAttribute('onclick', "aurl('" + url + "')");
-      //document.getElementById("page_right_link").setAttribute('href', url);
     }
-    $('.tooltipped').tooltip();
-    //$(".card-content").matchHeight();
+    $('.tooltipped').tooltip({enterDelay: 1000});
   });
 </script>
 {% endblock %}
@@ -51,7 +45,11 @@
       </ul>
       <div class="row valign">
         {% for t in tables %}
+	    {% if step.done %}
+	    <a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:personal_join_table' member.uuid %}?table={{ t.table.id }}')">
+	    {% else %}
 	    <a href="{% url 'cyka:personal_join_table' member.uuid %}?table={{t.table.id}}">
+	    {% endif %}
 		<div class="col card mplan tooltipped" data-tooltip="Beitreten">
                     <div class="card-content black-text">
 		      <div class="progress">

@@ -29,8 +29,8 @@
       var right = (page.valueOf() + 1).valueOf();
       var url = "{% url 'cyka:moderator_problemjostle' project.id %}?function=asi&page=" + right.toString();
       document.getElementById("page_right_link").setAttribute('onclick', "aurl('" + url + "')");
-      //document.getElementById("page_right_link").setAttribute('href', url);
     }
+    console.log("Load tooltipped");
     $('.tooltipped').tooltip({enterDelay: 1000});
   });
 </script>
@@ -46,7 +46,11 @@
       </ul>
       <div class="row valign">
         {% for t in tables %}
+	    {% if step.done %}
+	    <a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:moderator_problemjostle' project.id %}?table={{t.table.id}}&function=join')">
+	    {% else %}
 	    <a href="{% url 'cyka:moderator_problemjostle' project.id %}?table={{t.table.id}}&function=join">
+	    {% endif %}
 		<div class="col card mplan tooltipped" data-tooltip="Beitreten">
                     <div class="card-content black-text">
 		      <div class="progress">

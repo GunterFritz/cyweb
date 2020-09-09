@@ -54,6 +54,7 @@ class AgreedStatementImportance(helpers.MemberRequest):
     def __init__(self, request, uuid):
         helpers.MemberRequest.__init__(self,request, uuid)
         self.table = None
+        self.step = Workflow.getStep(self.member.proj, 70, self.request)
     
     def get(self):
         table_id = self.request.GET.get('table', '')
@@ -94,6 +95,9 @@ class AgreedStatementImportance(helpers.MemberRequest):
         if func == 'sign':
             return self.sign()
         
+        if self.step.done: 
+            return render(self.request, 'problemjostle/member_join_asi_finished.html', {'project' : self.member.proj, 'member': self.member, 'table': self.table })
+        
         #main page
         jitsi = Jitsi(self.table.uuid, self.table.card.heading, self.member.name)
         return render(self.request, 'problemjostle/member_join_asi.html', {'project' : self.member.proj, 'member': self.member, 'table': self.table, 'jitsi': jitsi })
@@ -103,6 +107,8 @@ class AgreedStatementImportance(helpers.MemberRequest):
     """
     def viewPad(self):
         pad = Pad(self.table.uuid, self.member.name)
+        if self.step.done:
+            pad.setReadOnly()
         asis = self.table.sisign_set.all()
         return render(self.request, 'problemjostle/pad.html', {'table': self.table, "etherpad": pad, "sign": asis, 'member' : self.member })
 
@@ -159,9 +165,9 @@ class ASIOverview(helpers.MemberRequest):
                 'pages': range(1, pages), 
                 'page':page})
     
-        #render tables overview
         step = Workflow.getStep(self.member.proj, 70, self.request)
         
+        #render tables overview
         htables = HTMLAsi.getProjAsi(self.member.proj, agreed)
         
         #ceil (instead of math.ceil)
@@ -187,6 +193,9 @@ class ModeratorASIOverview(helpers.ModeratorRequest):
         #show only agreed
         agreed = self.request.GET.get('agreed', 'false')
         page = int(self.request.GET.get('page', 1))
+       
+        #step is needed to render different when step is finished
+        step = Workflow.getStep(self.proj, 70, self.request)
         
         htables = HTMLAsi.getProjAsi(self.proj, agreed)
         
@@ -199,8 +208,8 @@ class ModeratorASIOverview(helpers.ModeratorRequest):
             'tables': htables[(page-1)*6:page*6], 
             'agreed': agreed,
             'pages': range(1, pages), 
-            'page':page
-            })
+            'page':page,
+            'step': step})
 
 class ModeratorScheduler(helpers.ModeratorRequest):
     def __init__(self, request, pid):
@@ -231,7 +240,7 @@ class ModeratorScheduler(helpers.ModeratorRequest):
         #join
         if function == 'join':
             m = ModeratorJoinASI(self.request, self.proj)
-            return m.joinAsi()
+            return m.joinAsi(self.step)
         
         #scheduling page requested
         return render(self.request, 'problemjostle/moderator_scheduler.html', {'project' : self.proj, 'step': self.step })
@@ -254,7 +263,9 @@ class ModeratorJoinASI:
         asis = self.table.sisign_set.all()
         return render(self.request, 'problemjostle/pad.html', {'table': self.table, "etherpad": pad, "sign": asis, 'project' : self.proj })
     
-    def joinAsi(self):
+    def joinAsi(self, step):
         #main page
+        if step.done:
+            return render(self.request, 'problemjostle/moderator_join_asi_finished.html', {'project' : self.proj, 'table': self.table })
         jitsi = Jitsi(self.table.uuid, self.table.card.heading, self.name)
         return render(self.request, 'problemjostle/moderator_join_asi.html', {'project' : self.proj, 'table': self.table, 'jitsi': jitsi })

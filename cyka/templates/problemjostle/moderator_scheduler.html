@@ -1,16 +1,16 @@
 {% load material_form %}
 {% block javascript %}
 <script>
-    function submit(stat){
-      if ("{{step.before.done}}" == "False"){
-	      return alert("Bitte beenden Sie erst den Agendapunkt {{step.before.short}}")
+    function submit(stat, stepid, beforedone, beforeshort){
+      if (beforedone == "False"){
+	      return alert("Bitte beenden Sie erst den Agendapunkt" + beforeshort)
       }
       $.ajax({
           type: "POST",
 	  url: '{% url 'cyka:moderator_problemjostle' project.id %}',
 	  data:{
               status:stat,
-	      step:'{{step.step}}',
+	      step:stepid,
               csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
               action: 'post'
           },
@@ -33,9 +33,9 @@
  	    <p>{{step.todo}}</p>
             {% csrf_token %}
 	    <div class="collection">
-	        <a onmouseover="this.style.cursor='pointer'" onclick="submit('O')" class="collection-item {% if step.status == 'O' %}active{% endif %}">Offen<i class="material-icons left">{% if step.status == 'O' %}radio_button_checked{% else %}radio_button_unchecked{% endif %}</i></a>
-	        <a onmouseover="this.style.cursor='pointer'" onclick="submit('S')" class="collection-item {% if step.status == 'S' %}active{% endif %}">Gestartet<i class="material-icons left">{% if step.status == 'S' %}radio_button_checked{% else %}radio_button_unchecked{% endif %}</i></a>
-                <a onmouseover="this.style.cursor='pointer'" onclick="submit('B')" class="collection-item {% if step.status == 'B' %}active{% endif %}">Beendet<i class="material-icons left">{% if step.status == 'B' %}radio_button_checked{% else %}radio_button_unchecked{% endif %}</i></a>
+		    <a onmouseover="this.style.cursor='pointer'" onclick="submit('O', '{{step.step}}', '{{step.before.done}}', '{{step.before.short}}')" class="collection-item {% if step.status == 'O' %}active{% endif %}">Offen<i class="material-icons left">{% if step.status == 'O' %}radio_button_checked{% else %}radio_button_unchecked{% endif %}</i></a>
+	        <a onmouseover="this.style.cursor='pointer'" onclick="submit('S', '{{step.step}}', '{{step.before.done}}', '{{step.before.short}}')" class="collection-item {% if step.status == 'S' %}active{% endif %}">Gestartet<i class="material-icons left">{% if step.status == 'S' %}radio_button_checked{% else %}radio_button_unchecked{% endif %}</i></a>
+                <a onmouseover="this.style.cursor='pointer'" onclick="submit('B', '{{step.step}}', '{{step.before.done}}', '{{step.before.short}}')" class="collection-item {% if step.status == 'B' %}active{% endif %}">Beendet<i class="material-icons left">{% if step.status == 'B' %}radio_button_checked{% else %}radio_button_unchecked{% endif %}</i></a>
             </div>
         </div>
     </div>
