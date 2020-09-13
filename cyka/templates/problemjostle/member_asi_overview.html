@@ -71,7 +71,7 @@
                 <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
             </div>
             <div class="row">
-	        <a  onclick="aurl('{% url 'cyka:personal_table' member.uuid %}?table=new')" class="btn-floating btn-large blue right tooltipped" data-tooltip="Neuer Themenvorschlag"><i class="material-icons">add_box</i></a>
+		    <a  onclick="aurl('{% url 'cyka:personal_table' member.uuid %}?table=new')" class="btn-floating btn-large blue right {% if step.done %}disabled tooltipped{% endif %}" data-tooltip="Neuer Themenvorschlag"><i class="material-icons">add_box</i></a>
             </div>
             <div class="row">
 	        <a  onclick="aurl('{% url 'cyka:personal_table' member.uuid %}')" class="btn-floating btn-large blue right {%if agreed == 'false' %}disabled{% endif %}"><i class="material-icons">content_copy</i></a>
