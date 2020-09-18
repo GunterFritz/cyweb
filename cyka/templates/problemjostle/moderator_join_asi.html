@@ -52,19 +52,20 @@
     //resize
     var size = 0;
     function small() {
-        $("#meetcontent").width('25%');
-        $("#stepcontent").width('70%');
+        $("#meetcontent").outerWidth('25%');
+        $("#stepcontent").outerWidth('75%');
         size = 1;
     } 
+    function big() {
+        $("#meetcontent").outerWidth('75%');
+        $("#stepcontent").outerWidth('25%');
+	size = 0;
+    }
     function resize() {
 	if (size == 0) {
-            $("#meetcontent").width('25%');
-            $("#stepcontent").width('70%');
-	    size = 1;
+	    small();
 	} else {
-            $("#meetcontent").width('75%');
-            $("#stepcontent").width('20%');
-	    size = 0;
+	    big();
 	}
     }
     function aurl(myurl, where) {

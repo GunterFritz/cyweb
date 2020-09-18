@@ -1,22 +1,5 @@
 {% extends 'cyka/full_base.html' %}
 {% block extrahead %}
-<style type="text/css">
-  @media only screen and (min-width : 601px) {
-      #id_card_type_container {
-          margin-top: 40px;
-          margin-left: 50px;
-      }
-  }
-      .groups {
-	  width:25%
-      }
-      .wbut {
-	  width:100%
-      }
-      .meet {
-	  width:75%
-      }
-</style>
 {% endblock %}
 {% block javascript %}
 <script src='{{jitsi.api}}'></script>
@@ -32,7 +15,7 @@
     var api = new JitsiMeetExternalAPI(domain, options);
     api.executeCommand ('displayName', '{{jitsi.name}}'); 
     api.executeCommand ('subject', '{{jitsi.subject}}');
-    console.log("load tooltipped");
+    big();
     $('.tooltipped').tooltip({enterDelay: 1000});
     {% if start == "asi" %}
     aurl('{% url 'cyka:moderator_problemjostle' project.id %}?function=asi');
@@ -43,19 +26,20 @@
     //resize
     var size = 0;
     function small() {
-        $("#meetcontent").width('25%');
-        $("#stepcontent").width('70%');
+        $("#meetcontent").outerWidth('25%');
+        $("#stepcontent").outerWidth('75%');
         size = 1;
     } 
+    function big() {
+        $("#meetcontent").outerWidth('75%');
+        $("#stepcontent").outerWidth('25%');
+	size = 0;
+    }
     function resize() {
 	if (size == 0) {
-            $("#meetcontent").width('25%');
-            $("#stepcontent").width('70%');
-	    size = 1;
+	    small();
 	} else {
-            $("#meetcontent").width('75%');
-            $("#stepcontent").width('20%');
-	    size = 0;
+	    big();
 	}
     }
     function aurl(myurl) {
@@ -111,12 +95,12 @@
 </script>
 {% endblock %}
 {% block content %}
-<div class="row valign change-form">
-    <div id="meetcontent" class="col meet">
+<div class="row">
+    <div id="meetcontent" class="col">
         <div id="jitsi-container">
         </div>
     </div>
-    <div id="stepcontent" class="col groups">
+    <div id="stepcontent" class="col">
         <div id="_appendHere">
         </div>
     </div>

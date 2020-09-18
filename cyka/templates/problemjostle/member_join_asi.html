@@ -45,26 +45,27 @@
     var api = new JitsiMeetExternalAPI(domain, options);
     api.executeCommand ('displayName', '{{jitsi.name}}'); 
     api.executeCommand ('subject', '{{jitsi.subject}}');
-    aurl('{% url 'cyka:personal_join_table' member.uuid %}?table={{table.id}}&function=pad', '#_appendHere');
+    aurl('{% url 'cyka:personal_join_table' member.uuid %}?table={{table.id}}&function=pad', '#_padArea');
     $('.tooltipped').tooltip({enterDelay: 1000});
     refreshSupporter();
     });
     //resize
     var size = 0;
     function small() {
-        $("#meetcontent").width('25%');
-        $("#stepcontent").width('70%');
+        $("#meetcontent").outerWidth('25%');
+        $("#stepcontent").outerWidth('75%');
         size = 1;
     } 
+    function big() {
+        $("#meetcontent").outerWidth('75%');
+        $("#stepcontent").outerWidth('25%');
+	size = 0;
+    }
     function resize() {
 	if (size == 0) {
-            $("#meetcontent").width('25%');
-            $("#stepcontent").width('70%');
-	    size = 1;
+	    small();
 	} else {
-            $("#meetcontent").width('75%');
-            $("#stepcontent").width('20%');
-	    size = 0;
+	    big();
 	}
     }
     function aurl(myurl, where) {
@@ -83,12 +84,16 @@
 </script>
 {% endblock %}
 {% block content %}
-<div class="row valign change-form">
+<div class="row">
     <div id="meetcontent" class="col meet">
         <div id="jitsi-container">
         </div>
     </div>
-    <div id="stepcontent" class="col groups fullh">
+    <div id="stepcontent" class="col headcontainer">
+        <div class="col actionarea">
+            <div id="_padArea" class="row">
+            </div>
+        </div>
         <div class="col navarea right">
             <div class="row">
 	        <a class="btn-floating btn-large red right" onclick="leave('{% url 'cyka:personal_workflow' member.uuid %}?start=table&project={{project.uuid}}')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">exit_to_app</i></a>
@@ -99,8 +104,6 @@
             <div class="row">
 		    <a id="_thumbButton" onclick="aurl('{% url 'cyka:personal_join_table' member.uuid %}?table={{table.id}}&function=sign', '#_supporter')" class="btn-floating btn-large right blue"><i class="material-icons tooltipped" data-tooltip="Thema unterstützen">thumb_up</i></a>
             </div>
-        </div>
-        <div id="_appendHere" class="col actionarea right">
         </div>
     </div>
 </div>
