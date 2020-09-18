@@ -1,6 +1,9 @@
 i.icon-grey {
     color:grey;
 }
+i.icon-red {
+    color:red;
+}
 i.icon-blue {
     color:blue;
 }
@@ -12,10 +15,40 @@ i.icon-green {
 }
 div.navarea {
     margin-top: 5px;
-    width: 8%;
+    margin-right: 5px;
+    width: 75px;
+    float:right;
 }
+div.debug {
+    border:3px solid black;
+}
+div.debug1 {
+    border:3px solid red;
+}
+div.debug2 {
+    border:3px solid green;
+}
+div.bottom {
+    position:absolute;
+    bottom:0;
+}
+div.votes {
+    margin-right: 0px;
+    width: 75px;
+    float:right;
+}
+
+div.headcontainer {
+    display:flex;
+}
+
 div.actionarea {
-    width: 92%;
+    flex: 1 1 auto;
+    float:left;
+}
+
+div.padplan {
+    width: 100%;
 }
 
 div.mplan {
