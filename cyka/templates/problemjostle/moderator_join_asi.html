@@ -83,21 +83,21 @@
 </script>
 {% endblock %}
 {% block content %}
-<div class="row valign change-form">
+<div class="row">
     <div id="meetcontent" class="col meet">
         <div id="jitsi-container">
         </div>
     </div>
-    <div id="stepcontent" class="col groups fullh">
-        <div class="col navarea right">
+    <div id="stepcontent" class="col headcontainer">
+        <div id="_appendHere" class="col actionarea">
+        </div>
+        <div class="col navarea">
             <div class="row">
 	        <a class="btn-floating btn-large red right" onclick="leave('{% url 'cyka:admin_jostle' project.id %}?start=asi')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">exit_to_app</i></a>
             </div>
             <div class="row">
                 <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
             </div>
-        </div>
-        <div id="_appendHere" class="col actionarea right">
         </div>
     </div>
 </div>
