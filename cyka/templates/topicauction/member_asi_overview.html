@@ -1,9 +1,4 @@
 {% block extrahead %}
-      <style>
-      .debugrow .debugcol {
-        border: 1px dotted #0313fc
-      }
-      </style>
 {% endblock %}
 {% block javascript %}
 <script>
@@ -18,7 +13,7 @@
     } else {
       //set url to page left
       var left = (page.valueOf() - 1).valueOf();
-      var url = "{% url 'cyka:moderator_topicauction' project.id %}?function=asi&page=" + left.toString();
+      var url = "{% url 'cyka:topicauction_asi_overview' member.uuid %}?project={{project.id}}&page=" + left.toString();
       document.getElementById("page_left_link").setAttribute('onclick', "aurl('" + url + "')");
     }
     if(page == {{ pages|length }}){
@@ -27,9 +22,8 @@
     } else {
       //set url to page right
       var right = (page.valueOf() + 1).valueOf();
-      var url = "{% url 'cyka:moderator_topicauction' project.id %}?function=asi&page=" + right.toString();
+      var url = "{% url 'cyka:topicauction_asi_overview' member.uuid %}?project={{project.id}}&page=" + right.toString();
       document.getElementById("page_right_link").setAttribute('onclick', "aurl('" + url + "')");
-      //document.getElementById("page_right_link").setAttribute('href', url);
     }
     $('.tooltipped').tooltip({enterDelay: 1000});
   });
@@ -40,38 +34,38 @@
       <ul class="pagination center">
         <li id="page_left"><a id="page_left_link"><i class="material-icons waves-effect">chevron_left</i></a></li>
           {% for p in pages %}	
-	    <li id="page_{{ p }}"><a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:moderator_topicauction' project.id %}?function=asi&page={{ p }}')">{{ p }}</a></li>
+	    <li id="page_{{ p }}"><a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:topicauction_asi_overview' member.uuid %}?page={{ p }}')">{{ p }}</a></li>
 	  {% endfor %}
         <li id="page_right" class="waves-effect"><a id="page_right_link"><i class="material-icons">chevron_right</i></a></li>
       </ul>
       <div class="row valign">
         {% for t in tables %}
-	    <a href="{% url 'cyka:moderator_topicauction' project.id %}?table={{t.table.id}}&function=join">
-		<div class="col card mplan tooltipped" data-tooltip="Beitreten">
+	    <a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:topicauction_join_asi' member.uuid %}?table={{ t.table.id }}')">
+		<div class="col card mplan tooltipped" data-tooltip="Details">
                     <div class="card-content black-text">
-		      <div class="progress">
-			      <div class="determinate" style="width: {{t.progress}}%"></div>
-                      </div>
-		        <span class="card-title grey-text text-darken-2">{{t.table.card.heading}}</span>
+		      <span class="card-title grey-text text-darken-2">{{t.table.card.heading}}</span>
 		        <p>{{t.table.card.desc}}</p>
+                        <div class="bottom-card">
+				<hr>
+				<p class="icon-text"><i class="material-icons icon-red icon-text">fiber_manual_record</i>({{t.votes}})</p>
+	                </div>
                     </div>
                 </div>
 	    </a>
 	{% endfor %}
       </div>
     </div>
-    <div class="col right navarea">
+    <div class="col navarea">
         <div class="row">
 	    <a class="btn-floating btn-large blue right" onclick="get_agenda()"><i class="right material-icons tooltipped" data-tooltip="Agenda">group_work</i></a>
         </div>
         <div class="row">
             <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
         </div>
-        <div class="row">
-	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="aurl('{% url 'cyka:moderator_topicauction' project.id %}')"><i class="left material-icons secondary-content">schedule</i></a>
-        </div>
-        <div class="row">
-	    <a class="btn-floating btn-large waves-effect waves-light right blue disabled" onclick="aurl('{% url 'cyka:moderator_topicauction' project.id %}?function=asi')"><i class="left material-icons secondary-content">star_border</i></a>
-        </div>
+        <div class="row navarea bottom">
+	    {% for v in votes %}
+	        <i class="material-icons icon-red">fiber_manual_record</i>
+            {% endfor %}
+	</div>
     </div>
 </div>

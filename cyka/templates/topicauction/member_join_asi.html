@@ -1,0 +1,79 @@
+{% block extrahead %}
+{% endblock %}
+{% block javascript %}
+<script>
+    function submit(action){
+      $.ajax({
+          type: "POST",
+	  url: '{% url 'cyka:topicauction_join_asi' member.uuid %}',
+	  data:{
+	      table:{{table.id}},
+              function:action,
+              csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+              action: 'post'
+          },
+      })
+      .done(function(response) {
+          $('#_supporter').html(response);
+	  aurl2('{% url 'cyka:topicauction_join_asi' member.uuid %}?table={{table.id}}&function=nav', '#_votes');
+      });
+    }
+  $(document).ready(function(){
+    $('.tooltipped').tooltip({enterDelay: 1000});
+  });
+  
+  var interval = null;
+  function refreshSupporter(){
+    interval = setInterval(function() {
+	aurl2('{% url 'cyka:topicauction_join_asi' member.uuid %}?table={{table.id}}&function=supporter', '#_supporter')
+    }, 3000);
+  }
+  $(document).ready(function(){
+    small();
+    aurl2('{% url 'cyka:topicauction_join_asi' member.uuid %}?table={{table.id}}&function=pad', '#_padArea');
+    $('.tooltipped').tooltip({enterDelay: 1000});
+    //refreshSupporter();
+    });
+    function aurl2(myurl, where) {
+        $.ajax({
+            type: "GET",
+		url: myurl,
+        })
+        .done(function(response) {
+            $(where).html(response);
+        }); 
+    }
+    function leave(url){
+        clearInterval(interval);
+        //aurl(url, '#_appendHere');
+        aurl(url);
+    }   
+</script>
+{% endblock %}
+{% block content %}
+<div class="headcontainer">
+    <div class="col actionarea">
+        <div id="_padArea">
+        </div>
+    </div>
+    <div class="col navarea">
+        <div class="row">
+            <a class="btn-floating btn-large red right" onclick="leave('{% url 'cyka:topicauction_asi_overview' member.uuid %}')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">exit_to_app</i></a>
+        </div>
+        <div class="row">
+            <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
+        </div>
+        <div id="_plus" class="row">
+            <a class="btn-floating btn-large blue right" onclick="submit('plus')"><i class="right material-icons tooltipped" data-tooltip="Stimme abgeben">add</i></a>
+        </div>
+        <div id="_minus" class="row">
+            <a class="btn-floating btn-large blue right" onclick="submit('minus')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">remove</i></a>
+        </div>
+        <div id="_votes" class="row navarea bottom">
+	    {% for v in votes %}
+	        <i class="material-icons icon-red">fiber_manual_record</i>
+            {% endfor %}
+	</div>
+    </div>
+</div>
+{% endblock %}

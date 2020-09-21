@@ -414,6 +414,18 @@ def personal_card(request, uuid):
     return brain.process()
 
 #working on asi
+def topicauction_join_asi(request, uuid):
+    asi = TopicAuction.AgreedStatementImportance(request, uuid)
+
+    return asi.process()
+
+#asi overview and creating
+def topicauction_asi_overview(request, uuid):
+    asio = TopicAuction.ASIOverview(request, uuid)
+
+    return asio.process()
+
+#working on asi
 def join_table(request, uuid):
     asi = AgreedStatementImportance(request, uuid)
 

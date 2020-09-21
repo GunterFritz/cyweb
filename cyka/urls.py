@@ -16,8 +16,14 @@ urlpatterns = [
 	url(r'^project/list/$', views.project_list, name="project_list"),
 	# ex: /cyka/project/5/moderator/problemjostle/
 	url(r'^(?P<project_id>[0-9]+)/moderator/problemjostle/$', views.moderator_problemjostle, name="moderator_problemjostle"),
-	# ex: /cyka/project/5/moderator/jostle/
+        #topicauction
+	# ex: /cyka/project/5/moderator/topicauction/
 	url(r'^(?P<project_id>[0-9]+)/moderator/topicauction/$', views.moderator_topicauction, name="moderator_topicauction"),
+	# ex: /member/topicauction/<uuid>
+        url(r'^member/topicauction/(?P<uuid>[0-9A-Za-z\-]+)$', views.topicauction_asi_overview, name="topicauction_asi_overview"),
+	# ex: /member/topicauction/<uuid>
+        url(r'^member/topicauction/asi/(?P<uuid>[0-9A-Za-z\-]+)$', views.topicauction_join_asi, name="topicauction_join_asi"),
+        #end topicauction
 	# ex: /cyka/project/5/jostle/
 	url(r'^(?P<project_id>[0-9]+)/jostle/$', views.admin_jostle, name="admin_jostle"),
 	# ex: /cyka/project/5/jostle/randsession/

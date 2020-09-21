@@ -90,7 +90,7 @@ workflow = [
             'short': 'Themenwahl',
             'desc' : 'Die Teilnehmer wählen die zu bearbeiteten Themen', 
             'link' : 'cyka:moderator_topicauction',
-            'memberlink' : 'cyka:personal_table',
+            'memberlink' : 'cyka:topicauction_asi_overview',
             'icon' : 'select_all',
             'todo' : 'Die Teilnehmer wählen die zu bearbeiteten Themen', 
             'formtype' : 'radio'

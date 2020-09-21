@@ -88,11 +88,18 @@ class Table(models.Model):
          editable = False)
     card = models.ForeignKey(Card, on_delete=models.CASCADE, default=None)
 
-
+#Likes for si
 class CardVotes(models.Model):
     member = models.ForeignKey(Member, on_delete=models.CASCADE)
     card = models.ForeignKey(Card, on_delete=models.CASCADE)
 
+#Signs to si to make asi
 class SIsign(models.Model):
     member = models.ForeignKey(Member, on_delete=models.CASCADE)
     table = models.ForeignKey(Table, on_delete=models.CASCADE)
+
+#Votes for topicauction
+class AsiVotes(models.Model):
+    member = models.ForeignKey(Member, on_delete=models.CASCADE)
+    table = models.ForeignKey(Table, on_delete=models.CASCADE)
+

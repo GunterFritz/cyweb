@@ -7,19 +7,13 @@ from .workflow import Workflow
 from django.db import transaction
 
 """
-File to render the problem jostle
-Used html member:
-    cyka/personal_join_table.html
-    cyka/personal_table.html
-    cyka/table_editor.html
-    cyka/edit_table.html
-    cyka/add_table.html
-    cyka/table_added.html
-    cyka/supporter.html
+File to render the topicauction
 """
 
 #wrapper
 class HTMLAsi:
+    #table: DB Object
+    #num: threshold of supporters to make an asi
     def __init__(self, table, num):
         self.table = table
         self.supporter = len(self.table.sisign_set.all())
@@ -27,6 +21,7 @@ class HTMLAsi:
         self.max = num
         if self.supporter < num:
             self.progress = int(self.supporter*100/num)
+        self.votes = len(self.table.asivotes_set.all())
     
     @staticmethod
     def getProjAsi(proj):
@@ -39,7 +34,41 @@ class HTMLAsi:
                 htables.append(h)
         
         return htables
+
+class HTMLMember:
+    def __init__(self, member):
+        self.member = member
+
+    def getFreeVotes(self):
+        votes = self.member.asivotes_set.all()
+        n_votes = Structure.factory(self.member.proj.ptype).getNumTopics()
         
+        return n_votes - len(votes)
+
+    def vote(self, asi):
+        if self.getFreeVotes() < 1:
+            return 0
+        
+        self.member.asivotes_set.create(table=asi)
+
+        return self.getFreeVotes()
+
+    def unvote(self, asi):
+        votes = self.member.asivotes_set.all().filter(table=asi)
+
+        if len(votes) > 0:
+            votes[0].delete()
+
+    #def create_priority_list(self):
+    #    topics =  self.member.proj.topic_set.all()
+    #    if len(topics) == 0:
+    #        return None
+    #    i=0
+    #    for t in topics:
+    #        self.member.priority_set.create(priority=i, topic=t)
+    #        i=i+1
+    #
+    #    return self.member.priority_set.all()
 
 #Member pages
 
@@ -54,7 +83,7 @@ class AgreedStatementImportance(helpers.MemberRequest):
     
     def get(self):
         table_id = self.request.GET.get('table', '')
-        card_id = self.request.GET.get('si', '')
+        self.table = helpers.get_asi(table_id, self.member.proj)
         func = self.request.GET.get('function', '')
         
         #supporter
@@ -65,9 +94,26 @@ class AgreedStatementImportance(helpers.MemberRequest):
         if func == 'pad':
             return self.viewPad()
         
+        #editor
+        if func == 'nav':
+            return self.viewNav()
+        
+        v = HTMLMember(self.member).getFreeVotes()
+
         #main page
-        jitsi = Jitsi(self.table.uuid, self.table.card.heading, self.member.name)
-        return render(self.request, 'problemjostle/member_join_asi.html', {'project' : self.member.proj, 'member': self.member, 'table': self.table, 'jitsi': jitsi })
+        return render(self.request, 'topicauction/member_join_asi.html', {'project' : self.member.proj, 'member': self.member, 'table': self.table, 'votes':range(v) })
+
+    def post(self):
+        table_id = self.request.POST.get('table', '')
+        self.table = helpers.get_asi(table_id, self.member.proj)
+        func = self.request.POST.get('function', '')
+
+        if(func == "plus"):
+            HTMLMember(self.member).vote(self.table)
+        if(func == "minus"):
+            HTMLMember(self.member).unvote(self.table)
+
+        return self.supporter();
 
     """
     Pad function, renders etherpad
@@ -75,19 +121,28 @@ class AgreedStatementImportance(helpers.MemberRequest):
     def viewPad(self):
         pad = Pad(self.table.uuid, self.member.name)
         asis = self.table.sisign_set.all()
-        return render(self.request, 'problemjostle/pad.html', {'table': self.table, "etherpad": pad, "sign": asis, 'member' : self.member })
+        return render(self.request, 'topicauction/pad.html', {'asi': HTMLAsi(self.table, 0), 
+            "etherpad": pad, 
+            "supporter": asis, 
+            'member' : self.member 
+            })
 
     def supporter(self):
         asis = self.table.sisign_set.all()
-        return render(self.request, 'problemjostle/supporter.html', {"sign": asis})
+        return render(self.request, 'topicauction/supporter.html', {'asi': HTMLAsi(self.table, 0), "supporter": asis})
 
+    def viewNav(self):
+        v = HTMLMember(self.member).getFreeVotes()
+        return render(self.request, 'topicauction/member_join_asi_nav.html', {
+            'project' : self.member.proj, 
+            'member': self.member, 
+            'votes':range(v) 
+            })
 
 """
-renders the table step of problem jostle
+renders all asi for that can be voted
 the basic view shows all tables
 GET: render page with all tables
-GET: + table='new' -> render create page
-POST: add table
 """
 class ASIOverview(helpers.MemberRequest):
     def __init__(self, request, uuid):
@@ -97,20 +152,6 @@ class ASIOverview(helpers.MemberRequest):
         table_id = self.request.GET.get('table', '')
         page = int(self.request.GET.get('page', 1))
         
-        #render new page, select an card to create an asi
-        if table_id == 'new':
-            cards = self.member.proj.card_set.all()
-            page = int(self.request.GET.get('page', 1))
-            #ceil (instead of math.ceil)
-            pages = int(len(cards)/6) + 1
-            if len(cards) % 6 > 0:
-                pages = pages + 1
-            return render(self.request, 'problemjostle/member_select_si.html', {'project' : self.member.proj, 
-                'member': self.member, 
-                'cards': cards[(page-1)*6:page*6], 
-                'pages': range(1, pages), 
-                'page':page})
-    
         #render tables overview
         step = Workflow.getStep(self.member.proj, 80, self.request)
         
@@ -121,12 +162,15 @@ class ASIOverview(helpers.MemberRequest):
         if len(htables) % 6 > 0:
             pages = pages + 1
         
-        return render(self.request, 'problemjostle/member_asi_overview.html', {'project' : self.member.proj, 
+        v = HTMLMember(self.member).getFreeVotes()
+        
+        return render(self.request, 'topicauction/member_asi_overview.html', {'project' : self.member.proj, 
             'member': self.member, 
             'tables': htables,
             'tables': htables[(page-1)*6:page*6], 
             'pages': range(1, pages), 
             'page':page,
+            'votes':range(v),
             'step': step})
 
 #moderator pages
@@ -153,6 +197,7 @@ class ModeratorASIOverview(helpers.ModeratorRequest):
 class ModeratorScheduler(helpers.ModeratorRequest):
     def __init__(self, request, pid):
         helpers.ModeratorRequest.__init__(self,request, pid)
+        #wf post request is handled by workflow itself
         self.step = Workflow.getStep(self.proj, 80, request)
     
     def post(self):
@@ -194,13 +239,13 @@ class ModeratorJoinASI:
 
     def supporter(self):
         asis = self.table.sisign_set.all()
-        return render(self.request, 'problemjostle/supporter.html', {"sign": asis})
+        return render(self.request, 'topicauction/supporter.html', {"sign": asis})
 
     def viewPad(self):
         pad = Pad(self.table.uuid, self.name)
         pad.setReadOnly()
         asis = self.table.sisign_set.all()
-        return render(self.request, 'problemjostle/pad.html', {'table': self.table, "etherpad": pad, "sign": asis, 'project' : self.proj })
+        return render(self.request, 'topicauction/pad.html', {'table': self.table, "etherpad": pad, "sign": asis, 'project' : self.proj })
     
     def joinAsi(self):
         #main page

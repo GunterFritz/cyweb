@@ -1,5 +1,5 @@
 from lib.structure import Structure2 as Structure
-from .models import Project, Topic, Member, Assignment, Card
+from .models import Project, Topic, Member, Assignment, Card, Table
 
 def MemberDelete(member):
     member.priority_set.all().delete()
@@ -226,3 +226,14 @@ def get_card(card_id, member):
         return card
     else:
         raise Http404("No such card")
+        
+def get_asi(tableid, proj):
+    try:
+        table = Table.objects.get(pk=tableid)
+    except Table.DoesNotExist:
+        raise Http404("No such table")
+    
+    if table.proj != proj:
+        raise Http404("No such table")
+
+    return table

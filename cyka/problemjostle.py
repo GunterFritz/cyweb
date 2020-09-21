@@ -214,6 +214,7 @@ class ModeratorASIOverview(helpers.ModeratorRequest):
 class ModeratorScheduler(helpers.ModeratorRequest):
     def __init__(self, request, pid):
         helpers.ModeratorRequest.__init__(self,request, pid)
+        #wf post request is handled by workflow itself
         self.step = Workflow.getStep(self.proj, 70, request)
     
     def post(self):

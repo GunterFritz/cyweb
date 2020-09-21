@@ -13,6 +13,9 @@ i.icon-blue {
 i.icon-green {
     color:green;
 }
+.icon-text {
+  vertical-align: middle;
+}
 div.navarea {
     margin-top: 5px;
     margin-right: 5px;
@@ -28,12 +31,21 @@ div.debug1 {
 div.debug2 {
     border:3px solid green;
 }
+div.bottom-card {
+    position:absolute;
+    width: 85%;
+    bottom:0;
+    padding-bottom: 8px;
+}
 div.bottom {
     position:absolute;
-    bottom:0;
+    bottom:8px;
+    right:5px;
 }
 div.votes {
-    margin-right: 0px;
+    padding-left: 20px;
+    margin-left: 5px;
+    margin-right: 10px;
     width: 75px;
     float:right;
 }
