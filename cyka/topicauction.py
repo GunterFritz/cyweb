@@ -1,10 +1,12 @@
 from lib.structure import Structure2 as Structure
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 from .models import Member, Table, Card, SIsign
 from .config import Jitsi, Pad
 from . import helpers
 from .workflow import Workflow
 from django.db import transaction
+
 
 """
 File to render the topicauction
@@ -45,6 +47,9 @@ class HTMLMember:
         
         return n_votes - len(votes)
 
+    def getMaxVotes(self):
+        return Structure.factory(self.member.proj.ptype).getNumTopics()
+
     def vote(self, asi):
         if self.getFreeVotes() < 1:
             return 0
@@ -58,6 +63,9 @@ class HTMLMember:
 
         if len(votes) > 0:
             votes[0].delete()
+
+    def numVotes(self, asi):
+        return len(self.member.asivotes_set.all().filter(table=asi))
 
     #def create_priority_list(self):
     #    topics =  self.member.proj.topic_set.all()
@@ -94,14 +102,19 @@ class AgreedStatementImportance(helpers.MemberRequest):
         if func == 'pad':
             return self.viewPad()
         
-        #editor
-        if func == 'nav':
-            return self.viewNav()
+        #votes
+        if func == 'votes':
+            return self.getVotes()
         
-        v = HTMLMember(self.member).getFreeVotes()
+        v = HTMLMember(self.member).getMaxVotes()
 
         #main page
-        return render(self.request, 'topicauction/member_join_asi.html', {'project' : self.member.proj, 'member': self.member, 'table': self.table, 'votes':range(v) })
+        return render(self.request, 'topicauction/member_join_asi.html', {
+            'project' : self.member.proj, 
+            'member': self.member, 
+            'table': self.table, 
+            'votes':range(v) 
+            })
 
     def post(self):
         table_id = self.request.POST.get('table', '')
@@ -113,7 +126,7 @@ class AgreedStatementImportance(helpers.MemberRequest):
         if(func == "minus"):
             HTMLMember(self.member).unvote(self.table)
 
-        return self.supporter();
+        return self.getVotes();
 
     """
     Pad function, renders etherpad
@@ -131,13 +144,15 @@ class AgreedStatementImportance(helpers.MemberRequest):
         asis = self.table.sisign_set.all()
         return render(self.request, 'topicauction/supporter.html', {'asi': HTMLAsi(self.table, 0), "supporter": asis})
 
-    def viewNav(self):
-        v = HTMLMember(self.member).getFreeVotes()
-        return render(self.request, 'topicauction/member_join_asi_nav.html', {
-            'project' : self.member.proj, 
-            'member': self.member, 
-            'votes':range(v) 
-            })
+    def getVotes(self):
+        hm = HTMLMember(self.member)
+        v = hm.getFreeVotes()
+        mtv = hm.numVotes(self.table)
+        tv = len(self.table.asivotes_set.all())
+        n = hm.getMaxVotes()
+        data = {'member_votes_left':v, 'member_topic_voted': mtv, 'topic_voted':tv, 'max_votes': n}
+        
+        return JsonResponse(data, safe=False)
 
 """
 renders all asi for that can be voted
@@ -162,7 +177,7 @@ class ASIOverview(helpers.MemberRequest):
         if len(htables) % 6 > 0:
             pages = pages + 1
         
-        v = HTMLMember(self.member).getFreeVotes()
+        v = HTMLMember(self.member).getMaxVotes()
         
         return render(self.request, 'topicauction/member_asi_overview.html', {'project' : self.member.proj, 
             'member': self.member, 

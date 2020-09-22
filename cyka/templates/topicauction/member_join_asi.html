@@ -2,37 +2,73 @@
 {% endblock %}
 {% block javascript %}
 <script>
+    function getVotes(){
+      $.ajax({
+          type: "GET",
+	  url: '{% url 'cyka:topicauction_join_asi' member.uuid %}?table={{table.id}}&function=votes',
+	  complete: function (response) {
+	      updateVotes(response)
+          }
+      });
+    }
     function submit(action){
       $.ajax({
           type: "POST",
 	  url: '{% url 'cyka:topicauction_join_asi' member.uuid %}',
+	  dataType: "json",
 	  data:{
 	      table:{{table.id}},
               function:action,
               csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
               action: 'post'
           },
-      })
-      .done(function(response) {
-          $('#_supporter').html(response);
-	  aurl2('{% url 'cyka:topicauction_join_asi' member.uuid %}?table={{table.id}}&function=nav', '#_votes');
+	  complete: function (response) {
+	      updateVotes(response)
+          }
       });
+    }
+    function updateVotes(response){
+	var obj = $.parseJSON(response.responseText);
+	document.getElementById("_topic_voted").innerHTML = obj.topic_voted;
+	if (obj.member_votes_left == 0){
+	    $( "#_plus-btn" ).addClass( "disabled" );
+	} else {
+	    $( "#_plus-btn" ).removeClass( "disabled" );
+	}
+	if (obj.member_topic_voted == 0){
+	    $( "#_minus-btn" ).addClass( "disabled" );
+	} else {
+	    $( "#_minus-btn" ).removeClass( "disabled" );
+        }
+	var i = 0;
+	var j = obj.member_votes_left    
+	for(i = 0; i < obj.max_votes; i++ ){
+	    if (j > 0){
+	        $( "#_vote-" + i ).addClass( "icon-red" );
+	        $( "#_vote-" + i ).removeClass( "icon-grey" );
+		j--;
+            } else {
+	        $( "#_vote-" + i ).addClass( "icon-grey" );
+	        $( "#_vote-" + i ).removeClass( "icon-red" );
+	    }
+        }
     }
   $(document).ready(function(){
     $('.tooltipped').tooltip({enterDelay: 1000});
   });
   
   var interval = null;
-  function refreshSupporter(){
+  function refreshVotes(){
     interval = setInterval(function() {
-	aurl2('{% url 'cyka:topicauction_join_asi' member.uuid %}?table={{table.id}}&function=supporter', '#_supporter')
+	getVotes();
     }, 3000);
   }
   $(document).ready(function(){
     small();
+    getVotes();
     aurl2('{% url 'cyka:topicauction_join_asi' member.uuid %}?table={{table.id}}&function=pad', '#_padArea');
+    refreshVotes();
     $('.tooltipped').tooltip({enterDelay: 1000});
-    //refreshSupporter();
     });
     function aurl2(myurl, where) {
         $.ajax({
@@ -64,14 +100,14 @@
             <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
         </div>
         <div id="_plus" class="row">
-            <a class="btn-floating btn-large blue right" onclick="submit('plus')"><i class="right material-icons tooltipped" data-tooltip="Stimme abgeben">add</i></a>
+            <a id="_plus-btn" class="btn-floating btn-large blue right" onclick="submit('plus')"><i class="right material-icons tooltipped" data-tooltip="Stimme abgeben">add</i></a>
         </div>
         <div id="_minus" class="row">
-            <a class="btn-floating btn-large blue right" onclick="submit('minus')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">remove</i></a>
+            <a id="_minus-btn" class="btn-floating btn-large blue right" onclick="submit('minus')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">remove</i></a>
         </div>
         <div id="_votes" class="row navarea bottom">
 	    {% for v in votes %}
-	        <i class="material-icons icon-red">fiber_manual_record</i>
+	    <i id="_vote-{{v}}" class="material-icons icon-red">fiber_manual_record</i>
             {% endfor %}
 	</div>
     </div>
