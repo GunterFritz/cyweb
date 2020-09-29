@@ -1,3 +1,4 @@
+import json
 from lib.structure import Structure2 as Structure
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
@@ -6,7 +7,7 @@ from .config import Jitsi, Pad
 from . import helpers
 from .workflow import Workflow
 from django.db import transaction
-
+from django.utils.safestring import SafeString
 
 """
 File to render the topicauction
@@ -16,7 +17,7 @@ File to render the topicauction
 class HTMLAsi:
     #table: DB Object
     #num: threshold of supporters to make an asi
-    def __init__(self, table, num):
+    def __init__(self, table, num = 0):
         self.table = table
         self.supporter = len(self.table.sisign_set.all())
         self.progress = 100
@@ -41,6 +42,19 @@ class HTMLMember:
     def __init__(self, member):
         self.member = member
 
+    @staticmethod
+    def getProjMember(proj):
+        member = proj.member_set.all().filter(mtype='M')
+        retval = []
+        for m in member:
+            retval.append(HTMLMember(m))
+        
+        return retval
+    
+    @staticmethod
+    def getNumVotes(proj):
+        return Structure.factory(proj.ptype).getNumTopics()
+
     def getFreeVotes(self):
         votes = self.member.asivotes_set.all()
         n_votes = Structure.factory(self.member.proj.ptype).getNumTopics()
@@ -50,6 +64,7 @@ class HTMLMember:
     def getMaxVotes(self):
         return Structure.factory(self.member.proj.ptype).getNumTopics()
 
+    #creates a vote relation between member and asi
     def vote(self, asi):
         if self.getFreeVotes() < 1:
             return 0
@@ -57,7 +72,8 @@ class HTMLMember:
         self.member.asivotes_set.create(table=asi)
 
         return self.getFreeVotes()
-
+    
+    #deletes a vote relation between member and asi
     def unvote(self, asi):
         votes = self.member.asivotes_set.all().filter(table=asi)
 
@@ -66,6 +82,23 @@ class HTMLMember:
 
     def numVotes(self, asi):
         return len(self.member.asivotes_set.all().filter(table=asi))
+    
+    #creates json message with votes from a memmber
+    def getVotesJson(self, htables = None):
+        n = self.getMaxVotes()
+        v = self.getFreeVotes()
+
+        if htables == None:
+            return {'id': self.member.id, 'member_votes_left':v, 'max_votes': n}
+        
+        tables = []
+
+        for h in htables:
+            mtv = self.numVotes(h.table)
+            tables.append({ 'id':h.table.id, 'voted':h.votes, 'mvoted':mtv })
+        
+        return {'member_votes_left':v, 'max_votes': n, 'table': tables}
+    
 
     #def create_priority_list(self):
     #    topics =  self.member.proj.topic_set.all()
@@ -91,29 +124,34 @@ class AgreedStatementImportance(helpers.MemberRequest):
     
     def get(self):
         table_id = self.request.GET.get('table', '')
-        self.table = helpers.get_asi(table_id, self.member.proj)
+        if table_id != 'all':
+            self.table = helpers.get_asi(table_id, self.member.proj)
         func = self.request.GET.get('function', '')
-        
-        #supporter
-        if func == 'supporter':
-            return self.supporter()
-        
-        #editor
-        if func == 'pad':
-            return self.viewPad()
         
         #votes
         if func == 'votes':
             return self.getVotes()
         
-        v = HTMLMember(self.member).getMaxVotes()
+        html_mem = HTMLMember(self.member)
+        v = html_mem.getMaxVotes()
+        
+        pad = Pad(self.table.uuid, self.member.name)
+        asis = self.table.sisign_set.all()
+       
+        tables = []
+        tables.append(HTMLAsi(self.table))
+        data = HTMLMember(self.member).getVotesJson(tables)
 
         #main page
         return render(self.request, 'topicauction/member_join_asi.html', {
             'project' : self.member.proj, 
             'member': self.member, 
+            "etherpad": pad, 
+            "supporter": asis,
+            'asi': HTMLAsi(self.table, 0),
             'table': self.table, 
-            'votes':range(v) 
+            'votes':range(v),
+            'json_votes':SafeString(json.dumps(data))
             })
 
     def post(self):
@@ -126,32 +164,34 @@ class AgreedStatementImportance(helpers.MemberRequest):
         if(func == "minus"):
             HTMLMember(self.member).unvote(self.table)
 
-        return self.getVotes();
+        return self.getVotes()
 
-    """
-    Pad function, renders etherpad
-    """
-    def viewPad(self):
-        pad = Pad(self.table.uuid, self.member.name)
-        asis = self.table.sisign_set.all()
-        return render(self.request, 'topicauction/pad.html', {'asi': HTMLAsi(self.table, 0), 
-            "etherpad": pad, 
-            "supporter": asis, 
-            'member' : self.member 
-            })
-
-    def supporter(self):
-        asis = self.table.sisign_set.all()
-        return render(self.request, 'topicauction/supporter.html', {'asi': HTMLAsi(self.table, 0), "supporter": asis})
-
-    def getVotes(self):
+    def getVotesJson(self):
         hm = HTMLMember(self.member)
-        v = hm.getFreeVotes()
-        mtv = hm.numVotes(self.table)
-        tv = len(self.table.asivotes_set.all())
         n = hm.getMaxVotes()
-        data = {'member_votes_left':v, 'member_topic_voted': mtv, 'topic_voted':tv, 'max_votes': n}
+        v = hm.getFreeVotes()
         
+        tables = []
+
+        if self.table != None:
+            mtv = hm.numVotes(self.table)
+            tv = len(self.table.asivotes_set.all())
+            tables.append({ 'id':self.table.id, 'voted':tv, 'mvoted':mtv })
+        else:
+            for table in self.member.proj.table_set.all():
+                mtv = hm.numVotes(table)
+                tv = len(table.asivotes_set.all())
+                tables.append({ 'id':table.id, 'voted':tv, 'mvoted':mtv })
+        
+        return {'member_votes_left':v, 'max_votes': n, 'table': tables}
+    
+    def getVotes(self):
+        if self.table != None:
+            tables = []
+            tables.append(HTMLAsi(self.table))
+            data = HTMLMember(self.member).getVotesJson(tables)
+        else:
+            data = HTMLMember(self.member).getVotesJson(HTMLAsi.getProjAsi(self.member.proj))
         return JsonResponse(data, safe=False)
 
 """
@@ -164,7 +204,7 @@ class ASIOverview(helpers.MemberRequest):
         helpers.MemberRequest.__init__(self,request, uuid)
 
     def get(self):
-        table_id = self.request.GET.get('table', '')
+        #table_id = self.request.GET.get('table', '')
         page = int(self.request.GET.get('page', 1))
         
         #render tables overview
@@ -177,7 +217,9 @@ class ASIOverview(helpers.MemberRequest):
         if len(htables) % 6 > 0:
             pages = pages + 1
         
+        html_mem = HTMLMember(self.member)
         v = HTMLMember(self.member).getMaxVotes()
+        data = HTMLMember(self.member).getVotesJson(HTMLAsi.getProjAsi(self.member.proj))
         
         return render(self.request, 'topicauction/member_asi_overview.html', {'project' : self.member.proj, 
             'member': self.member, 
@@ -186,6 +228,7 @@ class ASIOverview(helpers.MemberRequest):
             'pages': range(1, pages), 
             'page':page,
             'votes':range(v),
+            'json_votes':SafeString(json.dumps(data)),
             'step': step})
 
 #moderator pages
@@ -240,9 +283,39 @@ class ModeratorScheduler(helpers.ModeratorRequest):
         if function == 'join':
             m = ModeratorJoinASI(self.request, self.proj)
             return m.joinAsi()
+
+        if function == 'member':
+            return self.renderMember()
+        
+        if function == 'updatemember':
+            return self.updateMember()
         
         #scheduling page requested
         return render(self.request, 'topicauction/moderator_scheduler.html', {'project' : self.proj, 'step': self.step })
+
+    def jsonMember(self):
+        retval = []
+        for m in self.proj.member_set.all().filter(mtype='M'):
+            retval.append(HTMLMember(m).getVotesJson())
+
+        return {'member':retval}
+
+    def updateMember(self):
+        data = self.jsonMember()
+        return JsonResponse(data, safe=False)
+            
+
+    def renderMember(self):
+        data = self.jsonMember()
+        mem = HTMLMember.getProjMember(self.proj)
+
+        return render(self.request, 'topicauction/moderator_member_overview.html', {'project' : self.proj, 
+            'member' : mem,
+            'votes' : range(HTMLMember.getNumVotes(self.proj)),
+            'json_member':SafeString(json.dumps(data))
+            })
+            
+
 
 class ModeratorJoinASI:
     def __init__(self, request, proj):

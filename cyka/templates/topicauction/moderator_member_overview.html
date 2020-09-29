@@ -1,0 +1,80 @@
+{% block extrahead %}
+{% endblock %}
+{% block javascript %}
+<script>
+  function updateVotes(json){
+    console.log(json)
+    var obj = $.parseJSON(json);
+    $.each(obj.member , function(index, val) { 
+	var j = val.member_votes_left    
+	for(i = 0; i < val.max_votes; i++ ){
+	    if (j > 0){
+	        $( "#_member_" + val.id + "_vote-" + i ).addClass( "icon-red" );
+	        $( "#_member_" + val.id + "_vote-" + i ).removeClass( "icon-grey" );
+		j--;
+            } else {
+	        $( "#_member_" + val.id + "_vote-" + i ).addClass( "icon-grey" );
+	        $( "#_member_" + val.id + "_vote-" + i ).removeClass( "icon-red" );
+	    }
+        }
+    });
+  }
+  var interval = null;
+  function getVotes(){
+    $.ajax({
+        type: "GET",
+        url: '{% url 'cyka:moderator_topicauction' project.id %}?function=updatemember',
+	complete: function (response) {
+          updateVotes(response.responseText)
+      }
+    });
+  }
+  function refreshVotes(){
+    interval = setInterval(function() {
+	getVotes();
+    }, 3000);
+  }
+  $(document).ready(function(){
+    updateVotes('{{json_member}}')
+    refreshVotes();
+    $('.tooltipped').tooltip({enterDelay: 1000});
+  });
+    function leave_agenda(url){
+        clearInterval(interval);
+        get_agenda();
+    }   
+    function leave(url){
+        clearInterval(interval);
+        aurl(url);
+    }   
+</script>
+{% endblock %}
+<div class="headcontainer">
+    <div class="col actionarea">
+      <ul class="collection">
+          {% for m in member %}
+	  <li class="collection-item"><div>{{m.member.name}}<span class="secondary-content">{% for i in votes %}<i id="_member_{{m.member.id}}_vote-{{i}}" class="material-icons icon-text icon-red">fiber_manual_record</i>{% endfor %}</span></div></li>
+	  {% endfor %}
+      </ul>
+    </div>
+    <div class="col right navarea">
+        <div class="row">
+	    <a class="btn-floating btn-large blue right" onclick="leave_agenda()"><i class="right material-icons tooltipped" data-tooltip="Agenda">group_work</i></a>
+        </div>
+        <div class="row">
+            <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
+        </div>
+        <div class="row">
+	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="leave('{% url 'cyka:moderator_topicauction' project.id %}')"><i class="left material-icons secondary-content">schedule</i></a>
+        </div>
+        <div class="row">
+	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="leave('{% url 'cyka:moderator_topicauction' project.id %}?function=asi')"><i class="left material-icons secondary-content">star_border</i></a>
+        </div>
+        <div class="row">
+	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="leave('{% url 'cyka:moderator_topicauction' project.id %}?function=asi')"><i class="left material-icons secondary-content">assessment</i></a>
+        </div>
+        <div class="row">
+	    <a class="btn-floating btn-large waves-effect waves-light right blue disabled" onclick="leave('{% url 'cyka:moderator_topicauction' project.id %}?function=member')"><i class="left material-icons secondary-content">people_outline</i></a>
+        </div>
+    </div>
+</div>

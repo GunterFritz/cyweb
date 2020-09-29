@@ -5,9 +5,9 @@
     function getVotes(){
       $.ajax({
           type: "GET",
-	  url: '{% url 'cyka:topicauction_join_asi' member.uuid %}?table={{table.id}}&function=votes',
+	  url: '{% url 'cyka:topicauction_join_asi' member.uuid %}?table={{asi.table.id}}&function=votes',
 	  complete: function (response) {
-	      updateVotes(response)
+	      updateVotes(response.responseText)
           }
       });
     }
@@ -23,19 +23,24 @@
               action: 'post'
           },
 	  complete: function (response) {
-	      updateVotes(response)
+	      updateVotes(response.responseText)
           }
       });
     }
-    function updateVotes(response){
-	var obj = $.parseJSON(response.responseText);
-	document.getElementById("_topic_voted").innerHTML = obj.topic_voted;
+    function updateVotes(json){
+	console.log(json)
+	var obj = $.parseJSON(json);
+	var mvoted = 0
+	$.each(obj.table , function(index, val) { 
+	    $("#_topic_voted").text(val.voted);
+	    mvoted = val.mvoted
+        });
 	if (obj.member_votes_left == 0){
 	    $( "#_plus-btn" ).addClass( "disabled" );
 	} else {
 	    $( "#_plus-btn" ).removeClass( "disabled" );
 	}
-	if (obj.member_topic_voted == 0){
+	if (mvoted == 0){
 	    $( "#_minus-btn" ).addClass( "disabled" );
 	} else {
 	    $( "#_minus-btn" ).removeClass( "disabled" );
@@ -65,8 +70,7 @@
   }
   $(document).ready(function(){
     small();
-    getVotes();
-    aurl2('{% url 'cyka:topicauction_join_asi' member.uuid %}?table={{table.id}}&function=pad', '#_padArea');
+    updateVotes('{{ json_votes }}');
     refreshVotes();
     $('.tooltipped').tooltip({enterDelay: 1000});
     });
@@ -81,7 +85,6 @@
     }
     function leave(url){
         clearInterval(interval);
-        //aurl(url, '#_appendHere');
         aurl(url);
     }   
 </script>
@@ -89,8 +92,31 @@
 {% block content %}
 <div class="headcontainer">
     <div class="col actionarea">
-        <div id="_padArea">
+<div class="col padplan">
+    <div class="card row">
+        <div class="card-content black-text">
+	    <span class="card-title grey-text text-darken-2">{{asi.table.card.heading}}</span>
+	    <p>{{asi.table.card.desc}}<p>
         </div>
+        <div class="card-action black-text">
+	    <div id="_supporter">
+		    <p class="icon-text"><i class="material-icons icon-red icon-text">fiber_manual_record</i>(<span id="_topic_voted">{{asi.votes}}</span>)
+	            {% for s in supporter %}
+	            <span class="badge blue">{{s.member.name}}</span>
+		    {% endfor %}</p>
+	    </div>
+        </div>
+    </div>
+    <div class="row">
+	<iframe  frameborder="0" 
+            marginheight="0" 
+            marginwidth="0" 
+	    scrolling="auto" name="{{etherpad.name}}" src="{{etherpad.domain}}/{{etherpad.pad}}?showChat=false&showLineNumbers=false&userName={{etherpad.user}}" 
+	    width="100%" 
+            height="550px">
+	</iframe>
+    </div>
+</div>
     </div>
     <div class="col navarea">
         <div class="row">

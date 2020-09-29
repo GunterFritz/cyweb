@@ -2,10 +2,44 @@
 {% endblock %}
 {% block javascript %}
 <script>
+    function getVotes(){
+      $.ajax({
+          type: "GET",
+	  url: '{% url 'cyka:topicauction_join_asi' member.uuid %}?table=all&function=votes',
+	  complete: function (response) {
+	      updateVotes(response.responseText)
+          }
+      });
+    }
+  var interval = null;
+  function refreshVotes(){
+    interval = setInterval(function() {
+	getVotes();
+    }, 3000);
+  }
+    function updateVotes(json){
+	var obj = $.parseJSON(json);
+	$("#_topic_voted").text(obj.topic_voted);
+	$.each(obj.table , function(index, val) { 
+	    $("#_vote_" + val.id).text(val.voted);
+        });
+	var i = 0;
+	var j = obj.member_votes_left    
+	for(i = 0; i < obj.max_votes; i++ ){
+	    if (j > 0){
+	        $( "#_vote-" + i ).addClass( "icon-red" );
+	        $( "#_vote-" + i ).removeClass( "icon-grey" );
+		j--;
+            } else {
+	        $( "#_vote-" + i ).addClass( "icon-grey" );
+	        $( "#_vote-" + i ).removeClass( "icon-red" );
+	    }
+        }
+    }
   var page = parseInt({{page}});
   $(document).ready(function(){
     small();
-    queryString = window.location.search;
+    updateVotes('{{ json_votes }}');
     document.getElementById("page_" + page).classList.add('class', "active");
     if(page == 1){
       //disable page left
@@ -26,7 +60,16 @@
       document.getElementById("page_right_link").setAttribute('onclick', "aurl('" + url + "')");
     }
     $('.tooltipped').tooltip({enterDelay: 1000});
+    refreshVotes();
   });
+    function leave(url){
+        clearInterval(interval);
+        aurl(url);
+    }
+    function goAgenda(){
+        clearInterval(interval);
+        get_agenda();
+    }
 </script>
 {% endblock %}
 <div class="headcontainer">
@@ -34,20 +77,20 @@
       <ul class="pagination center">
         <li id="page_left"><a id="page_left_link"><i class="material-icons waves-effect">chevron_left</i></a></li>
           {% for p in pages %}	
-	    <li id="page_{{ p }}"><a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:topicauction_asi_overview' member.uuid %}?page={{ p }}')">{{ p }}</a></li>
+	    <li id="page_{{ p }}"><a onmouseover="this.style.cursor='pointer'" onclick="url('{% url 'cyka:topicauction_asi_overview' member.uuid %}?page={{ p }}')">{{ p }}</a></li>
 	  {% endfor %}
         <li id="page_right" class="waves-effect"><a id="page_right_link"><i class="material-icons">chevron_right</i></a></li>
       </ul>
       <div class="row valign">
         {% for t in tables %}
-	    <a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:topicauction_join_asi' member.uuid %}?table={{ t.table.id }}')">
+	    <a onmouseover="this.style.cursor='pointer'" onclick="leave('{% url 'cyka:topicauction_join_asi' member.uuid %}?table={{ t.table.id }}')">
 		<div class="col card mplan tooltipped" data-tooltip="Details">
                     <div class="card-content black-text">
 		      <span class="card-title grey-text text-darken-2">{{t.table.card.heading}}</span>
 		        <p>{{t.table.card.desc}}</p>
                         <div class="bottom-card">
 				<hr>
-				<p class="icon-text"><i class="material-icons icon-red icon-text">fiber_manual_record</i>({{t.votes}})</p>
+				<p class="icon-text"><i class="material-icons icon-red icon-text">fiber_manual_record</i>(<span id="_vote_{{t.table.id}}">{{t.votes}}</span>)</p>
 	                </div>
                     </div>
                 </div>
@@ -57,14 +100,14 @@
     </div>
     <div class="col navarea">
         <div class="row">
-	    <a class="btn-floating btn-large blue right" onclick="get_agenda()"><i class="right material-icons tooltipped" data-tooltip="Agenda">group_work</i></a>
+	    <a class="btn-floating btn-large blue right" onclick="goAgenda()"><i class="right material-icons tooltipped" data-tooltip="Agenda">group_work</i></a>
         </div>
         <div class="row">
             <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
         </div>
         <div class="row navarea bottom">
 	    {% for v in votes %}
-	        <i class="material-icons icon-red">fiber_manual_record</i>
+	        <i id="_vote-{{v}}" class="material-icons icon-red">fiber_manual_record</i>
             {% endfor %}
 	</div>
     </div>
