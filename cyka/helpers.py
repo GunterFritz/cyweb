@@ -11,7 +11,7 @@ def CardDelete(card):
     card.cardvotes_set.all().delete()
 
 def ProjectDelete(project):
-    for c in card.card_set.all():
+    for c in project.card_set.all():
         CardDelete(m)
     for m in project.member_set.all():
         MemberDelete(m)
