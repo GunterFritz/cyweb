@@ -11,6 +11,7 @@ from .models import Project, Topic, Member, Assignment, Card, Table
 from random import randrange 
 from . import helpers
 from . import topicauction as TopicAuction
+from . import start as Start
 from . import brainwriting
 from .helpers import Agenda, HtmlCard
 from .workflow import Workflow
@@ -538,10 +539,9 @@ def moderator_brainwriting(request, project_id):
 
 @login_required
 def jostle_welcome(request, project_id):
-    proj = get_project(request, project_id)
-    step = Workflow.getStep(proj, 30, request)
-    
-    return render(request, 'cyka/jostle_welcome.html', {'project' : proj, 'step': step, 'wf_form': step.form })
+    m = Start.ModeratorScheduler(request, project_id)
+
+    return m.process()
 
 @login_required
 def rand_session(request, project_id):

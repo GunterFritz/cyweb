@@ -33,7 +33,7 @@ urlpatterns = [
 	# ex: /cyka/project/5/jostle/randsession/
 	url(r'^(?P<project_id>[0-9]+)/jostle/randsession/$', views.rand_session, name="randsession"),
 	# ex: /cyka/project/5/jostle/welcome/
-	url(r'^(?P<project_id>[0-9]+)/jostle/welcome/$', views.jostle_welcome, name="jostle_welcome"),
+	url(r'^(?P<project_id>[0-9]+)/jostle/welcome/$', views.jostle_welcome, name="moderator_startjostle"),
 	# ex: /cyka/project/5/delete/
 	url(r'^(?P<project_id>[0-9]+)/delete/$', views.project_delete, name="project_delete"),
 	# ex: /cyka/project/5/votes/

@@ -39,7 +39,7 @@ workflow = [
             'step' : 30,
             'short': 'Begrüßung',
             'desc' : 'Begrüßen Sie die Teilnehmer, führen Sie in den Workshop ein und stellen Sie die Ausgangsfrage vor', 
-            'link' : 'cyka:jostle_welcome',
+            'link' : 'cyka:moderator_startjostle',
             'memberlink' : 'cyka:personal_plenum',
             'icon' : 'personal_video',
             'todo' : 'Begrüßen Sie die Teilnehmer, führen Sie in den Workshop ein und lassen Sie durch den Auftraggeber die Ausgangsfrage vorstellen', 
@@ -55,26 +55,26 @@ workflow = [
             'todo' : 'Lassen Sie den Teilnehmern 5 - 15 Minuten Zeit, um ihre Gedanken zur Ausgangsfrage aufzuschreiben. Die Teilnehmer sehen nur ihre eigenen Karten.', 
             'formtype' : 'radio'
         },
-        {
-            'step' : 50,
-            'short': 'Voting',
-            'desc' : 'Die Teilnehmer können besonders wichtigen Gedanken zustimmen', 
-            'link' : 'cyka:admin_votes',
-            'memberlink' : 'cyka:personal_votes',
-            'icon' : 'thumb_up',
-            'todo' : 'Die Teilnehmer können nun alle Karten sehen. Lassen Sie den Teilnehmern 5 - 15 Minuten Zeit, um diese durchzusehen. Gedanken, die besonders wichtig sind können markiert weden.', 
-            'formtype' : 'radio'
-        },
-        {
-            'step' : 60,
-            'short': 'Tagungscafe',
-            'desc' : 'Die Teilnehmer tauschen sich in zufälligen Gruppen zur Ausgangsfrage aus', 
-            'link' : 'cyka:randsession',
-            'memberlink' : 'cyka:personal_workflow',
-            'icon' : 'free_breakfast',
-            'todo' : 'Die Teilnehmer tauschen sich in zufälligen Gruppen zur Ausgangsfrage aus', 
-            'formtype' : 'radio'
-        },
+ #       {
+ #           'step' : 50,
+ #           'short': 'Voting',
+ #           'desc' : 'Die Teilnehmer können besonders wichtigen Gedanken zustimmen', 
+ #           'link' : 'cyka:admin_votes',
+ #           'memberlink' : 'cyka:personal_votes',
+ #           'icon' : 'thumb_up',
+ #           'todo' : 'Die Teilnehmer können nun alle Karten sehen. Lassen Sie den Teilnehmern 5 - 15 Minuten Zeit, um diese durchzusehen. Gedanken, die besonders wichtig sind können markiert weden.', 
+ #           'formtype' : 'radio'
+ #       },
+ #       {
+ #           'step' : 60,
+ #           'short': 'Tagungscafe',
+ #           'desc' : 'Die Teilnehmer tauschen sich in zufälligen Gruppen zur Ausgangsfrage aus', 
+ #           'link' : 'cyka:randsession',
+ #           'memberlink' : 'cyka:personal_workflow',
+ #           'icon' : 'free_breakfast',
+ #           'todo' : 'Die Teilnehmer tauschen sich in zufälligen Gruppen zur Ausgangsfrage aus', 
+ #           'formtype' : 'radio'
+ #       },
         {
             'step' : 70,
             'short': 'Themenvorschläge',
