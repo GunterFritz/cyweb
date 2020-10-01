@@ -19,6 +19,7 @@ class HTMLAsi:
     #num: threshold of supporters to make an asi
     def __init__(self, table, num = 0):
         self.table = table
+        self.name = self.table.card.heading
         self.supporter = len(self.table.sisign_set.all())
         self.progress = 100
         self.max = num
@@ -27,8 +28,8 @@ class HTMLAsi:
         self.votes = len(self.table.asivotes_set.all())
     
     @staticmethod
-    def getProjAsi(proj):
-        tables = proj.table_set.all()
+    def getProjAsi(proj, tid = None):
+        tables = proj.table_set.all() if tid == None else proj.table_set.all().filter(id=tid)
         n = Structure.factory(proj.ptype).getMinAgreedPersons(len(proj.member_set.all().filter(mtype='M')))
         htables = []
         for t in tables:
@@ -37,6 +38,26 @@ class HTMLAsi:
                 htables.append(h)
         
         return htables
+    
+    """
+    returns all ASI of a project in json
+    ---
+    params
+      proj Model.Project
+
+    return
+      dictonary
+    """
+    @staticmethod
+    def getProjAsiJson(proj, tid = None):
+        t = HTMLAsi.getProjAsi(proj, tid)
+        retval = []
+        i = 0
+        for e in sorted(t, key=lambda HTMLAsi: HTMLAsi.votes, reverse=True):
+            retval.append({'id': e.table.id, 'name': e.name, 'votes': e.votes, 'sort': i})
+            i = i + 1
+
+        return { 'asi': retval }
 
 class HTMLMember:
     def __init__(self, member):
@@ -269,26 +290,27 @@ class ModeratorScheduler(helpers.ModeratorRequest):
             m = ModeratorASIOverview(self.request, self.proj.id)
             return m.process()
         
-        #supporter
-        if function == 'supporter':
-            m = ModeratorJoinASI(self.request, self.proj)
-            return m.supporter()
+        if function == 'table':
+            return self.renderTable()
         
-        #editor
-        if function == 'pad':
-            m = ModeratorJoinASI(self.request, self.proj)
-            return m.viewPad()
-        
-        #join
         if function == 'join':
             m = ModeratorJoinASI(self.request, self.proj)
-            return m.joinAsi()
-
+            return m.renderJoinAsi()
+        
         if function == 'member':
             return self.renderMember()
         
         if function == 'updatemember':
-            return self.updateMember()
+            data = self.jsonMember()
+            return JsonResponse(data, safe=False)
+        
+        if function == 'updatetable':
+            tid = self.request.GET.get('table', '')
+            if tid == '':
+                tid = None
+            data = HTMLAsi.getProjAsiJson(self.proj, tid)
+            print(data)
+            return JsonResponse(data, safe=False)
         
         #scheduling page requested
         return render(self.request, 'topicauction/moderator_scheduler.html', {'project' : self.proj, 'step': self.step })
@@ -300,11 +322,6 @@ class ModeratorScheduler(helpers.ModeratorRequest):
 
         return {'member':retval}
 
-    def updateMember(self):
-        data = self.jsonMember()
-        return JsonResponse(data, safe=False)
-            
-
     def renderMember(self):
         data = self.jsonMember()
         mem = HTMLMember.getProjMember(self.proj)
@@ -315,7 +332,15 @@ class ModeratorScheduler(helpers.ModeratorRequest):
             'json_member':SafeString(json.dumps(data))
             })
             
+    def renderTable(self):
+        data = HTMLAsi.getProjAsiJson(self.proj)
+        t = HTMLAsi.getProjAsi(self.proj)
 
+        return render(self.request, 'topicauction/moderator_asi_sorted.html', {'project' : self.proj, 
+            'table' : sorted(t, key=lambda HTMLAsi: HTMLAsi.votes, reverse=True),
+            'count': range(len(t)),
+            'json_table':SafeString(json.dumps(data))
+            })
 
 class ModeratorJoinASI:
     def __init__(self, request, proj):
@@ -324,18 +349,19 @@ class ModeratorJoinASI:
         self.table = Table.objects.get(pk=table_id)
         self.name = self.request.user.get_username
         self.proj = proj
-
-    def supporter(self):
-        asis = self.table.sisign_set.all()
-        return render(self.request, 'topicauction/supporter.html', {"sign": asis})
-
-    def viewPad(self):
-        pad = Pad(self.table.uuid, self.name)
+    
+    def renderJoinAsi(self):
+        pad = Pad(self.table.uuid, self.request.user.get_username)
         pad.setReadOnly()
         asis = self.table.sisign_set.all()
-        return render(self.request, 'topicauction/pad.html', {'table': self.table, "etherpad": pad, "sign": asis, 'project' : self.proj })
-    
-    def joinAsi(self):
-        #main page
-        jitsi = Jitsi(self.table.uuid, self.table.card.heading, self.name)
-        return render(self.request, 'problemjostle/moderator_join_asi.html', {'project' : self.proj, 'table': self.table, 'jitsi': jitsi })
+        data = HTMLAsi.getProjAsiJson(self.proj, self.table.id)
+        
+        return render(self.request, 'topicauction/moderator_join_asi.html', {
+            'project' : self.proj, 
+            "etherpad": pad, 
+            "supporter": asis,
+            'asi': HTMLAsi(self.table, 0),
+            'table': self.table, 
+            'json_votes':SafeString(json.dumps(data))
+            })
+

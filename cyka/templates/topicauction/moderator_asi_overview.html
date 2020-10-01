@@ -46,7 +46,7 @@
       </ul>
       <div class="row valign">
         {% for t in tables %}
-	    <a href="{% url 'cyka:moderator_topicauction' project.id %}?table={{t.table.id}}&function=join">
+	    <a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:moderator_topicauction' project.id %}?function=join&table={{t.table.id}}')">
 		<div class="col card mplan tooltipped" data-tooltip="Beitreten">
                     <div class="card-content black-text">
 		      <div class="progress">
@@ -74,7 +74,7 @@
 	    <a class="btn-floating btn-large waves-effect waves-light right blue disabled" onclick="aurl('{% url 'cyka:moderator_topicauction' project.id %}?function=asi')"><i class="left material-icons secondary-content">star_border</i></a>
         </div>
         <div class="row">
-	    <a class="btn-floating btn-large waves-effect waves-light right blue disabled" onclick="aurl('{% url 'cyka:moderator_topicauction' project.id %}?function=asi')"><i class="left material-icons secondary-content">assessment</i></a>
+	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="aurl('{% url 'cyka:moderator_topicauction' project.id %}?function=table')"><i class="left material-icons secondary-content">assessment</i></a>
         </div>
         <div class="row">
 	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="aurl('{% url 'cyka:moderator_topicauction' project.id %}?function=member')"><i class="left material-icons secondary-content">people_outline</i></a>

@@ -5,23 +5,7 @@
     function getVotes(){
       $.ajax({
           type: "GET",
-	  url: '{% url 'cyka:topicauction_join_asi' member.uuid %}?table={{asi.table.id}}&function=votes',
-	  complete: function (response) {
-	      updateVotes(response.responseText)
-          }
-      });
-    }
-    function submit(action){
-      $.ajax({
-          type: "POST",
-	  url: '{% url 'cyka:topicauction_join_asi' member.uuid %}',
-	  dataType: "json",
-	  data:{
-	      table:{{table.id}},
-              function:action,
-              csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
-              action: 'post'
-          },
+	  url: '{% url 'cyka:moderator_topicauction' project.id %}?table={{asi.table.id}}&function=updatetable',
 	  complete: function (response) {
 	      updateVotes(response.responseText)
           }
@@ -31,32 +15,10 @@
 	console.log(json)
 	var obj = $.parseJSON(json);
 	var mvoted = 0
-	$.each(obj.table , function(index, val) { 
-	    $("#_topic_voted").text(val.voted);
+	$.each(obj.asi , function(index, val) { 
+	    $("#_topic_voted").text(val.votes);
 	    mvoted = val.mvoted
         });
-	if (obj.member_votes_left == 0){
-	    $( "#_plus-btn" ).addClass( "disabled" );
-	} else {
-	    $( "#_plus-btn" ).removeClass( "disabled" );
-	}
-	if (mvoted == 0){
-	    $( "#_minus-btn" ).addClass( "disabled" );
-	} else {
-	    $( "#_minus-btn" ).removeClass( "disabled" );
-        }
-	var i = 0;
-	var j = obj.member_votes_left    
-	for(i = 0; i < obj.max_votes; i++ ){
-	    if (j > 0){
-	        $( "#_vote-" + i ).addClass( "icon-red" );
-	        $( "#_vote-" + i ).removeClass( "icon-grey" );
-		j--;
-            } else {
-	        $( "#_vote-" + i ).addClass( "icon-grey" );
-	        $( "#_vote-" + i ).removeClass( "icon-red" );
-	    }
-        }
     }
   
   var interval = null;
@@ -70,7 +32,7 @@
     updateVotes('{{ json_votes }}');
     refreshVotes();
     $('.tooltipped').tooltip({enterDelay: 1000});
-    });
+  });
     function aurl2(myurl, where) {
         $.ajax({
             type: "GET",
@@ -117,22 +79,11 @@
     </div>
     <div class="col navarea">
         <div class="row">
-            <a class="btn-floating btn-large red right" onclick="leave('{% url 'cyka:topicauction_asi_overview' member.uuid %}')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">exit_to_app</i></a>
+            <a class="btn-floating btn-large red right" onclick="leave('{% url 'cyka:moderator_topicauction' project.id %}?function=asi')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">exit_to_app</i></a>
         </div>
         <div class="row">
             <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
         </div>
-        <div id="_plus" class="row">
-            <a id="_plus-btn" class="btn-floating btn-large blue right" onclick="submit('plus')"><i class="right material-icons tooltipped" data-tooltip="Stimme abgeben">add</i></a>
-        </div>
-        <div id="_minus" class="row">
-            <a id="_minus-btn" class="btn-floating btn-large blue right" onclick="submit('minus')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">remove</i></a>
-        </div>
-        <div id="_votes" class="row navarea bottom">
-	    {% for v in votes %}
-	    <i id="_vote-{{v}}" class="material-icons icon-red">fiber_manual_record</i>
-            {% endfor %}
-	</div>
     </div>
 </div>
 {% endblock %}
