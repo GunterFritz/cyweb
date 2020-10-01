@@ -470,6 +470,12 @@ def personal_edit(request, uuid):
     return render(request, 'cyka/personal_edit.html', {'project' : member.proj, 'member': member, 'priority_list':priority_list, 'ok_form' : ok_form})
 
 @login_required
+def admin_startjostle(request, project_id):
+    proj = get_project(request, project_id)
+    
+    return render(request, 'cyka/admin_startjostle.html', {'project' : proj })
+
+@login_required
 def admin_votes(request, project_id):
     proj = get_project(request, project_id)
     step = Workflow.getStep(proj, 50, request)

@@ -88,19 +88,19 @@
                 <ul id="slide-out" class="sidenav sidenav-fixed">
                     {% block sidenav_items %}
                     <li>
-                        <a href="{% url 'cyka:workflow' project.id %}" class="collapsible-header" data-turbolinks="false"><i class="material-icons">group_work</i>Agenda</a>
-                    </li>
-                    <li>
                         <a href="{% url 'cyka:project_details' project.id %}" class="collapsible-header" data-turbolinks="false"><i class="material-icons">home</i>Workshop</a>
                     </li>
                     <li>
                         <a href="{% url 'cyka:project_team' project.id %}" class="collapsible-header" data-turbolinks="false"><i class="material-icons">supervisor_account</i>Teilnehmer</a>
                     </li>
                     <li>
-			    <a href="{% url 'cyka:admin_jostle' project.id %}" class="collapsible-header" data-turbolinks="false"><i class="material-icons">videocam</i>Problem Jostle</a>
+			    <a href="{% url 'cyka:admin_startjostle' project.id %}" class="collapsible-header" data-turbolinks="false"><i class="material-icons">videocam</i>Problem Jostle</a>
                     </li>
                     <li>
-			    <a href="{% url 'cyka:plenum' project.id %}" class="collapsible-header" data-turbolinks="false"><i class="material-icons">videocam</i>Zum Plenum</a>
+                        <a href="{% url 'cyka:workflow' project.id %}" class="collapsible-header" data-turbolinks="false"><i class="material-icons">group_work</i>Agenda(obsolete)</a>
+                    </li>
+                    <li>
+			    <a href="{% url 'cyka:plenum' project.id %}" class="collapsible-header" data-turbolinks="false"><i class="material-icons">videocam</i>Test</a>
                     </li>
                     {% endblock sidenav_items %}
 		</ul>

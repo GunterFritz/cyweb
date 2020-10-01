@@ -1,0 +1,32 @@
+{% extends 'cyka/project_base.html' %}
+{% load material_form %}
+
+{% block extrahead %}
+<style type="text/css">
+  @media only screen and (min-width : 601px) {
+      #id_card_type_container {
+          margin-top: 40px;
+          margin-left: 50px;
+      }
+}
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="row valign change-form">
+    <div class="{% block formclass %}col s12 m8 offset-m2 l8 offset-l2{% endblock %}">
+        <div class="card">
+                <div class="card-content">
+                    <span class="card-title grey-text text-darken-2">Was ist zu tun<i class="material-icons right">videocam</i></span>
+		    <p>Eröffnen Sie die Konferenz</p>
+                </div>
+                <div class="card-action">
+                    <div class="right-align">
+			<a href="{% url 'cyka:admin_jostle' project.id %}" class="btn btn-primary" data-turbolinks="false">Problem Jostle</a>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
