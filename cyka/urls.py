@@ -19,7 +19,13 @@ urlpatterns = [
         #navbar
 	# ex: /cyka/project/5/jostle/
 	url(r'^(?P<project_id>[0-9]+)/startjostle/$', views.admin_startjostle, name="admin_startjostle"),
-        #endnavbar
+        #end navbar
+        #start
+	# ex: /cyka/project/5/jostle/welcome/
+	url(r'^(?P<project_id>[0-9]+)/jostle/welcome/$', views.jostle_welcome, name="moderator_startjostle"),
+        #endstart
+	# ex: /cyka/member_start/uuid
+        url(r'^member_start/(?P<uuid>[0-9A-Za-z\-]+)$', views.member_start, name="member_start"),
         #topicauction
 	# ex: /cyka/project/5/moderator/topicauction/
 	url(r'^(?P<project_id>[0-9]+)/moderator/topicauction/$', views.moderator_topicauction, name="moderator_topicauction"),
@@ -32,8 +38,6 @@ urlpatterns = [
 	url(r'^(?P<project_id>[0-9]+)/jostle/$', views.admin_jostle, name="admin_jostle"),
 	# ex: /cyka/project/5/jostle/randsession/
 	url(r'^(?P<project_id>[0-9]+)/jostle/randsession/$', views.rand_session, name="randsession"),
-	# ex: /cyka/project/5/jostle/welcome/
-	url(r'^(?P<project_id>[0-9]+)/jostle/welcome/$', views.jostle_welcome, name="moderator_startjostle"),
 	# ex: /cyka/project/5/delete/
 	url(r'^(?P<project_id>[0-9]+)/delete/$', views.project_delete, name="project_delete"),
 	# ex: /cyka/project/5/votes/
@@ -77,8 +81,6 @@ urlpatterns = [
         url(r'^cards/(?P<uuid>[0-9A-Za-z\-]+)$', views.personal_card, name="personal_card"),
 	# ex: /cyka/personal_plenum/uuid
         url(r'^get_more_agenda/(?P<uuid>[0-9A-Za-z\-]+)$', views.get_more_agenda, name="get_more_agenda"),
-	# ex: /cyka/personal_plenum/uuid
-        url(r'^personal_plenum/(?P<uuid>[0-9A-Za-z\-]+)$', views.personal_plenum, name="personal_plenum"),
 	# ex: /cyka/personal_agenda/uuid
         url(r'^personal_workflow/(?P<uuid>[0-9A-Za-z\-]+)$', views.personal_workflow, name="personal_workflow"),
 	# ex: /cyka/join_meeting/uuid

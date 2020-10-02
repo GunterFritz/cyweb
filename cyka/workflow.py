@@ -40,7 +40,7 @@ workflow = [
             'short': 'Begrüßung',
             'desc' : 'Begrüßen Sie die Teilnehmer, führen Sie in den Workshop ein und stellen Sie die Ausgangsfrage vor', 
             'link' : 'cyka:moderator_startjostle',
-            'memberlink' : 'cyka:personal_plenum',
+            'memberlink' : 'cyka:member_start',
             'icon' : 'personal_video',
             'todo' : 'Begrüßen Sie die Teilnehmer, führen Sie in den Workshop ein und lassen Sie durch den Auftraggeber die Ausgangsfrage vorstellen', 
             'formtype' : 'radio'

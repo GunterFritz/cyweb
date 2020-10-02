@@ -356,13 +356,13 @@ def personal_edit_up(request, uuid, priority):
 
     return redirect('cyka:personal_edit', uuid)
 
-def personal_plenum(request, uuid):
+def member_start(request, uuid):
     try:
         member = Member.objects.all().filter(uuid=uuid)[0]
 
     except Member.DoesNotExist:
         raise Http404("Member does not exist")
-    return render(request, 'cyka/personal_plenum.html', {'project' : member.proj, 'member': member})
+    return render(request, 'start/member_start.html', {'project' : member.proj, 'member': member})
 
 def test(request, uuid):
     member = Member.objects.all().filter(uuid=uuid)[0]

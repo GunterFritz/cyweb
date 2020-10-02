@@ -1,0 +1,31 @@
+{% block extrahead %}
+{% endblock %}
+{% block javascript %}
+<script>
+  $(document).ready(function(){
+    full();
+    $('.tooltipped').tooltip({enterDelay: 1000});
+  });
+    function full() {
+        $("#meetcontent").outerWidth('90%');
+        $("#stepcontent").outerWidth('10%');
+	size = 0;
+    }
+    function goAgenda(){
+	console.log("hallo");
+        get_agenda();
+    }
+</script>
+{% endblock %}
+<div class="headcontainer">
+    <div class="col actionarea">
+    </div>
+    <div class="col navarea">
+        <div class="row">
+	    <a class="btn-floating btn-large blue right" onclick="get_agenda()"><i class="right material-icons tooltipped" data-tooltip="Agenda">group_work</i></a>
+        </div>
+        <div class="row">
+            <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
+        </div>
+    </div>
+</div>
