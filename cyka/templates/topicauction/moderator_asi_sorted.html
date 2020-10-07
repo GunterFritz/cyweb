@@ -3,27 +3,17 @@
 {% block javascript %}
 <script>
   function updateVotes(json){
-    console.log(json)
     var obj = $.parseJSON(json);
-    $.each(obj.member , function(index, val) { 
-	var j = val.member_votes_left    
-	for(i = 0; i < val.max_votes; i++ ){
-	    if (j > 0){
-	        $( "#_member_" + val.id + "_vote-" + i ).addClass( "icon-blue" );
-	        $( "#_member_" + val.id + "_vote-" + i ).removeClass( "icon-grey" );
-		j--;
-            } else {
-	        $( "#_member_" + val.id + "_vote-" + i ).addClass( "icon-grey" );
-	        $( "#_member_" + val.id + "_vote-" + i ).removeClass( "icon-blue" );
-	    }
-        }
+    $.each(obj.asi , function(index, val) {
+       $( "#_row_" + val.sort + "_name").text( val.name );
+       $( "#_row_" + val.sort + "_votes").text( "(" + val.votes + ")");
     });
   }
   var interval = null;
   function getVotes(){
     $.ajax({
         type: "GET",
-        url: '{% url 'cyka:moderator_topicauction' project.id %}?function=updatemember',
+        url: '{% url 'cyka:moderator_topicauction' project.id %}?function=updatetable',
 	complete: function (response) {
           updateVotes(response.responseText)
       }
@@ -35,7 +25,7 @@
     }, 3000);
   }
   $(document).ready(function(){
-    updateVotes('{{json_member}}')
+    updateVotes('{{json_table}}')
     refreshVotes();
     $('.tooltipped').tooltip({enterDelay: 1000});
   });
@@ -52,10 +42,11 @@
 <div class="headcontainer">
     <div class="col actionarea">
       <ul class="collection">
-          {% for m in member %}
-	  <li class="collection-item"><div>{{m.member.name}}<span class="secondary-content">{% for i in votes %}<i id="_member_{{m.member.id}}_vote-{{i}}" class="material-icons icon-text icon-blue">fiber_manual_record</i>{% endfor %}</span></div></li>
+          {% for t in table %}
+	  <li class="collection-item {% if forloop.counter0 < threshold %}grey lighten-4{% endif %}"><div><span id="_row_{{forloop.counter0}}_name">_row_{{forloop.counter0}}_name {{t.name}}</span><span class="secondary-content"><i class="material-icons icon-text icon-blue">fiber_manual_record</i><span id="_row_{{forloop.counter0}}_votes" class="icon-black">({{t.votes}})</span></span></div></li>
 	  {% endfor %}
       </ul>
+      <a class="btn btn-medium blue waves-effect" onclick="leave('{% url 'cyka:moderator_topicauction' project.id %}?function=createtopics')">Themen übernehmen</a>
     </div>
     <div class="col right navarea">
         <div class="row">
@@ -71,10 +62,10 @@
 	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="leave('{% url 'cyka:moderator_topicauction' project.id %}?function=asi')"><i class="left material-icons secondary-content">star_border</i></a>
         </div>
         <div class="row">
-	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="leave('{% url 'cyka:moderator_topicauction' project.id %}?function=table')"><i class="left material-icons secondary-content">assessment</i></a>
+	    <a class="btn-floating btn-large waves-effect waves-light right blue disabled" onclick="leave('{% url 'cyka:moderator_topicauction' project.id %}?function=table')"><i class="left material-icons secondary-content">assessment</i></a>
         </div>
         <div class="row">
-	    <a class="btn-floating btn-large waves-effect waves-light right blue disabled" onclick="leave('{% url 'cyka:moderator_topicauction' project.id %}?function=member')"><i class="left material-icons secondary-content">people_outline</i></a>
+	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="leave('{% url 'cyka:moderator_topicauction' project.id %}?function=member')"><i class="left material-icons secondary-content">people_outline</i></a>
         </div>
     </div>
 </div>

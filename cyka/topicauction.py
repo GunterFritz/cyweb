@@ -2,7 +2,7 @@ import json
 from lib.structure import Structure2 as Structure
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from .models import Member, Table, Card, SIsign
+from .models import Member, Topic, Table, Card, SIsign
 from .config import Jitsi, Pad
 from . import helpers
 from .workflow import Workflow
@@ -289,31 +289,57 @@ class ModeratorScheduler(helpers.ModeratorRequest):
             #ASI page requested
             m = ModeratorASIOverview(self.request, self.proj.id)
             return m.process()
-        
+       
+        #show sorted (by votes) list of ASIs
         if function == 'table':
             return self.renderTable()
         
+        #get details page of an ASI
         if function == 'join':
             m = ModeratorJoinASI(self.request, self.proj)
             return m.renderJoinAsi()
         
+        #show votes of members
         if function == 'member':
             return self.renderMember()
         
+        #get votes of members as json
         if function == 'updatemember':
             data = self.jsonMember()
             return JsonResponse(data, safe=False)
         
+        #get sorted list (by votes) of ASIs
         if function == 'updatetable':
             tid = self.request.GET.get('table', '')
             if tid == '':
                 tid = None
             data = HTMLAsi.getProjAsiJson(self.proj, tid)
-            print(data)
             return JsonResponse(data, safe=False)
+        
+        if function == 'createtopics':
+            return self.createTopics()
         
         #scheduling page requested
         return render(self.request, 'topicauction/moderator_scheduler.html', {'project' : self.proj, 'step': self.step })
+
+    """
+    the function creates from the first ASIs topics
+    """
+    def createTopics(self):
+        #TODO check current step, must not be created/ deleted when step is finished or assignment is already finished
+        num = Structure.factory(self.proj.ptype).getNumTopics()
+        asi = sorted(HTMLAsi.getProjAsi(self.proj), key=lambda HTMLAsi: HTMLAsi.votes, reverse=True)
+        if num > len(asi):
+            return None
+        
+        #delete old topics
+        self.proj.topic_set.all().delete()
+        
+        #create new
+        for i in range(1, num +1):
+            topic = self.proj.topic_set.create(number=i, asi=asi[i-1].table, name=asi[i-1].name, desc=asi[i-1].table.card.desc)
+    
+        return self.renderTable()
 
     def jsonMember(self):
         retval = []
@@ -339,6 +365,7 @@ class ModeratorScheduler(helpers.ModeratorRequest):
         return render(self.request, 'topicauction/moderator_asi_sorted.html', {'project' : self.proj, 
             'table' : sorted(t, key=lambda HTMLAsi: HTMLAsi.votes, reverse=True),
             'count': range(len(t)),
+            'threshold' : Structure.factory(self.proj.ptype).getNumTopics(),
             'json_table':SafeString(json.dumps(data))
             })
 
