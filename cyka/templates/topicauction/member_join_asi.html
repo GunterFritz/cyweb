@@ -49,12 +49,12 @@
 	var j = obj.member_votes_left    
 	for(i = 0; i < obj.max_votes; i++ ){
 	    if (j > 0){
-	        $( "#_vote-" + i ).addClass( "icon-red" );
+	        $( "#_vote-" + i ).addClass( "icon-blue" );
 	        $( "#_vote-" + i ).removeClass( "icon-grey" );
 		j--;
             } else {
 	        $( "#_vote-" + i ).addClass( "icon-grey" );
-	        $( "#_vote-" + i ).removeClass( "icon-red" );
+	        $( "#_vote-" + i ).removeClass( "icon-blue" );
 	    }
         }
     }
@@ -97,7 +97,7 @@
         </div>
         <div class="card-action black-text">
 	    <div id="_supporter">
-		    <p class="icon-text"><i class="material-icons icon-red icon-text">fiber_manual_record</i>(<span id="_topic_voted">{{asi.votes}}</span>)
+		    <p class="icon-text"><i class="material-icons icon-blue icon-text">fiber_manual_record</i>(<span id="_topic_voted">{{asi.votes}}</span>)
 	            {% for s in supporter %}
 	            <span class="badge blue">{{s.member.name}}</span>
 		    {% endfor %}</p>
@@ -130,7 +130,7 @@
         </div>
         <div id="_votes" class="row navarea bottom">
 	    {% for v in votes %}
-	    <i id="_vote-{{v}}" class="material-icons icon-red">fiber_manual_record</i>
+	    <i id="_vote-{{v}}" class="material-icons icon-blue">fiber_manual_record</i>
             {% endfor %}
 	</div>
     </div>
