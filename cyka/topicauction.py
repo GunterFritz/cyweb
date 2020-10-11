@@ -119,6 +119,22 @@ class HTMLMember:
             tables.append({ 'id':h.table.id, 'voted':h.votes, 'mvoted':mtv })
         
         return {'member_votes_left':v, 'max_votes': n, 'table': tables}
+
+    def get_priority_list(self):
+        priority_list = self.member.priority_set.all().order_by('priority')
+
+        if len(priority_list) > 0:
+            return priority_list
+
+        topics =  self.member.proj.topic_set.all()
+        if len(topics) == 0:
+            return None
+        i=0
+        for t in topics:
+            self.member.priority_set.create(priority=i, topic=t)
+            i=i+1
+
+        return self.priority_set.all()
     
 
     #def create_priority_list(self):
@@ -142,6 +158,8 @@ class AgreedStatementImportance(helpers.MemberRequest):
     def __init__(self, request, uuid):
         helpers.MemberRequest.__init__(self,request, uuid)
         self.table = None
+        self.step = Workflow.getStep(self.member.proj, 80, self.request)
+
     
     def get(self):
         table_id = self.request.GET.get('table', '')
@@ -179,14 +197,19 @@ class AgreedStatementImportance(helpers.MemberRequest):
         table_id = self.request.POST.get('table', '')
         self.table = helpers.get_asi(table_id, self.member.proj)
         func = self.request.POST.get('function', '')
-
-        if(func == "plus"):
-            HTMLMember(self.member).vote(self.table)
-        if(func == "minus"):
-            HTMLMember(self.member).unvote(self.table)
+        
+        #don't vote, when step isn't started
+        if self.step.isActive():
+            if(func == "plus"):
+                HTMLMember(self.member).vote(self.table)
+            if(func == "minus"):
+                HTMLMember(self.member).unvote(self.table)
 
         return self.getVotes()
 
+    """
+       returns json for all asi
+    """
     def getVotesJson(self):
         hm = HTMLMember(self.member)
         n = hm.getMaxVotes()
@@ -206,6 +229,9 @@ class AgreedStatementImportance(helpers.MemberRequest):
         
         return {'member_votes_left':v, 'max_votes': n, 'table': tables}
     
+    """
+       returns json for specific asi
+    """
     def getVotes(self):
         if self.table != None:
             tables = []
@@ -225,6 +251,15 @@ class ASIOverview(helpers.MemberRequest):
         helpers.MemberRequest.__init__(self,request, uuid)
 
     def get(self):
+        func = self.request.GET.get('function', '')
+        
+        #votes
+        if func == 'priority_list':
+            return self.renderPriority()
+        
+        return self.overview()
+    
+    def overview(self):
         #table_id = self.request.GET.get('table', '')
         page = int(self.request.GET.get('page', 1))
         
@@ -252,27 +287,19 @@ class ASIOverview(helpers.MemberRequest):
             'json_votes':SafeString(json.dumps(data)),
             'step': step})
 
-#moderator pages
-class ModeratorASIOverview(helpers.ModeratorRequest):
-    def __init__(self, request, pid):
-        helpers.ModeratorRequest.__init__(self,request, pid)
-
-    def get(self):
-        page = int(self.request.GET.get('page', 1))
+    def renderPriority(self):
+        html_mem = HTMLMember(self.member)
+        prio = html_mem.get_priority_list()
         
-        htables = HTMLAsi.getProjAsi(self.proj)
-        
-        #calculate paging ceil (instead of math.ceil)
-        pages = int(len(htables)/6) + 1
-        if len(htables) % 6 > 0:
-            pages = pages + 1
-        
-        return render(self.request, 'topicauction/moderator_asi_overview.html', {'project' : self.proj, 
-            'tables': htables[(page-1)*6:page*6], 
-            'pages': range(1, pages), 
-            'page':page
+        return render(self.request, 'topicauction/member_priority_list.html', {
+            'project' : self.member.proj, 
+            'member': self.member, 
+            'priority_list': prio
             })
 
+
+
+#moderator pages
 class ModeratorScheduler(helpers.ModeratorRequest):
     def __init__(self, request, pid):
         helpers.ModeratorRequest.__init__(self,request, pid)
@@ -285,11 +312,6 @@ class ModeratorScheduler(helpers.ModeratorRequest):
     def get(self):
         function = self.request.GET.get('function', '')
     
-        if function == 'asi':
-            #ASI page requested
-            m = ModeratorASIOverview(self.request, self.proj.id)
-            return m.process()
-       
         #show sorted (by votes) list of ASIs
         if function == 'table':
             return self.renderTable()

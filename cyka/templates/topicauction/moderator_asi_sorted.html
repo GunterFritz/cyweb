@@ -4,9 +4,11 @@
 <script>
   function updateVotes(json){
     var obj = $.parseJSON(json);
+    var url = '{% url 'cyka:moderator_topicauction' project.id %}?function=join&table=';
     $.each(obj.asi , function(index, val) {
        $( "#_row_" + val.sort + "_name").text( val.name );
        $( "#_row_" + val.sort + "_votes").text( "(" + val.votes + ")");
+       $( "#_row_" + val.sort + "_click").attr('onClick', "leave('" + url + val.id + "');");
     });
   }
   var interval = null;
@@ -41,25 +43,35 @@
 {% endblock %}
 <div class="headcontainer">
     <div class="col actionarea">
-      <ul class="collection">
+      <div class="card">
+      <div class="collection">
           {% for t in table %}
-	  <li class="collection-item {% if forloop.counter0 < threshold %}grey lighten-4{% endif %}"><div><span id="_row_{{forloop.counter0}}_name">_row_{{forloop.counter0}}_name {{t.name}}</span><span class="secondary-content"><i class="material-icons icon-text icon-blue">fiber_manual_record</i><span id="_row_{{forloop.counter0}}_votes" class="icon-black">({{t.votes}})</span></span></div></li>
+	  <a class="collection-item" id="_row_{{forloop.counter0}}_click" onmouseover="this.style.cursor='pointer'"><div>
+		  {% if forloop.counter0 < threshold %}
+			  <i class="material-icons icon-text icon-blue">check_box</i>
+		  {% else %}
+			  <i class="material-icons icon-text icon-blue">check_box_outline_blank</i>
+		  {% endif %}
+		  <span id="_row_{{forloop.counter0}}_name" class="icon-black">{{t.name}}</span>
+		  <span class="secondary-content">
+			  <span id="_row_{{forloop.counter0}}_votes" class="icon-black">({{t.votes}})</span>
+			  <i class="material-icons icon-text icon-blue">fiber_manual_record</i>
+		  </span>
+	  </div></a>
 	  {% endfor %}
-      </ul>
+      </div>
+      </div>
       <a class="btn btn-medium blue waves-effect" onclick="leave('{% url 'cyka:moderator_topicauction' project.id %}?function=createtopics')">Themen übernehmen</a>
     </div>
     <div class="col right navarea">
         <div class="row">
-	    <a class="btn-floating btn-large blue right" onclick="leave_agenda()"><i class="right material-icons tooltipped" data-tooltip="Agenda">group_work</i></a>
+	    <a class="btn-floating btn-large blue right" onclick="leave_agenda()"><i class="right material-icons tooltipped" data-tooltip="Agenda">menu</i></a>
         </div>
         <div class="row">
             <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
         </div>
         <div class="row">
 	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="leave('{% url 'cyka:moderator_topicauction' project.id %}')"><i class="left material-icons secondary-content">schedule</i></a>
-        </div>
-        <div class="row">
-	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="leave('{% url 'cyka:moderator_topicauction' project.id %}?function=asi')"><i class="left material-icons secondary-content">star_border</i></a>
         </div>
         <div class="row">
 	    <a class="btn-floating btn-large waves-effect waves-light right blue disabled" onclick="leave('{% url 'cyka:moderator_topicauction' project.id %}?function=table')"><i class="left material-icons secondary-content">assessment</i></a>

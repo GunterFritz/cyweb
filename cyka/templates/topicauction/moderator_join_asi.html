@@ -77,12 +77,21 @@
     </div>
 </div>
     </div>
-    <div class="col navarea">
+    <div class="col right navarea">
         <div class="row">
-            <a class="btn-floating btn-large red right" onclick="leave('{% url 'cyka:moderator_topicauction' project.id %}?function=asi')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">exit_to_app</i></a>
+	    <a class="btn-floating btn-large blue right" onclick="leave_agenda()"><i class="right material-icons tooltipped" data-tooltip="Agenda">menu</i></a>
         </div>
         <div class="row">
             <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
+        </div>
+        <div class="row">
+	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="leave('{% url 'cyka:moderator_topicauction' project.id %}')"><i class="left material-icons secondary-content">schedule</i></a>
+        </div>
+        <div class="row">
+	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="leave('{% url 'cyka:moderator_topicauction' project.id %}?function=table')"><i class="left material-icons secondary-content">assessment</i></a>
+        </div>
+        <div class="row">
+	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="leave('{% url 'cyka:moderator_topicauction' project.id %}?function=member')"><i class="left material-icons secondary-content">people_outline</i></a>
         </div>
     </div>
 </div>

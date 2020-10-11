@@ -137,6 +137,11 @@ class Step:
                 self.elem.done = False
         self.elem.save()
 
+    def isActive(self):
+        if self.elem.status == 'S':
+            return True
+        return False
+
     def toggleState(self):
         self.elem.done = not self.elem.done
         self.done = self.elem.done
