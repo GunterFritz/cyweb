@@ -7,7 +7,7 @@
       }
       $.ajax({
           type: "POST",
-	  url: '{% url 'cyka:moderator_problemjostle' project.id %}',
+	  url: '{% url 'cyka:moderator_startjostle' project.id %}',
 	  data:{
               status:stat,
 	      step:'{{step.step}}',
@@ -46,15 +46,6 @@
     </div>
     <div class="row">
         <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
-    </div>
-    <div class="row">
-	    <a class="btn-floating btn-large waves-effect waves-light right blue disabled" onclick="aurl('{% url 'cyka:moderator_problemjostle' project.id %}')"><i class="left material-icons secondary-content">schedule</i></a>
-    </div>
-    <div class="row">
-	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="aurl('{% url 'cyka:moderator_problemjostle' project.id %}?function=asi')"><i class="left material-icons secondary-content">content_copy</i></a>
-    </div>
-    <div class="row">
-        <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="aurl('{% url 'cyka:moderator_problemjostle' project.id %}?function=asi&agreed=true')"><i class="left material-icons secondary-content">star_border</i></a>
     </div>
 </div>
 </div>

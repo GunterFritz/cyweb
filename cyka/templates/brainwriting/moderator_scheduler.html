@@ -33,9 +33,9 @@
  	    <p>{{step.todo}}</p>
             {% csrf_token %}
 	    <div class="collection">
-	        <a onmouseover="this.style.cursor='pointer'" onclick="submit('O')" class="collection-item {% if step.status == 'O' %}active{% endif %}">Offen<i class="material-icons left">{% if step.status == 'O' %}radio_button_checked{% else %}radio_button_unchecked{% endif %}</i></a>
-	        <a onmouseover="this.style.cursor='pointer'" onclick="submit('S')" class="collection-item {% if step.status == 'S' %}active{% endif %}">Gestartet<i class="material-icons left">{% if step.status == 'S' %}radio_button_checked{% else %}radio_button_unchecked{% endif %}</i></a>
-                <a onmouseover="this.style.cursor='pointer'" onclick="submit('B')" class="collection-item {% if step.status == 'B' %}active{% endif %}">Beendet<i class="material-icons left">{% if step.status == 'B' %}radio_button_checked{% else %}radio_button_unchecked{% endif %}</i></a>
+	        <a onmouseover="this.style.cursor='pointer'" onclick="submit('O')" class="collection-item {% if step.status == 'O' %}grey lighten-3{% endif %}">Offen<i class="material-icons left icon-blue">{% if step.status == 'O' %}radio_button_checked{% else %}radio_button_unchecked{% endif %}</i></a>
+	        <a onmouseover="this.style.cursor='pointer'" onclick="submit('S')" class="collection-item {% if step.status == 'S' %}grey lighten-3{% endif %}">Gestartet<i class="material-icons left icon-blue">{% if step.status == 'S' %}radio_button_checked{% else %}radio_button_unchecked{% endif %}</i></a>
+                <a onmouseover="this.style.cursor='pointer'" onclick="submit('B')" class="collection-item {% if step.status == 'B' %}grey lighten-3{% endif %}">Beendet<i class="material-icons left icon-blue">{% if step.status == 'B' %}radio_button_checked{% else %}radio_button_unchecked{% endif %}</i></a>
             </div>
         </div>
     </div>
