@@ -2,6 +2,12 @@
 {% load material_form %}
 
 {% block content %}
+<script>
+  $(document).ready(function(){
+    $( "#_base_workshop_new" ).addClass( "active" );
+  });
+</script>
+
 <div class="row valign change-form">
     <div class="{% block formclass %}col s12 m8 offset-m2 l8 offset-l2{% endblock %}">
         <div class="card">
