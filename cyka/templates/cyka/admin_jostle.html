@@ -9,13 +9,13 @@
     var domain = "{{jitsi.domain}}";
     var options = {
 	roomName: "{{jitsi.room}}",
-        height: 700,
+        height: "100%",
         parentNode: container,
     };
     var api = new JitsiMeetExternalAPI(domain, options);
     api.executeCommand ('displayName', '{{jitsi.name}}'); 
     api.executeCommand ('subject', '{{jitsi.subject}}');
-    big();
+    small();
     $('.tooltipped').tooltip({enterDelay: 1000});
     {% if start == "asi" %}
     aurl('{% url 'cyka:moderator_problemjostle' project.id %}?function=asi');
@@ -95,12 +95,12 @@
 </script>
 {% endblock %}
 {% block content %}
-<div class="row">
-    <div id="meetcontent" class="col">
-        <div id="jitsi-container">
+<div class="row" style="height: 100%" style="overflow: hidden">
+    <div id="meetcontent" class="col" style="height: 100%; overflow: hidden">
+        <div style="height: 100%" id="jitsi-container">
         </div>
     </div>
-    <div id="stepcontent" class="col">
+    <div id="stepcontent" class="col" style="height: 100%; overflow: auto">
         <div id="_appendHere">
         </div>
     </div>
