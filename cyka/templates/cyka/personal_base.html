@@ -44,6 +44,8 @@
     <style type="text/css">
       html, body {
           background: #FFF;
+	  display: flex;
+  	  flex-flow: column;
           height: 100%;
       }
     </style>
@@ -82,9 +84,9 @@
             {% endblock header %}
       </header>
 
-      <main>
+      <main style="flex-grow: 1; overflow:hidden">
       {% block main %}
-      <div class="row">
+      <div style="height: 100%">
           {% block main_content %}
           <div class="content">
           {% block content %}{% endblock %}
