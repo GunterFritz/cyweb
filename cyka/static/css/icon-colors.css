@@ -17,10 +17,13 @@ i.icon-green {
   vertical-align: middle;
 }
 div.navarea {
+    right: 15px;
     margin-top: 5px;
     margin-right: 5px;
+    padding-right: 5px;
     width: 75px;
     float:right;
+    position:absolute;
 }
 div.debug {
     border:3px solid black;
@@ -52,11 +55,14 @@ div.votes {
 
 div.headcontainer {
     display:flex;
+    overflow:hidden;
 }
 
 div.actionarea {
     flex: 1 1 auto;
     float:left;
+    overflow:auto;
+    margin-right: 25px;
 }
 
 div.padplan {
