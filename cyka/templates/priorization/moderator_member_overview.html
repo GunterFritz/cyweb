@@ -1,0 +1,106 @@
+{% block extrahead %}
+<style>
+tbody {
+display:block;
+height:100%;
+overflow:auto;
+}
+thead, tbody tr {
+display:table;
+width:100%;
+table-layout:fixed;
+}
+thead {
+width: calc( 100% - 1em )
+}
+table {
+width:100%;
+}
+</style>
+{% endblock %}
+{% block javascript %}
+<script>
+  function updateVotes(json){
+    console.log(json)
+    var obj = $.parseJSON(json);
+    $.each(obj.member , function(index, val) { 
+	var j = val.member_votes_left    
+	for(i = 0; i < val.max_votes; i++ ){
+	    if (j > 0){
+	        $( "#_member_" + val.id + "_vote-" + i ).addClass( "icon-blue" );
+	        $( "#_member_" + val.id + "_vote-" + i ).removeClass( "icon-grey" );
+		j--;
+            } else {
+	        $( "#_member_" + val.id + "_vote-" + i ).addClass( "icon-grey" );
+	        $( "#_member_" + val.id + "_vote-" + i ).removeClass( "icon-blue" );
+	    }
+        }
+    });
+  }
+  var interval = null;
+  function getVotes(){
+    $.ajax({
+        type: "GET",
+        url: '{% url 'cyka:moderator_topicauction' project.id %}?function=updatemember',
+	complete: function (response) {
+          updateVotes(response.responseText)
+      }
+    });
+  }
+  function refreshVotes(){
+    interval = setInterval(function() {
+	getVotes();
+    }, 3000);
+  }
+  $(document).ready(function(){
+    small();
+    //updateVotes('{{json_member}}')
+    //refreshVotes();
+    $('.tooltipped').tooltip({enterDelay: 1000});
+  });
+    function leave_agenda(url){
+        clearInterval(interval);
+        get_agenda();
+    }   
+    function leave(url){
+        clearInterval(interval);
+        aurl(url);
+    }   
+</script>
+{% endblock %}
+<div class="headcontainer">
+<div class="col actionarea" style="overflow: hidden">
+    <div class="card">
+        <div class="card-content">
+      <table>
+        <tbody>
+         <tr class="grey lighten-4">
+          <th>Name</th>
+          <th class="center">Abgegeben</th>
+        </tr>
+          {% for m in member %}
+          <tr>
+		<td>{{m.name}}</td>
+		<td class="center"><i id="_member_{{m.id}}_status" class="material-icons icon-text icon-blue">{% if m.status %}check{% else %}remove{% endif %}</i></td>
+          </tr>
+	  {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    </div>
+    </div>
+    <div class="col right navarea">
+        <div class="row">
+	    <a class="btn-floating btn-large blue right" onclick="leave_agenda()"><i class="right material-icons tooltipped" data-tooltip="Agenda">menu</i></a>
+        </div>
+        <div class="row">
+            <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
+        </div>
+        <div class="row">
+	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="leave('{% url 'cyka:moderator_priorization' project.id %}')"><i class="left material-icons secondary-content">schedule</i></a>
+        </div>
+        <div class="row">
+	    <a class="btn-floating btn-large waves-effect waves-light right blue disabled" onclick="leave('{% url 'cyka:moderator_priorization' project.id %}?function=member')"><i class="left material-icons secondary-content disabled">people_outline</i></a>
+        </div>
+    </div>
+</div>

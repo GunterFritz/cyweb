@@ -348,12 +348,19 @@ class ModeratorScheduler(helpers.ModeratorRequest):
     the function creates from the first ASIs topics
     """
     def createTopics(self):
-        #TODO check current step, must not be created/ deleted when step is finished or assignment is already finished
+        #create topics only if step is active
+        if not self.step.isActive():
+            self.renderTable()
+
         num = Structure.factory(self.proj.ptype).getNumTopics()
         asi = sorted(HTMLAsi.getProjAsi(self.proj), key=lambda HTMLAsi: HTMLAsi.votes, reverse=True)
+        #not enough ASI to create topics
         if num > len(asi):
             return None
         
+        #finish current step
+        self.step.close()
+
         #delete old topics
         self.proj.topic_set.all().delete()
         
@@ -387,6 +394,7 @@ class ModeratorScheduler(helpers.ModeratorRequest):
         return render(self.request, 'topicauction/moderator_asi_sorted.html', {'project' : self.proj, 
             'table' : sorted(t, key=lambda HTMLAsi: HTMLAsi.votes, reverse=True),
             'count': range(len(t)),
+            'active': self.step.isActive(),
             'threshold' : Structure.factory(self.proj.ptype).getNumTopics(),
             'json_table':SafeString(json.dumps(data))
             })

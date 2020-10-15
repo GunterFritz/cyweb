@@ -11,6 +11,7 @@ from .models import Project, Topic, Member, Assignment, Card, Table
 from random import randrange 
 from . import helpers
 from . import topicauction as TopicAuction
+from . import priorization as Priorization
 from . import start as Start
 from . import brainwriting
 from .helpers import Agenda, HtmlCard
@@ -409,6 +410,7 @@ def personal_votes(request, uuid):
 
     return render(request, 'cyka/personal_votes.html', {'project' : member.proj, 'member': member, 'cards': cards[(page-1)*6:page*6], 'pages': range(1, pages), 'page':page, 'step': step})
 
+#Brainwriting
 def personal_card(request, uuid):
     brain = brainwriting.MemberBrainwriting(request, uuid)
 
@@ -437,6 +439,18 @@ def personal_table(request, uuid):
     asio = ASIOverview(request, uuid)
 
     return asio.process()
+
+#asi overview and creating
+def moderator_priorization(request, project_id):
+    m = Priorization.Moderator(request, project_id)
+
+    return m.process()
+
+#asi overview and creating
+def member_priorization(request, uuid):
+    m = Priorization.Member(request, uuid)
+
+    return m.process()
 
 def personal_workflow(request, uuid):
     member = get_member_by_uuid(uuid)

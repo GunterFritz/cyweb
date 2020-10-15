@@ -27,6 +27,7 @@ class Member(models.Model):
          default = uuid.uuid4, 
          editable = False) 
     proj = models.ForeignKey(Project, on_delete=models.CASCADE)
+    #True if priorization is finished
     status = models.BooleanField(default=False)
     mtype = models.CharField(max_length=16,choices=(('M', 'MEMBER'),('G', 'GUEST')),default='M')
 

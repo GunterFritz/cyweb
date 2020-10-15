@@ -61,7 +61,7 @@
 	  {% endfor %}
       </div>
       </div>
-      <a class="btn btn-medium blue waves-effect" onclick="leave('{% url 'cyka:moderator_topicauction' project.id %}?function=createtopics')">Themen übernehmen</a>
+      <a class="btn btn-medium blue waves-effect" {% if not active %}disabled="true"{% endif %}  onclick="leave('{% url 'cyka:moderator_topicauction' project.id %}?function=createtopics')">Themen übernehmen</a>
     </div>
     <div class="col right navarea">
         <div class="row">

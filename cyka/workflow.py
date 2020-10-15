@@ -95,6 +95,16 @@ workflow = [
             'todo' : 'Die Teilnehmer wählen die zu bearbeiteten Themen', 
             'formtype' : 'radio'
         },
+        {
+            'step' : 90,
+            'short': 'Priorisierung',
+            'desc' : 'Die Teilnehmer wählen die zu bearbeiteten Themen', 
+            'link' : 'cyka:moderator_priorization',
+            'memberlink' : 'cyka:member_priorization',
+            'icon' : 'select_all',
+            'todo' : 'Die Teilnehmer priorisieren die Themen', 
+            'formtype' : 'radio'
+        },
         ]
     }
 ]
@@ -141,6 +151,11 @@ class Step:
         if self.elem.status == 'S':
             return True
         return False
+
+    def close(self):
+        self.elem.status = 'B'
+        self.elem.done = True
+        self.elem.save()
 
     def toggleState(self):
         self.elem.done = not self.elem.done

@@ -1,0 +1,102 @@
+{% block extrahead %}
+{% endblock %}
+{% block javascript %}
+<script>
+    function getVotes(){
+      $.ajax({
+          type: "GET",
+	  url: '{% url 'cyka:topicauction_join_asi' member.uuid %}?table=all&function=votes',
+	  complete: function (response) {
+	      updateVotes(response.responseText)
+          }
+      });
+    }
+  var interval = null;
+  function refreshVotes(){
+    interval = setInterval(function() {
+	getVotes();
+    }, 3000);
+  }
+    function updateVotes(json){
+	var obj = $.parseJSON(json);
+	$("#_topic_voted").text(obj.topic_voted);
+	$.each(obj.table , function(index, val) { 
+	    $("#_vote_" + val.id).text(val.voted);
+        });
+	var i = 0;
+	var j = obj.member_votes_left    
+	for(i = 0; i < obj.max_votes; i++ ){
+	    if (j > 0){
+	        $( "#_vote-" + i ).addClass( "icon-blue" );
+	        $( "#_vote-" + i ).removeClass( "icon-grey" );
+		j--;
+            } else {
+	        $( "#_vote-" + i ).addClass( "icon-grey" );
+	        $( "#_vote-" + i ).removeClass( "icon-blue" );
+	    }
+        }
+    }
+  $(document).ready(function(){
+    small();
+    $('.tooltipped').tooltip({enterDelay: 1000});
+  });
+    function leave(url){
+        clearInterval(interval);
+        aurl(url);
+    }
+    function goAgenda(){
+        clearInterval(interval);
+        get_agenda();
+    }
+var _el;
+
+function dragOver(e) {
+  if (isBefore(_el, e.target))
+    e.target.parentNode.insertBefore(_el, e.target);
+  else
+    e.target.parentNode.insertBefore(_el, e.target.nextSibling);
+}
+
+function dragStart(e) {
+  e.dataTransfer.effectAllowed = "move";
+  e.dataTransfer.setData("text/plain", null); // Thanks to bqlou for their comment.
+  _el = e.target;
+}
+
+function isBefore(el1, el2) {
+  if (el2.parentNode === el1.parentNode)
+    for (var cur = el1.previousSibling; cur && cur.nodeType !== 9; cur = cur.previousSibling)
+      if (cur === el2)
+        return true;
+  return false;
+}
+
+</script>
+{% endblock %}
+<div class="headcontainer">
+    <div class="col actionarea">
+        <div id="themen" >
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title grey-text text-darken-2">Themen Liste</span>
+		    <ul class="collection">
+		    {% for prio in priority_list %}
+		    <li class="collection-item" draggable="true" ondragover="dragOver(event)" ondragstart="dragStart(event)">{{prio.topic.name}}</li>
+	            {% endfor %}
+		    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col navarea">
+        <div class="row">
+	    <a class="btn-floating btn-large blue right" onclick="goAgenda()"><i class="right material-icons tooltipped" data-tooltip="Agenda">menu</i></a>
+        </div>
+        <div class="row">
+            <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
+        </div>
+        <div class="row">
+            <a class="btn-floating btn-large waves-effect waves-light right blue disabled" onclick="resize()"><i class="left material-icons secondary-content">assignment</i></a>
+        </div>
+    </div>
+</div>
