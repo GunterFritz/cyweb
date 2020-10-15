@@ -70,25 +70,22 @@ width:100%;
 {% endblock %}
 <div class="headcontainer">
 <div class="col actionarea" style="overflow: hidden">
-    <div class="card">
-        <div class="card-content">
-      <table>
-        <tbody>
-         <tr class="grey lighten-4">
-          <th>Name</th>
-          <th class="center">Abgegeben</th>
-        </tr>
+      <div class="card">
+        <div class="collection">
           {% for m in member %}
-          <tr>
-		<td>{{m.name}}</td>
-		<td class="center"><i id="_member_{{m.id}}_status" class="material-icons icon-text icon-blue">{% if m.status %}check{% else %}remove{% endif %}</i></td>
-          </tr>
+	  <a class="collection-item" id="_member_{{m.id}}" onmouseover="this.style.cursor='pointer'"><div>
+		  <span id="_row_{{forloop.counter0}}_name" class="icon-black">{{m.name}}</span>
+		  <span class="secondary-content">
+			  <i class="material-icons icon-text icon-blue">{% if m.status %}check{% else %}remove{% endif %}</i>
+		  </span>
+	  </div></a>
 	  {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    </div>
-    </div>
+        </div>
+	<div class="card-action">
+	    <a class="btn blue" onclick="leave_agenda()">Themen Zuteilen</a>
+        </div>
+      </div>
+</div>
     <div class="col right navarea">
         <div class="row">
 	    <a class="btn-floating btn-large blue right" onclick="leave_agenda()"><i class="right material-icons tooltipped" data-tooltip="Agenda">menu</i></a>
