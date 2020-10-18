@@ -7,8 +7,10 @@
   var page = parseInt({{page}});
   $(document).ready(function(){
     small();
-    queryString = window.location.search;
-    document.getElementById("page_" + page).classList.add('class', "active");
+    ele = document.getElementById("page_" + page);
+    if (ele){
+      ele.classList.add('class', "active");
+    }
     if(page == 1){
       //disable page left
       document.getElementById("page_left").classList.add('class', "disabled");
@@ -18,7 +20,7 @@
       var url = "{% url 'cyka:personal_card' member.uuid %}?project={{project.id}}&page=" + left.toString();
       document.getElementById("page_left_link").setAttribute('onclick', "aurl('" + url + "')");
     }
-    if(page == {{ pages|length }}){
+    if(page < {{ pages|length }}){
       //disable page right
       document.getElementById("page_right").classList.add('class', "disabled");
     } else {

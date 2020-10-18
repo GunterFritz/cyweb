@@ -103,7 +103,6 @@ class MemberBrainwriting(helpers.MemberRequest):
         return render(self.request, 'brainwriting/member_si_edit.html', {'project' : self.member.proj, 'member': self.member, 'form': form})
 
     def getOverviewAll(self, page):
-    
         cards = self.member.proj.card_set.all()
     
         #calculate paging ceil (instead of math.ceil)
@@ -113,7 +112,7 @@ class MemberBrainwriting(helpers.MemberRequest):
 
         if page == "last":
             page = pages - 1
-    
+        
         return render(self.request, 'brainwriting/member_si_overview.html', {
             'project' : self.member.proj, 
             'member': self.member, 
@@ -133,7 +132,7 @@ class MemberBrainwriting(helpers.MemberRequest):
             pages = pages + 1
         if page == "last":
             page = pages - 1
-    
+        
         return render(self.request, 'brainwriting/member_si_overview.html', {
             'project' : self.member.proj, 
             'member': self.member, 
