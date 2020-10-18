@@ -23,7 +23,7 @@
   function getVotes(){
     $.ajax({
         type: "GET",
-        url: '{% url 'cyka:moderator_topicauction' project.id %}?function=updatemember',
+        url: '{% url 'cyka:get_json_members' project.id %}',
 	complete: function (response) {
           updateVotes(response.responseText)
       }

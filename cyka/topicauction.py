@@ -325,11 +325,6 @@ class ModeratorScheduler(helpers.ModeratorRequest):
         if function == 'member':
             return self.renderMember()
         
-        #get votes of members as json
-        if function == 'updatemember':
-            data = self.jsonMember()
-            return JsonResponse(data, safe=False)
-        
         #get sorted list (by votes) of ASIs
         if function == 'updatetable':
             tid = self.request.GET.get('table', '')
@@ -366,6 +361,7 @@ class ModeratorScheduler(helpers.ModeratorRequest):
         
         #create new
         for i in range(1, num +1):
+            #TODO add key to asi
             topic = self.proj.topic_set.create(number=i, asi=asi[i-1].table, name=asi[i-1].name, desc=asi[i-1].table.card.desc)
     
         return self.renderTable()
