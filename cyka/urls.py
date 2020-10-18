@@ -34,11 +34,14 @@ urlpatterns = [
 	# ex: /member/topicauction/<uuid>
         url(r'^member/topicauction/asi/(?P<uuid>[0-9A-Za-z\-]+)$', views.topicauction_join_asi, name="topicauction_join_asi"),
         #end topicauction
+        #priorization
 	url(r'^(?P<project_id>[0-9]+)/moderator/priorization/$', views.moderator_priorization, name="moderator_priorization"),
 	# ex: /member/topicauction/<uuid>
         url(r'^member/priorization/(?P<uuid>[0-9A-Za-z\-]+)$', views.member_priorization, name="member_priorization"),
-        #priorization
         #end priorization
+        #get data
+	url(r'^(?P<project_id>[0-9]+)/getmembers/$', views.get_json_members, name="get_json_members"),
+        #end get data
 	# ex: /cyka/project/5/jostle/
 	url(r'^(?P<project_id>[0-9]+)/jostle/$', views.admin_jostle, name="admin_jostle"),
 	# ex: /cyka/project/5/jostle/randsession/

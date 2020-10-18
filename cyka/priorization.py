@@ -21,6 +21,41 @@ class Member(helpers.MemberRequest):
     def __init__(self, request, uuid):
         helpers.MemberRequest.__init__(self,request, uuid)
 
+    def post(self):
+        func = self.request.POST.get('function', '')
+
+        #save order
+        if func == 'push_order':
+            return self.pushOrder()
+
+        #set status to false, so that sorting is possible
+        if func == 'reset':
+            self.member.status = False
+            self.member.save()
+        
+        
+        return self.renderPriority()
+
+    """
+    saves the priorization from user
+    """
+    def pushOrder(self):
+        data = self.request.POST.get('order', '')
+    
+        priority_list = self.member.priority_set.all()
+       
+        for p in priority_list:
+            for u in json.loads(data):
+                if p.topic.number == u['number']:
+                    p.priority =u['order']
+                    p.save()
+
+        self.member.status = True
+        self.member.save()
+            #print(p.topic.name, p.priority)
+
+        return self.renderPriority()
+    
     def get(self):
         func = self.request.GET.get('function', '')
         

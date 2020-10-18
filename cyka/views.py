@@ -2,7 +2,7 @@ from lib.structure import Structure2 as Structure
 from lib.structure import Topic as A_Topic
 from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView
-from django.http import HttpResponseRedirect,HttpResponse,HttpResponseForbidden, Http404
+from django.http import HttpResponseRedirect,HttpResponse,HttpResponseForbidden, Http404, JsonResponse
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
@@ -15,6 +15,7 @@ from . import priorization as Priorization
 from . import start as Start
 from . import brainwriting
 from .helpers import Agenda, HtmlCard
+from .htmlobjects import HTMLMember
 from .workflow import Workflow
 from .config import Jitsi, Pad
 from .problemjostle import AgreedStatementImportance, ASIOverview, ModeratorASIOverview, ModeratorScheduler
@@ -441,6 +442,7 @@ def personal_table(request, uuid):
     return asio.process()
 
 #asi overview and creating
+@login_required
 def moderator_priorization(request, project_id):
     m = Priorization.Moderator(request, project_id)
 
@@ -451,6 +453,16 @@ def member_priorization(request, uuid):
     m = Priorization.Member(request, uuid)
 
     return m.process()
+
+#update Calls (return json)
+@login_required
+def get_json_members(request, project_id):
+    proj = helpers.get_project(request, project_id)
+    data = HTMLMember.jsonMember(proj)
+
+    return JsonResponse(data, safe=False)
+
+
 
 def personal_workflow(request, uuid):
     member = get_member_by_uuid(uuid)

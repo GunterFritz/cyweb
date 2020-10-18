@@ -20,42 +20,38 @@ width:100%;
 {% endblock %}
 {% block javascript %}
 <script>
-  function updateVotes(json){
+  function updateMembers(json){
     console.log(json)
     var obj = $.parseJSON(json);
-    $.each(obj.member , function(index, val) { 
-	var j = val.member_votes_left    
-	for(i = 0; i < val.max_votes; i++ ){
-	    if (j > 0){
-	        $( "#_member_" + val.id + "_vote-" + i ).addClass( "icon-blue" );
-	        $( "#_member_" + val.id + "_vote-" + i ).removeClass( "icon-grey" );
-		j--;
-            } else {
-	        $( "#_member_" + val.id + "_vote-" + i ).addClass( "icon-grey" );
-	        $( "#_member_" + val.id + "_vote-" + i ).removeClass( "icon-blue" );
-	    }
-        }
+    $.each(obj.member , function(index, val) {
+	console.log(val.id);
+	if(val.status){
+	    console.log("True");
+            $( "#_member_" + val.id + "_icon").text('check');
+	} else {
+	    console.log("False");
+            $( "#_member_" + val.id + "_icon").text('remove');
+	}
     });
   }
   var interval = null;
-  function getVotes(){
+  function getMembers(){
     $.ajax({
         type: "GET",
-        url: '{% url 'cyka:moderator_topicauction' project.id %}?function=updatemember',
+        url: '{% url 'cyka:get_json_members' project.id %}',
 	complete: function (response) {
-          updateVotes(response.responseText)
+          updateMembers(response.responseText)
       }
     });
   }
-  function refreshVotes(){
+  function refreshMembers(){
     interval = setInterval(function() {
-	getVotes();
+	getMembers();
     }, 3000);
   }
   $(document).ready(function(){
     small();
-    //updateVotes('{{json_member}}')
-    //refreshVotes();
+    refreshMembers();
     $('.tooltipped').tooltip({enterDelay: 1000});
   });
     function leave_agenda(url){
@@ -74,9 +70,9 @@ width:100%;
         <div class="collection">
           {% for m in member %}
 	  <a class="collection-item" id="_member_{{m.id}}" onmouseover="this.style.cursor='pointer'"><div>
-		  <span id="_row_{{forloop.counter0}}_name" class="icon-black">{{m.name}}</span>
+		  <span id="_member_{{m.id}}_name" class="icon-black">{{m.name}}</span>
 		  <span class="secondary-content">
-			  <i class="material-icons icon-text icon-blue">{% if m.status %}check{% else %}remove{% endif %}</i>
+			  <i id="_member_{{m.id}}_icon" class="material-icons icon-text icon-blue">{% if m.status %}check{% else %}remove{% endif %}</i>
 		  </span>
 	  </div></a>
 	  {% endfor %}
