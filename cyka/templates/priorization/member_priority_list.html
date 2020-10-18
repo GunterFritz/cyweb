@@ -2,50 +2,46 @@
 {% endblock %}
 {% block javascript %}
 <script>
-    function getVotes(){
-      $.ajax({
-          type: "GET",
-	  url: '{% url 'cyka:topicauction_join_asi' member.uuid %}?table=all&function=votes',
-	  complete: function (response) {
-	      updateVotes(response.responseText)
-          }
+function reset(){
+  $.ajax({
+      type: "POST",
+      url: '{% url 'cyka:member_priorization' member.uuid %}',
+      data:{
+              function:'reset',
+              csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+              action: 'post'
+          },
+      })
+      .done(function(response) {
+	  $('.tooltipped').tooltip('close');
+          $('#_appendHere').html(response);
       });
-    }
-  var interval = null;
-  function refreshVotes(){
-    interval = setInterval(function() {
-	getVotes();
-    }, 3000);
-  }
-    function updateVotes(json){
-	var obj = $.parseJSON(json);
-	$("#_topic_voted").text(obj.topic_voted);
-	$.each(obj.table , function(index, val) { 
-	    $("#_vote_" + val.id).text(val.voted);
-        });
-	var i = 0;
-	var j = obj.member_votes_left    
-	for(i = 0; i < obj.max_votes; i++ ){
-	    if (j > 0){
-	        $( "#_vote-" + i ).addClass( "icon-blue" );
-	        $( "#_vote-" + i ).removeClass( "icon-grey" );
-		j--;
-            } else {
-	        $( "#_vote-" + i ).addClass( "icon-grey" );
-	        $( "#_vote-" + i ).removeClass( "icon-blue" );
-	    }
-        }
-    }
+}
+function sendOrder(d){
+  $.ajax({
+      type: "POST",
+      url: '{% url 'cyka:member_priorization' member.uuid %}',
+      data:{
+	      order:JSON.stringify(d),
+              function:'push_order',
+              csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+              action: 'post'
+          },
+      })
+      .done(function(response) {
+	  $('.tooltipped').tooltip('close');
+          $('#_appendHere').html(response);
+      });
+}
   $(document).ready(function(){
+	  console.log("READY");
     small();
     $('.tooltipped').tooltip({enterDelay: 1000});
   });
     function leave(url){
-        clearInterval(interval);
         aurl(url);
     }
     function goAgenda(){
-        clearInterval(interval);
         get_agenda();
     }
 var _el;
@@ -71,6 +67,18 @@ function isBefore(el1, el2) {
   return false;
 }
 
+function send_sorting() {
+  var topics = [];
+  $( "#_topicList li" ).each(function( index ) {
+    var element = {}
+    element.order = index;
+    element.number = $( this ).data("number");
+    element.name = $( this ).text();
+    topics.push(element);
+  });
+  sendOrder( topics );
+}
+
 </script>
 {% endblock %}
 <div class="headcontainer">
@@ -79,11 +87,15 @@ function isBefore(el1, el2) {
             <div class="card">
                 <div class="card-content">
                     <span class="card-title grey-text text-darken-2">Themen Liste</span>
-		    <ul class="collection">
+		    <ul id="_topicList" class="collection">
 		    {% for prio in priority_list %}
-		    <li class="collection-item" draggable="true" ondragover="dragOver(event)" ondragstart="dragStart(event)">{{prio.topic.name}}</li>
+		    <li class="collection-item" {%if not member.status %}onmouseover="this.style.cursor='pointer'" draggable="true" ondragover="dragOver(event)" ondragstart="dragStart(event)"{% endif %}data-number="{{prio.topic.number}}">{{prio.topic.name}}</li>
 	            {% endfor %}
 		    </ul>
+                </div>
+                <div class="card-action">
+			<a class="btn btn-medium blue waves-effect {%if member.status %}disabled{% endif %}" onclick="send_sorting()">Liste abgeben</a>
+			<a class="btn btn-medium blue waves-effect {%if not member.status %}disabled{% endif %}" onclick="reset()">Zurücksetzen</a>
                 </div>
             </div>
         </div>
