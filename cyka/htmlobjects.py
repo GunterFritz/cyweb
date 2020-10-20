@@ -1,4 +1,5 @@
 import json
+from random import randrange 
 from lib.structure import Structure2 as Structure
 from .models import Member, Table, Card, SIsign
 from . import helpers
@@ -149,7 +150,7 @@ class HTMLMember:
     def shuffle_priority_list(self):
         priority_list = self.member.priority_set.all().order_by('priority')
         #shuffle
-        for p in self.priority_list:
+        for p in priority_list:
             p1 = randrange(priority_list.count())
             p2 = p.priority
         
