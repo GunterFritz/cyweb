@@ -1,0 +1,42 @@
+{% load material_form %}
+{% block javascript %}
+<script>
+    function getDetails(){
+      $.ajax({
+          type: "GET",
+	  url: '{% url 'cyka:get_member_details' project.id %}?member={{member.id}}',
+	  data:{
+	      member:{{member.id}},
+          },
+      })
+      .done(function(response) {
+          $('#_memberDetails').html(response);
+      });
+    }
+  $(document).ready(function(){
+    getDetails();
+    $('.tooltipped').tooltip({enterDelay: 1000});
+  });
+</script>
+{% endblock %}
+
+<div class="headcontainer">
+<div class="col actionarea">
+    <div id="_memberDetails">
+    </div>
+</div>
+<div class="col right navarea">
+    <div class="row">
+        <a class="btn-floating btn-large blue right" onclick="get_agenda()"><i class="right material-icons tooltipped" data-tooltip="Agenda">menu</i></a>
+    </div>
+    <div class="row">
+        <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
+    </div>
+    <div class="row">
+	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="aurl('{% url 'cyka:moderator_priorization' project.id %}')"><i class="left material-icons secondary-content">schedule</i></a>
+    </div>
+    <div class="row">
+        <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="aurl('{% url 'cyka:moderator_priorization' project.id %}?function=member')"><i class="left material-icons secondary-content">people_outline</i></a>
+    </div>
+</div>
+</div>

@@ -127,7 +127,6 @@ class HTMLMember:
         priority_list = self.member.priority_set.all().order_by('priority')
 
         if len(priority_list) > 0:
-            print("EXIST")
             return priority_list
 
         topics =  self.member.proj.topic_set.all()
@@ -159,5 +158,4 @@ class HTMLMember:
             p.save()
             priority_list[p1].priority = p2
             priority_list[p1].save()
-    
 

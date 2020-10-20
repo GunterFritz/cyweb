@@ -69,7 +69,7 @@ width:100%;
       <div class="card">
         <div class="collection">
           {% for m in member %}
-	  <a class="collection-item" id="_member_{{m.id}}" onmouseover="this.style.cursor='pointer'"><div>
+	  <a class="collection-item" id="_member_{{m.id}}" onmouseover="this.style.cursor='pointer'" onclick="leave('{% url 'cyka:moderator_priorization' project.id %}?function=details&member={{m.id}}')"><div>
 		  <span id="_member_{{m.id}}_name" class="icon-black">{{m.name}}</span>
 		  <span class="secondary-content">
 			  <i id="_member_{{m.id}}_icon" class="material-icons icon-text icon-blue">{% if m.status %}check{% else %}remove{% endif %}</i>

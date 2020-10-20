@@ -39,6 +39,9 @@ urlpatterns = [
 	# ex: /member/topicauction/<uuid>
         url(r'^member/priorization/(?P<uuid>[0-9A-Za-z\-]+)$', views.member_priorization, name="member_priorization"),
         #end priorization
+        #common views
+	url(r'^(?P<project_id>[0-9]+)/getmemberdetails/$', views.get_member_details, name="get_member_details"),
+        #end get data
         #get data
 	url(r'^(?P<project_id>[0-9]+)/getmembers/$', views.get_json_members, name="get_json_members"),
         #end get data

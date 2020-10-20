@@ -160,7 +160,7 @@ def project_delete(request, project_id):
 
 @login_required
 def member_delete(request, member_id):
-    member = get_member(request, member_id)
+    member = helpers.get_member(request, member_id)
     project_id = member.proj.pk
 
     helpers.MemberDelete(member)
@@ -171,7 +171,7 @@ edit view of member
 """
 @login_required
 def member_edit(request, member_id):
-    member = get_member(request, member_id)
+    member = helpers.get_member(request, member_id)
     priority_list = member.priority_set.all().order_by('priority')
 
     if len(priority_list) == 0:
@@ -454,6 +454,22 @@ def member_priorization(request, uuid):
 
     return m.process()
 
+#common templates
+@login_required
+def get_member_details(request, project_id):
+    proj = helpers.get_project(request, project_id)
+    member_id = request.GET.get('member', '')
+    member = helpers.get_member(request, member_id)
+    
+    mem = HTMLMember(member)
+    prio = mem.get_priority_list()
+    
+    return render(request, 'common/member_view.html', {
+        'project' : proj, 
+        'member': member, 
+        'priority_list': prio
+    })
+
 #update Calls (return json)
 @login_required
 def get_json_members(request, project_id):
@@ -647,31 +663,6 @@ def get_subject(proj, uuid):
             subject = topics[0].name
 
     return subject
-
-"""
-returns member to an id and checks, if user has authorization
-
-params
-------
-request: http request
-pid: privat key of member
-
-return
-------
-Models.Member
-"""
-def get_member(request, mid):
-    try:
-        member = Member.objects.get(pk=mid)
-    except Member.DoesNotExist:
-        raise Http404("No such member")
-    
-    if (member.proj.admin != request.user):
-        raise Http404("No such member")
-    
-    return member
-
-
 
 """
 returns member to an id 

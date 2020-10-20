@@ -237,3 +237,28 @@ def get_asi(tableid, proj):
         raise Http404("No such table")
 
     return table
+
+"""
+returns member to an id and checks, if user has authorization
+
+params
+------
+request: http request
+id: privat key of member
+
+return
+------
+Models.Member
+"""
+def get_member(request, mid):
+    try:
+        member = Member.objects.get(pk=mid)
+    except Member.DoesNotExist:
+        raise Http404("No such member")
+    
+    if (member.proj.admin != request.user):
+        raise Http404("No such member")
+    
+    return member
+
+

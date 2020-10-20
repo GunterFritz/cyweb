@@ -92,7 +92,11 @@ class Moderator(helpers.ModeratorRequest):
     
         #show votes of members
         if function == 'member':
-            return self.renderMember()
+            return self.renderMemberOverview()
+        
+        #show votes of members
+        if function == 'details':
+            return self.renderMemberDetails()
         
         #scheduling page requested
         return render(self.request, 'priorization/moderator_scheduler.html', {
@@ -100,7 +104,16 @@ class Moderator(helpers.ModeratorRequest):
             'step': self.step
             })
 
-    def renderMember(self):
+    def renderMemberDetails(self):
+        member_id = self.request.GET.get('member', '')
+        member = helpers.get_member(self.request, member_id)
+        
+        return render(self.request, 'priorization/moderator_member_detail.html', {
+            'project' : self.proj,
+            'member': member
+            })
+    
+    def renderMemberOverview(self):
         member = self.proj.member_set.all().filter(mtype='M')
         
         return render(self.request, 'priorization/moderator_member_overview.html', {
