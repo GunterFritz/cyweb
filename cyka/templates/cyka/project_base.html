@@ -62,8 +62,8 @@
                     <div>
                     {% block topbar_links %}
                         <ul id="nav-mobile" class="right hide-on-med-and-down">
-			    <li><a href="{% url 'cyka:project_list' %}" data-turbolinks="false">Workshops</a></li>
-			    <li><a href="{% url 'cyka:project_new' %}" data-turbolinks="false">Neuer Workshop</a></li>
+			    <li><a href="{% url 'cyka:project_list' %}" data-turbolinks="false">Workshops<i class="material-icons left">account_balance</i></a></li>
+			    <li><a href="{% url 'cyka:project_new' %}" data-turbolinks="false">Neuer Workshop<i class="material-icons left">add</i></a></li>
                             {% if user.is_authenticated %}
                             <li><a href="{% url 'cyka:logout'%}" data-turbolinks="false"><i class="material-icons right">exit_to_app</i>Logout</a></li>
                             {% else %}
