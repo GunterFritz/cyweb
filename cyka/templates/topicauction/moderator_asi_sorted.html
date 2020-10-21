@@ -55,7 +55,11 @@
 		  <span id="_row_{{forloop.counter0}}_name" class="icon-black">{{t.name}}</span>
 		  <span class="secondary-content">
 			  <span id="_row_{{forloop.counter0}}_votes" class="icon-black">({{t.votes}})</span>
-			  <i class="material-icons icon-text icon-blue">fiber_manual_record</i>
+		  {% if forloop.counter0 < threshold %}
+			  <i class="material-icons icon-text icon-blue">lens</i>
+		  {% else %}
+			  <i class="material-icons icon-text icon-blue">radio_button_unchecked</i>
+		  {% endif %}
 		  </span>
 	  </div></a>
 	  {% endfor %}

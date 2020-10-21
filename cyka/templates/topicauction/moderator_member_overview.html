@@ -9,12 +9,15 @@
 	var j = val.member_votes_left    
 	for(i = 0; i < val.max_votes; i++ ){
 	    if (j > 0){
+		//remaining votes
 	        $( "#_member_" + val.id + "_vote-" + i ).addClass( "icon-blue" );
 	        $( "#_member_" + val.id + "_vote-" + i ).removeClass( "icon-grey" );
+	        $( "#_member_" + val.id + "_vote-" + i ).text( "lens" );
 		j--;
             } else {
 	        $( "#_member_" + val.id + "_vote-" + i ).addClass( "icon-grey" );
 	        $( "#_member_" + val.id + "_vote-" + i ).removeClass( "icon-blue" );
+	        $( "#_member_" + val.id + "_vote-" + i ).text( "radio_button_unchecked" );
 	    }
         }
     });
@@ -53,7 +56,7 @@
     <div class="col actionarea">
       <ul class="collection">
           {% for m in member %}
-	  <li class="collection-item"><div>{{m.member.name}}<span class="secondary-content">{% for i in votes %}<i id="_member_{{m.member.id}}_vote-{{i}}" class="material-icons icon-text icon-blue">fiber_manual_record</i>{% endfor %}</span></div></li>
+	  <li class="collection-item"><div>{{m.member.name}}<span class="secondary-content">{% for i in votes %}<i id="_member_{{m.member.id}}_vote-{{i}}" class="material-icons icon-text icon-blue">lens</i>{% endfor %}</span></div></li>
 	  {% endfor %}
       </ul>
     </div>
