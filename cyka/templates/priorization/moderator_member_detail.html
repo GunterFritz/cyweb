@@ -38,5 +38,8 @@
     <div class="row">
         <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="aurl('{% url 'cyka:moderator_priorization' project.id %}?function=member')"><i class="left material-icons secondary-content">people_outline</i></a>
     </div>
+    <div class="row">
+        <a class="btn-floating btn-large waves-effect waves-light right blue{% if not project.hasagenda %} disabled{% endif %}" onclick="leave('{% url 'cyka:moderator_priorization' project.id %}?function=agenda')"><i class="left material-icons secondary-content">group_work</i></a>
+    </div>
 </div>
 </div>

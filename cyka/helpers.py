@@ -101,6 +101,14 @@ class Agenda:
             self.assign_topic(t[0], i)
             self.assign_topic(t[1], i+1)
             i = i + 2
+
+        self.project.hasagenda = True
+        self.project.save()
+
+    def resolve_agenda(self):
+        self.project.hasagenda = False
+        self.project.save()
+
     """
     creates the assignments for one topic from a "flat" algorithm object
     ---

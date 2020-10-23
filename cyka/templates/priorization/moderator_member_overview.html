@@ -62,6 +62,11 @@ width:100%;
         clearInterval(interval);
         aurl(url);
     }   
+    function resolve(){
+	if (confirm("Möchten Sie die Themen Zuteilung auflösen?")){
+	    leave('{% url 'cyka:moderator_priorization' project.id %}?function=resolve');
+	}
+    }
 </script>
 {% endblock %}
 <div class="headcontainer">
@@ -78,7 +83,8 @@ width:100%;
 	  {% endfor %}
         </div>
 	<div class="card-action">
-	    <a class="btn blue" onclick="leave('{% url 'cyka:moderator_priorization' project.id %}?function=assign')">Themen Zuteilen</a>
+		<a class="btn blue{% if project.hasagenda %} disabled{% endif %}" onclick="leave('{% url 'cyka:moderator_priorization' project.id %}?function=assign')">Themen Zuteilen</a>
+		<a class="btn blue{% if not project.hasagenda %} disabled{% endif %}" onclick="resolve()">Zuteilung löschen</a>
         </div>
       </div>
 </div>
@@ -96,7 +102,7 @@ width:100%;
 	    <a class="btn-floating btn-large waves-effect waves-light right blue disabled" onclick="leave('{% url 'cyka:moderator_priorization' project.id %}?function=member')"><i class="left material-icons secondary-content disabled">people_outline</i></a>
         </div>
         <div class="row">
-	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="leave('{% url 'cyka:moderator_priorization' project.id %}?function=agenda')"><i class="left material-icons secondary-content disabled">group_work</i></a>
+	    <a class="btn-floating btn-large waves-effect waves-light right blue{% if not project.hasagenda %} disabled{% endif %}" onclick="leave('{% url 'cyka:moderator_priorization' project.id %}?function=agenda')"><i class="left material-icons secondary-content">group_work</i></a>
         </div>
     </div>
 </div>

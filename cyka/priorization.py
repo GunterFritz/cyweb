@@ -94,17 +94,21 @@ class Moderator(helpers.ModeratorRequest):
         if function == 'member':
             return self.renderMemberOverview()
         
-        #show votes of members
+        #show the agenda (assigned persons to topics)
         if function == 'agenda':
             return self.showAgenda()
         
-        #show votes of members
+        #assign topics to edges and persons to struts
         if function == 'assign':
             self.createAgenda()
-            print("ASSIGN")
+            return self.showAgenda()
+        
+        if function == 'resolve':
+            agenda = helpers.Agenda(self.proj)
+            agenda.resolve_agenda()
             return self.renderMemberOverview()
         
-        #show votes of members
+        #show details of an specific members
         if function == 'details':
             return self.renderMemberDetails()
         
@@ -113,7 +117,9 @@ class Moderator(helpers.ModeratorRequest):
             'project' : self.proj,
             'step': self.step
             })
-
+    """
+    assigns each topic to an edge and each person to a strut
+    """
     def createAgenda(self):
         agenda = helpers.Agenda(self.proj)
         agenda.create_agenda()
