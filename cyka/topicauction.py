@@ -227,7 +227,6 @@ class ModeratorScheduler(helpers.ModeratorRequest):
         
         #create new
         for i in range(1, num +1):
-            #TODO add key to asi
             topic = self.proj.topic_set.create(number=i, asi=asi[i-1].table, name=asi[i-1].name, desc=asi[i-1].table.card.desc)
     
         return self.renderTable()

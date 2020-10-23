@@ -20,7 +20,6 @@
                 </div>
               </form>
            </div>
-	   <span><i class="material-icons right secondary-content">{% if member.status %}done{% else %}remove{% endif %}</i></span>
 	   <span>Persönlicher Link</span>
 	   <span><a href="{% url 'cyka:personal_edit' member.uuid %}">{% url 'cyka:personal_edit' member.uuid %}</a></span>
         </div>
@@ -35,6 +34,8 @@
 		    <li class="collection-item">{{prio.topic.name}}</li>
 	            {% endfor %}
 		    </ul>
+	        <span>Abgegeben</span>
+	        <span><i class="material-icons left secondary-content icon-blue">{% if member.status %}check_box{% else %}check_box_outline_blank{% endif %}</i></span>
             </div>
         </div>
     </div>

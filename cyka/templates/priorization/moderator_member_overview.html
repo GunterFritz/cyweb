@@ -78,7 +78,7 @@ width:100%;
 	  {% endfor %}
         </div>
 	<div class="card-action">
-	    <a class="btn blue" onclick="leave_agenda()">Themen Zuteilen</a>
+	    <a class="btn blue" onclick="leave('{% url 'cyka:moderator_priorization' project.id %}?function=assign')">Themen Zuteilen</a>
         </div>
       </div>
 </div>
@@ -94,6 +94,9 @@ width:100%;
         </div>
         <div class="row">
 	    <a class="btn-floating btn-large waves-effect waves-light right blue disabled" onclick="leave('{% url 'cyka:moderator_priorization' project.id %}?function=member')"><i class="left material-icons secondary-content disabled">people_outline</i></a>
+        </div>
+        <div class="row">
+	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="leave('{% url 'cyka:moderator_priorization' project.id %}?function=agenda')"><i class="left material-icons secondary-content disabled">group_work</i></a>
         </div>
     </div>
 </div>

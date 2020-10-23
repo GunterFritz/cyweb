@@ -1,0 +1,77 @@
+{% block extrahead %}
+<style>
+tbody {
+display:block;
+height:100%;
+overflow:auto;
+}
+thead, tbody tr {
+display:table;
+width:100%;
+table-layout:fixed;
+}
+thead {
+width: calc( 100% - 1em )
+}
+table {
+width:100%;
+}
+</style>
+{% endblock %}
+{% block javascript %}
+<script>
+  $(document).ready(function(){
+    small();
+    $('.tooltipped').tooltip({enterDelay: 1000});
+  });
+    function leave_agenda(url){
+        clearInterval(interval);
+        get_agenda();
+    }   
+    function leave(url){
+        clearInterval(interval);
+        aurl(url);
+    }   
+</script>
+{% endblock %}
+<div class="headcontainer">
+<div class="col actionarea" style="overflow: hidden">
+{% for a in agenda %}
+    <div class="row">
+	<div class="col card mplan">
+            <div class="card-content black-text">
+	        <span class="card-title grey-text text-darken-2">{{ a.0.topic.name }} - {{ a.0.topic.color }}</span>
+            	{% for p in a.0.person %}
+		<p>{{ p.name }} ({{p.priority}})</p>
+            	{% endfor %}
+            </div>
+        </div>
+	<div class="col card mplan">
+            <div class="card-content black-text">
+	        <span class="card-title grey-text text-darken-2">{{ a.1.topic.name }} - {{ a.1.topic.color }}</span>
+            	{% for p in a.1.person %}
+		<p>{{ p.name }} ({{p.priority}})</p>
+            	{% endfor %}
+            </div>
+        </div>
+    </div>
+{% endfor %}
+</div>
+    <div class="col right navarea">
+        <div class="row">
+	    <a class="btn-floating btn-large blue right" onclick="leave_agenda()"><i class="right material-icons tooltipped" data-tooltip="Agenda">menu</i></a>
+        </div>
+        <div class="row">
+            <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
+        </div>
+        <div class="row">
+	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="leave('{% url 'cyka:moderator_priorization' project.id %}')"><i class="left material-icons secondary-content">schedule</i></a>
+        </div>
+        <div class="row">
+	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="leave('{% url 'cyka:moderator_priorization' project.id %}?function=member')"><i class="left material-icons secondary-content">people_outline</i></a>
+        </div>
+        <div class="row">
+	    <a class="btn-floating btn-large waves-effect waves-light right blue disabled" onclick="leave('{% url 'cyka:moderator_priorization' project.id %}?function=agenda')"><i class="left material-icons secondary-content disabled">group_work</i></a>
+        </div>
+    </div>
+</div>

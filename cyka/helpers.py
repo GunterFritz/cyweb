@@ -64,7 +64,6 @@ def get_project(request, pid, auth = True):
 
 
 #obsolete?
-"""
 class HtmlPerson:
     def __init__(self, db):
         self.ty = db.atype
@@ -80,7 +79,6 @@ class HtmlTopic:
 
         for a in assignments:
             self.person.append(HtmlPerson(a))
-"""
 
 class Agenda:
     def __init__(self, proj):
@@ -135,12 +133,13 @@ class Agenda:
     #creates an array that can be used as input for structure object
     def create_if_list(self):
         retval = []
-        for p in self.project.member_set.all():
+        for p in self.project.member_set.all().filter(mtype='M'):
             retval.append(self.get_priority_list(p))
         return retval
 
     """
     creates a good readable structure from db objects
+    [HtmlTopic 1, HtmlTopic 2, HtmlTopic 3, ...]
     """
     def get_agenda(self):
         topics =  self.project.topic_set.all().order_by('agendanumber')

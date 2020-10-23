@@ -95,6 +95,16 @@ class Moderator(helpers.ModeratorRequest):
             return self.renderMemberOverview()
         
         #show votes of members
+        if function == 'agenda':
+            return self.showAgenda()
+        
+        #show votes of members
+        if function == 'assign':
+            self.createAgenda()
+            print("ASSIGN")
+            return self.renderMemberOverview()
+        
+        #show votes of members
         if function == 'details':
             return self.renderMemberDetails()
         
@@ -103,6 +113,10 @@ class Moderator(helpers.ModeratorRequest):
             'project' : self.proj,
             'step': self.step
             })
+
+    def createAgenda(self):
+        agenda = helpers.Agenda(self.proj)
+        agenda.create_agenda()
 
     def renderMemberDetails(self):
         member_id = self.request.GET.get('member', '')
@@ -121,3 +135,12 @@ class Moderator(helpers.ModeratorRequest):
             'member' : member,
             'step': self.step
             })
+    
+    def showAgenda(self):
+        agenda = helpers.Agenda(self.proj)
+        
+        return render(self.request, 'priorization/moderator_agenda.html', {
+            'project' : self.proj,
+            'agenda' : agenda.get_agenda()
+            })
+
