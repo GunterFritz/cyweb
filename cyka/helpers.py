@@ -63,7 +63,6 @@ def get_project(request, pid, auth = True):
     return project
 
 
-#obsolete?
 class HtmlPerson:
     def __init__(self, db):
         self.ty = db.atype
@@ -107,6 +106,8 @@ class Agenda:
 
     def resolve_agenda(self):
         self.project.hasagenda = False
+        for t in self.project.topic_set.all():
+            t.assignment_set.all().delete()
         self.project.save()
 
     """

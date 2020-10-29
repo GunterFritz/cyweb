@@ -54,6 +54,22 @@ class HTMLAsi:
 
         return { 'asi': retval }
 
+class PrioList:
+    def __init__(self, member):
+        class P:
+            def __init__(self, t, a):
+                self.topic = t
+                self.assigned = a
+        self.plist = []
+        assignment =  member.assignment_set.all()
+        for p in member.priority_set.all().order_by('priority'):
+            a = False
+            if len(assignment) > 0:
+                if p.topic == assignment[0].topic or p.topic == assignment[1].topic:
+                    a = True
+            self.plist.append(P(p.topic,a))
+
+
 class HTMLMember:
     def __init__(self, member):
         self.member = member
@@ -124,11 +140,15 @@ class HTMLMember:
         
         return {'member_votes_left':v, 'max_votes': n, 'table': tables}
 
+    """
+    creates a by personal priorities sorted list with ASIs
+        assignments =  db.assignment_set.all()
+    """
     def get_priority_list(self):
         priority_list = self.member.priority_set.all().order_by('priority')
 
         if len(priority_list) > 0:
-            return priority_list
+            return PrioList(self.member)
 
         topics =  self.member.proj.topic_set.all()
         if len(topics) == 0:
@@ -141,6 +161,7 @@ class HTMLMember:
         #secure,that each member has its own priority
         self.shuffle_priority_list()
         
+        return PrioList(self.member)
         return self.member.priority_set.all().order_by('priority')
    
     """

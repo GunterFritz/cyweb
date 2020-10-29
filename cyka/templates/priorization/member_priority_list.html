@@ -88,14 +88,20 @@ function send_sorting() {
                 <div class="card-content">
                     <span class="card-title grey-text text-darken-2">Themen Liste</span>
 		    <ul id="_topicList" class="collection">
-		    {% for prio in priority_list %}
-		    <li class="collection-item" {%if not member.status %}onmouseover="this.style.cursor='pointer'" draggable="true" ondragover="dragOver(event)" ondragstart="dragStart(event)"{% endif %}data-number="{{prio.topic.number}}">{{prio.topic.name}}</li>
+		    {% for prio in priority_list.plist %}
+		    <li class="collection-item" {%if not member.status %}onmouseover="this.style.cursor='pointer'" draggable="true" ondragover="dragOver(event)" ondragstart="dragStart(event)"{% endif %}data-number="{{prio.topic.number}}">{{prio.topic.name}}
+		        <span class="secondary-content">
+		        {% if prio.assigned %}
+			  <i class="material-icons icon-text icon-blue">person</i>
+	                {% endif %}
+			</span>
+		    </li>
 	            {% endfor %}
 		    </ul>
                 </div>
                 <div class="card-action">
-			<a class="btn btn-medium blue waves-effect {%if member.status %}disabled{% endif %}" onclick="send_sorting()">Liste abgeben</a>
-			<a class="btn btn-medium blue waves-effect {%if not member.status %}disabled{% endif %}" onclick="reset()">Zurücksetzen</a>
+			<a class="btn btn-medium blue waves-effect {%if member.status or member.proj.hasagenda %}disabled{% endif %}" onclick="send_sorting()">Liste abgeben</a>
+			<a class="btn btn-medium blue waves-effect {%if not member.status or member.proj.hasagenda %}disabled{% endif %}" onclick="reset()">Zurücksetzen</a>
                 </div>
             </div>
         </div>
@@ -108,7 +114,10 @@ function send_sorting() {
             <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
         </div>
         <div class="row">
-            <a class="btn-floating btn-large waves-effect waves-light right blue disabled" onclick="resize()"><i class="left material-icons secondary-content">assignment</i></a>
+            <a class="btn-floating btn-large waves-effect waves-light right blue disabled" onclick="aurl()"><i class="left material-icons secondary-content">assignment</i></a>
+        </div>
+        <div class="row">
+            <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="aurl('{% url 'cyka:member_priorization' member.uuid %}?function=agenda')"><i class="left material-icons secondary-content">group_work</i></a>
         </div>
     </div>
 </div>

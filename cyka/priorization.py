@@ -63,6 +63,10 @@ class Member(helpers.MemberRequest):
         if func == 'priority_list':
             return self.renderPriority()
         
+        #votes
+        if func == 'agenda':
+            return self.renderAgenda()
+        
         return self.renderPriority()
     
     def renderPriority(self):
@@ -74,6 +78,19 @@ class Member(helpers.MemberRequest):
             'member': self.member, 
             'priority_list': prio
             })
+    
+    def renderAgenda(self):
+        if not self.member.proj.hasagenda:
+            return None
+
+        agenda = helpers.Agenda(self.member.proj)
+        
+        return render(self.request, 'priorization/member_agenda.html', {
+            'project' : self.member.proj,
+            'member': self.member, 
+            'agenda' : agenda.get_agenda()
+            })
+
 
 
 

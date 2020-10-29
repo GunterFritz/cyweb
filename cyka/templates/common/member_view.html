@@ -30,8 +30,14 @@
             <div class="card-content">
                 <span class="card-title grey-text text-darken-2">Themen Liste</span>
 		    <ul class="collection">
-		    {% for prio in priority_list %}
-		    <li class="collection-item">{{prio.topic.name}}</li>
+		    {% for prio in priority_list.plist %}
+		    <li class="collection-item">{{prio.topic.name}}
+		        <span class="secondary-content">
+		        {% if prio.assigned %}
+			  <i class="material-icons icon-text icon-blue">person</i>
+	                {% endif %}
+			</span>
+		    </li>
 	            {% endfor %}
 		    </ul>
 	        <span>Abgegeben</span>
