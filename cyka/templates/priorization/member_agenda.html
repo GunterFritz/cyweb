@@ -1,3 +1,11 @@
+{% block javascript %}
+<script>
+  $(document).ready(function(){
+    small();
+    $('.tooltipped').tooltip({enterDelay: 1000});
+  });
+</script>
+{% endblock %}
 <div class="headcontainer">
 <div class="col actionarea" style="overflow: hidden">
 {% for a in agenda %}
