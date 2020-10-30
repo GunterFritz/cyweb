@@ -117,22 +117,22 @@
     </div>
     <div class="col navarea">
         <div class="row">
-            <a class="btn-floating btn-large red right" onclick="leave('{% url 'cyka:topicauction_asi_overview' member.uuid %}')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">exit_to_app</i></a>
+            <a class="btn-floating waves-effect waves-light btn-large red right" onclick="leave('{% url 'cyka:topicauction_asi_overview' member.uuid %}')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">exit_to_app</i></a>
         </div>
         <div class="row">
             <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
         </div>
         <div id="_plus" class="row">
-            <a id="_plus-btn" class="btn-floating btn-large blue right" onclick="submit('plus')"><i class="right material-icons tooltipped" data-tooltip="Stimme abgeben">add</i></a>
+            <a id="_plus-btn" class="btn-floating waves-effect waves-light btn-large blue right" onclick="submit('plus')"><i class="right material-icons tooltipped" data-tooltip="Stimme abgeben">add</i></a>
         </div>
         <div id="_minus" class="row">
-            <a id="_minus-btn" class="btn-floating btn-large blue right" onclick="submit('minus')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">remove</i></a>
+            <a id="_minus-btn" class="btn-floating waves-effect waves-light btn-large blue right" onclick="submit('minus')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">remove</i></a>
         </div>
+    </div>
         <div id="_votes" class="row navarea bottom">
 	    {% for v in votes %}
 	    <i id="_vote-{{v}}" class="material-icons icon-blue">fiber_manual_record</i>
             {% endfor %}
 	</div>
-    </div>
 </div>
 {% endblock %}

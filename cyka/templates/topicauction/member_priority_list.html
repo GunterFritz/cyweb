@@ -98,5 +98,8 @@ function isBefore(el1, el2) {
         <div class="row">
             <a class="btn-floating btn-large waves-effect waves-light right blue disabled" onclick="resize()"><i class="left material-icons secondary-content">assignment</i></a>
         </div>
+        <div class="row">
+            <a class="btn-floating btn-large waves-effect pulse waves-light right blue" onclick="aurl('{% url 'cyka:member_priorization' member.uuid %}?function=agenda')"><i class="left material-icons secondary-content">group_work</i></a>
+        </div>
     </div>
 </div>
