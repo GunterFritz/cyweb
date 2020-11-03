@@ -36,9 +36,13 @@ urlpatterns = [
         #end topicauction
         #priorization
 	url(r'^(?P<project_id>[0-9]+)/moderator/priorization/$', views.moderator_priorization, name="moderator_priorization"),
-	# ex: /member/topicauction/<uuid>
+	# ex: /member/priorization/<uuid>
         url(r'^member/priorization/(?P<uuid>[0-9A-Za-z\-]+)$', views.member_priorization, name="member_priorization"),
         #end priorization
+        #iterations
+	url(r'^(?P<project_id>[0-9]+)/moderator/round/$', views.moderator_round, name="moderator_round"),
+        url(r'^member/round/(?P<uuid>[0-9A-Za-z\-]+)$', views.member_round, name="member_round"),
+        #end iterations
         #common views
 	url(r'^(?P<project_id>[0-9]+)/getmemberdetails/$', views.get_member_details, name="get_member_details"),
         #end get data

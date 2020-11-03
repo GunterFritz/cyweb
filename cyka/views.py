@@ -14,6 +14,7 @@ from . import topicauction as TopicAuction
 from . import priorization as Priorization
 from . import start as Start
 from . import brainwriting
+from . import round as Round
 from .helpers import Agenda, HtmlCard
 from .htmlobjects import HTMLMember
 from .workflow import Workflow
@@ -453,6 +454,19 @@ def member_priorization(request, uuid):
     m = Priorization.Member(request, uuid)
 
     return m.process()
+
+#join meeting room topic
+@login_required
+def moderator_round(request, project_id):
+    m = Round.ModeratorJoinTopic(request, project_id)
+
+    return m.process()
+
+def member_round(request, project_id):
+    m = Round.ModeratorJoinTopic(request, project_id)
+
+    return m.process()
+
 
 #common templates
 @login_required

@@ -4,17 +4,28 @@
 {% block javascript %}
 <script src='{{jitsi.api}}'></script>
 <script>
-  $(document).ready(function(){
+  var api;
+  function connectRoom(room){
     var container = document.querySelector('#jitsi-container');
     var domain = "{{jitsi.domain}}";
     var options = {
-	roomName: "{{jitsi.room}}",
-        height: "100%",
+	roomName: room,
+        height: 700,
         parentNode: container,
     };
-    var api = new JitsiMeetExternalAPI(domain, options);
+    api = new JitsiMeetExternalAPI(domain, options);
     api.executeCommand ('displayName', '{{jitsi.name}}'); 
     api.executeCommand ('subject', '{{jitsi.subject}}');
+  }
+  function connectVideo(){
+	connectRoom("{{jitsi.room}}");
+  }
+  function hangup(){
+	api.executeCommand('hangup');
+	document.getElementById("jitsi-container").innerHTML = "";
+  }   
+  $(document).ready(function(){
+    connectVideo();
     small();
     $('.tooltipped').tooltip({enterDelay: 1000});
     {% if start == "asi" %}
