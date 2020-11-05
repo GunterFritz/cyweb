@@ -462,8 +462,8 @@ def moderator_round(request, project_id):
 
     return m.process()
 
-def member_round(request, project_id):
-    m = Round.ModeratorJoinTopic(request, project_id)
+def member_round(request, uuid):
+    m = Round.MemberJoinTopic(request, uuid)
 
     return m.process()
 

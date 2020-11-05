@@ -20,28 +20,26 @@
 <div class="col actionarea" style="overflow: hidden">
 {% for a in agenda %}
     <div class="row">
-	<div class="col card mplanopen">
+        <a onmouseover="this.style.cursor='pointer'" onclick="leave('{% url 'cyka:moderator_round' project.id %}?topic={{ a.0.topic.id }}')">
+	<div class="col card mplan">
             <div class="card-content black-text">
 	        <span class="card-title grey-text text-darken-2">{{ a.0.topic.name }}<i class="right material-icons icon-{{ a.0.topic.color }}">brightness_1</i></span>
             	{% for p in a.0.person %}
 		<p>{{ p.name }} ({{p.priority}})</p>
             	{% endfor %}
             </div>
-            <div class="card-action">
-		    <a onmouseover="this.style.cursor='pointer'" onclick="leave('{% url 'cyka:moderator_round' project.id %}?topic={{ a.0.topic.id }}')">Join</a>
-            </div>
         </div>
-	<div class="col card mplanopen">
+	</a>
+        <a onmouseover="this.style.cursor='pointer'" onclick="leave('{% url 'cyka:moderator_round' project.id %}?topic={{ a.1.topic.id }}')">
+	<div class="col card mplan">
             <div class="card-content black-text">
 	        <span class="card-title grey-text text-darken-2">{{ a.1.topic.name }}<i class="right material-icons icon-{{ a.1.topic.color }}">brightness_1</i></span>
             	{% for p in a.1.person %}
 		    <p>{{ p.name }} ({{p.priority}})</p>
             	{% endfor %}
             </div>
-            <div class="card-action">
-		    <a onmouseover="this.style.cursor='pointer'" onclick="leave('{% url 'cyka:moderator_round' project.id %}?topic={{ a.1.topic.id }}')">Join</a>
-            </div>
         </div>
+	</a>
     </div>
 {% endfor %}
 </div>

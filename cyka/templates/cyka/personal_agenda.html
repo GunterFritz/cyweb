@@ -5,6 +5,22 @@
 <script src='{{jitsi.api}}'></script>
 <script>
   var interval = null;
+  var api = null;
+  function connectRoom(room){
+    var container = document.querySelector('#jitsi-container');
+    var domain = "{{jitsi.domain}}";
+    var options = {
+	roomName: room,
+        height: 700,
+        parentNode: container,
+    };
+    api = new JitsiMeetExternalAPI(domain, options);
+    api.executeCommand ('displayName', '{{jitsi.name}}'); 
+    api.executeCommand ('subject', '{{jitsi.subject}}');
+  }
+  function connectVideo(){
+    connectRoom('{{jitsi.room}}');
+  }
   function refreshAgenda(){
     interval = setInterval(function() {
         $.ajax({
@@ -16,18 +32,13 @@
         }); 
     }, 7000);
   }
+  function hangup(){
+	api.executeCommand('hangup');
+	document.getElementById("jitsi-container").innerHTML = "";
+  }   
   $(document).ready(function(){
-    var container = document.querySelector('#jitsi-container');
-    var domain = "{{jitsi.domain}}";
-    var options = {
-	roomName: "{{jitsi.room}}",
-        height: 700,
-        parentNode: container,
-    };
-    var api = new JitsiMeetExternalAPI(domain, options);
-    api.executeCommand ('displayName', '{{jitsi.name}}'); 
-    api.executeCommand ('subject', '{{jitsi.subject}}');
     big();
+    connectVideo();
     {% if start == "table" %}
     aurl('{% url 'cyka:personal_table' member.uuid %}?project={{project.uuid}}');
     {% else %}
@@ -68,12 +79,15 @@
     function aurl(myurl) {
 	clearInterval(interval)
 	$('.tooltipped').tooltip('close');
+        aurl2(myurl, "#_appendHere" );
+    }
+    function aurl2(myurl, where) {
         $.ajax({
             type: "GET",
 		url: myurl,
         })
         .done(function(response) {
-            $('#_appendHere').html(response);
+            $(where).html(response);
         }); 
     }
     function csrfSafeMethod(method) {

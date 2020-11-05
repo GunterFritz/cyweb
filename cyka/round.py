@@ -53,15 +53,14 @@ class to render the Topic creation step
 class MemberJoinTopic(helpers.MemberRequest):
     def __init__(self, request, uuid):
         helpers.MemberRequest.__init__(self,request, uuid)
-        self.table = None
+        topic_id = self.request.GET.get('topic', '')
+        self.topic = Topic.objects.get(pk=topic_id)
+        self.table = self.topic.asi
+        self.name = self.request.user.get_username
     
     def get(self):
-        table_id = self.request.GET.get('table', '')
-        card_id = self.request.GET.get('si', '')
         func = self.request.GET.get('function', '')
         
-        if self.table == None and table_id != '':
-            self.table = Table.objects.get(pk=table_id)
         if self.table == None:
             raise("No such table")
         
@@ -74,15 +73,13 @@ class MemberJoinTopic(helpers.MemberRequest):
         
         #main page
         jitsi = Jitsi(self.table.uuid, self.table.card.heading, self.member.name)
-        return render(self.request, 'problemjostle/member_join_asi.html', {'project' : self.member.proj, 'member': self.member, 'table': self.table, 'jitsi': jitsi })
+        return render(self.request, 'round/member_join_table.html', {'project' : self.member.proj, 'member': self.member, 'topic': self.topic, 'jitsi': jitsi })
 
     """
     Pad function, renders etherpad
     """
     def viewPad(self):
         pad = Pad(self.table.uuid, self.member.name)
-        if self.step.done:
-            pad.setReadOnly()
         asis = self.table.sisign_set.all()
         return render(self.request, 'problemjostle/pad.html', {'table': self.table, "etherpad": pad, "sign": asis, 'member' : self.member })
 

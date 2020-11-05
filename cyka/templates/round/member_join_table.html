@@ -1,0 +1,32 @@
+{% block extrahead %}
+{% endblock %}
+{% block javascript %}
+<script>
+  $(document).ready(function(){
+      small();
+      hangup();
+      connectRoom('{{jitsi.room}}');
+      aurl2('{% url 'cyka:member_round' member.uuid %}?topic={{topic.id}}&function=pad', '#_pad');
+      $('.tooltipped').tooltip({enterDelay: 1000});
+    });
+    function leave(url){
+        hangup();
+	connectVideo();
+        aurl(url);
+    }   
+</script>
+{% endblock %}
+{% block content %}
+<div class="headcontainer">
+    <div id="_pad" class="col actionarea">
+    </div>
+    <div class="col navarea right">
+        <div class="row">
+	    <a class="btn-floating btn-large red right" onclick="leave('{% url 'cyka:member_priorization' member.uuid %}?function=agenda')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">exit_to_app</i></a>
+        </div>
+        <div class="row">
+            <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
+        </div>
+    </div>
+</div>
+{% endblock %}
