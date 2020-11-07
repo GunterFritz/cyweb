@@ -58,11 +58,9 @@ class MemberBrainwriting(helpers.MemberRequest):
         card_id = self.request.POST.get('cardid', '')
         delete = self.request.POST.get('delete', 'false')
         card = None
-        page = "last"
         if card_id != '':
             card = helpers.get_card(card_id, self.member)
             cards = self.member.card_set.all()
-            page = int(getIndex(cards, card)/6)+1
         #delete action
         if delete == 'true' and card != None:
             card.delete()
@@ -76,72 +74,46 @@ class MemberBrainwriting(helpers.MemberRequest):
                 card.save()
             else:
                 #input fields not valid
-                #print("ID, ", form.cardid.value)
 
-                return self.getOverviewMy(page, form)
+                return self.getOverviewMy(form)
         #return to overview
-        return self.getOverviewMy(page)
+        return self.getOverviewMy()
 
     def get(self):
         card_id = self.request.GET.get('card', '')
-        #render create form
-        if card_id == 'new':
-            form = CardForm()
-            return render(self.request, 'brainwriting/member_si_edit.html', {'project' : self.member.proj, 'member': self.member, 'form': form})
+        
         #render overview
         if card_id == '':
-            page = int(self.request.GET.get('page', 1))
             if self.request.GET.get('cards', '') == 'all':
                 #show all cards
-                return self.getOverviewAll(page)
+                return self.getOverviewAll()
             #show only cards of user
-            return self.getOverviewMy(page)
+            return self.getOverviewMy()
         
         #render change card
         card = helpers.get_card(card_id, self.member)
         form = CardForm(initial={'heading': card.heading, 'desc' : card.desc, 'cardid': card.id })
-        return self.getOverviewMy(1, form)
+        return self.getOverviewMy(form)
 
-    def getOverviewAll(self, page):
+    def getOverviewAll(self):
         cards = self.member.proj.card_set.all()
     
-        #calculate paging ceil (instead of math.ceil)
-        pages = int(len(cards)/6) + 1
-        if len(cards) % 6 > 0:
-            pages = pages + 1
-
-        if page == "last":
-            page = pages - 1
-        
         return render(self.request, 'brainwriting/member_si_overview.html', {
             'project' : self.member.proj, 
             'member': self.member, 
-            #'cards': cards[(page-1)*6:page*6], 
             'cards': cards, 
-            'pages': range(1, pages), 
-            'page':page,
             'step': self.step,
             'all' : True
             })
     
-    def getOverviewMy(self, page, form=CardForm()):
+    def getOverviewMy(self, form=CardForm()):
         cards = self.member.card_set.all()
     
-        #calculate paging ceil (instead of math.ceil)
-        pages = int(len(cards)/6) + 1
-        if len(cards) % 6 > 0:
-            pages = pages + 1
-        if page == "last":
-            page = pages - 1
-        
         return render(self.request, 'brainwriting/member_si_overview.html', {
             'form' : form,
             'project' : self.member.proj, 
             'member': self.member, 
-            #'cards': cards[(page-1)*6:page*6], 
             'cards': cards, 
-            'pages': range(1, pages), 
-            'page':page,
             'step': self.step,
             'all' : False
             })
