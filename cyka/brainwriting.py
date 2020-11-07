@@ -76,11 +76,11 @@ class MemberBrainwriting(helpers.MemberRequest):
                 card.save()
             else:
                 #input fields not valid
-                return render(self.request, 'brainwriting/member_si_edit.html', {'project' : self.member.proj, 'member': self.member, 'form': form})
-        cards = self.member.card_set.all()
+                #print("ID, ", form.cardid.value)
+
+                return self.getOverviewMy(page, form)
         #return to overview
         return self.getOverviewMy(page)
-        return render(self.request, 'brainwriting/member_si_overview.html', {'project' : self.member.proj, 'member': self.member, 'cards': cards, 'step': self.step})
 
     def get(self):
         card_id = self.request.GET.get('card', '')
@@ -100,7 +100,7 @@ class MemberBrainwriting(helpers.MemberRequest):
         #render change card
         card = helpers.get_card(card_id, self.member)
         form = CardForm(initial={'heading': card.heading, 'desc' : card.desc, 'cardid': card.id })
-        return render(self.request, 'brainwriting/member_si_edit.html', {'project' : self.member.proj, 'member': self.member, 'form': form})
+        return self.getOverviewMy(1, form)
 
     def getOverviewAll(self, page):
         cards = self.member.proj.card_set.all()
@@ -116,14 +116,15 @@ class MemberBrainwriting(helpers.MemberRequest):
         return render(self.request, 'brainwriting/member_si_overview.html', {
             'project' : self.member.proj, 
             'member': self.member, 
-            'cards': cards[(page-1)*6:page*6], 
+            #'cards': cards[(page-1)*6:page*6], 
+            'cards': cards, 
             'pages': range(1, pages), 
             'page':page,
             'step': self.step,
             'all' : True
             })
     
-    def getOverviewMy(self, page):
+    def getOverviewMy(self, page, form=CardForm()):
         cards = self.member.card_set.all()
     
         #calculate paging ceil (instead of math.ceil)
@@ -134,9 +135,11 @@ class MemberBrainwriting(helpers.MemberRequest):
             page = pages - 1
         
         return render(self.request, 'brainwriting/member_si_overview.html', {
+            'form' : form,
             'project' : self.member.proj, 
             'member': self.member, 
-            'cards': cards[(page-1)*6:page*6], 
+            #'cards': cards[(page-1)*6:page*6], 
+            'cards': cards, 
             'pages': range(1, pages), 
             'page':page,
             'step': self.step,
