@@ -84,7 +84,7 @@ class MemberBrainwriting(helpers.MemberRequest):
         
         #render overview
         if card_id == '':
-            if self.request.GET.get('cards', '') == 'all':
+            if self.request.GET.get('cards', '') == 'all' or self.step.status == 'B':
                 #show all cards
                 return self.getOverviewAll()
             #show only cards of user

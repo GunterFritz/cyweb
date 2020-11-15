@@ -1,4 +1,3 @@
-import json
 from lib.structure import Structure2 as Structure
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
@@ -6,8 +5,9 @@ from .models import Member, Topic, Table, Card, SIsign
 from .config import Jitsi, Pad
 from . import helpers
 from .workflow import Workflow
-from .htmlobjects import HTMLAsi, HTMLMember
+from .htmlobjects import HTMLAsi, HTMLMember, HTML_Si
 from django.db import transaction
+import json
 from django.utils.safestring import SafeString
 
 """
@@ -53,6 +53,7 @@ class AgreedStatementImportance(helpers.MemberRequest):
             'member': self.member, 
             "etherpad": pad, 
             "supporter": asis,
+            'step':self.step,
             'asi': HTMLAsi(self.table, 0),
             'table': self.table, 
             'votes':range(v),
@@ -104,7 +105,7 @@ class AgreedStatementImportance(helpers.MemberRequest):
             tables.append(HTMLAsi(self.table))
             data = HTMLMember(self.member).getVotesJson(tables)
         else:
-            data = HTMLMember(self.member).getVotesJson(HTMLAsi.getProjAsi(self.member.proj))
+            data = HTMLMember(self.member).getVotesJson(HTMLAsi.get_proj_asi(self.member.proj))
         return JsonResponse(data, safe=False)
 
 """
@@ -127,28 +128,21 @@ class ASIOverview(helpers.MemberRequest):
     
     def overview(self):
         #table_id = self.request.GET.get('table', '')
-        page = int(self.request.GET.get('page', 1))
         
         #render tables overview
         step = Workflow.getStep(self.member.proj, 80, self.request)
         
-        htables = HTMLAsi.getProjAsi(self.member.proj)
-        
-        #ceil (instead of math.ceil)
-        pages = int(len(htables)/6) + 1
-        if len(htables) % 6 > 0:
-            pages = pages + 1
+        htables = HTMLAsi.get_proj_asi(self.member.proj)
         
         html_mem = HTMLMember(self.member)
         v = HTMLMember(self.member).getMaxVotes()
-        data = HTMLMember(self.member).getVotesJson(HTMLAsi.getProjAsi(self.member.proj))
+        data = HTMLMember(self.member).getVotesJson(HTMLAsi.get_proj_asi(self.member.proj))
+        sis = HTML_Si.get_proj_si(self.member.proj)
         
         return render(self.request, 'topicauction/member_asi_overview.html', {'project' : self.member.proj, 
             'member': self.member, 
             'tables': htables,
-            'tables': htables[(page-1)*6:page*6], 
-            'pages': range(1, pages), 
-            'page':page,
+            'sis':sis,
             'votes':range(v),
             'json_votes':SafeString(json.dumps(data)),
             'step': step})
@@ -214,7 +208,7 @@ class ModeratorScheduler(helpers.ModeratorRequest):
             self.renderTable()
 
         num = Structure.factory(self.proj.ptype).getNumTopics()
-        asi = sorted(HTMLAsi.getProjAsi(self.proj), key=lambda HTMLAsi: HTMLAsi.votes, reverse=True)
+        asi = sorted(HTMLAsi.get_proj_asi(self.proj), key=lambda HTMLAsi: HTMLAsi.votes, reverse=True)
         #not enough ASI to create topics
         if num > len(asi):
             return None
@@ -250,7 +244,7 @@ class ModeratorScheduler(helpers.ModeratorRequest):
             
     def renderTable(self):
         data = HTMLAsi.getProjAsiJson(self.proj)
-        t = HTMLAsi.getProjAsi(self.proj)
+        t = HTMLAsi.get_proj_asi(self.proj)
 
         return render(self.request, 'topicauction/moderator_asi_sorted.html', {'project' : self.proj, 
             'table' : sorted(t, key=lambda HTMLAsi: HTMLAsi.votes, reverse=True),

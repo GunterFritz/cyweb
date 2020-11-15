@@ -1,83 +1,157 @@
+{% load material_form %}
 {% block extrahead %}
-      <style>
-      .debugrow .debugcol {
-        border: 1px dotted #0313fc
-      }
-      </style>
 {% endblock %}
 {% block javascript %}
 <script>
-  var page = parseInt({{page}});
   $(document).ready(function(){
-    small();
-    queryString = window.location.search;
-    document.getElementById("page_" + page).classList.add('class', "active");
-    if(page == 1){
-      //disable page left
-      document.getElementById("page_left").classList.add('class', "disabled");
-    } else {
-      //set url to page left
-      var left = (page.valueOf() - 1).valueOf();
-      var url = "{% url 'cyka:personal_table' member.uuid %}?project={{project.id}}&page=" + left.toString();
-      document.getElementById("page_left_link").setAttribute('onclick', "aurl('" + url + "')");
-    }
-    if(page == {{ pages|length }}){
-      //disable page right
-      document.getElementById("page_right").classList.add('class', "disabled");
-    } else {
-      //set url to page right
-      var right = (page.valueOf() + 1).valueOf();
-      var url = "{% url 'cyka:personal_table' member.uuid %}?project={{project.id}}&page=" + right.toString();
-      document.getElementById("page_right_link").setAttribute('onclick', "aurl('" + url + "')");
-    }
+    refreshStep();
+    //refreshAsi();
+    refreshAsi();
     $('.tooltipped').tooltip({enterDelay: 1000});
   });
+  
+  function createASI(name, id){
+	  if(confirm("Neues Thema \"" + name + "\". Zur Ausarbeitung wird ein Raum erstellt.")){
+	    aurl("{% url 'cyka:personal_join_table' member.uuid %}?si=" + id);
+	  }
+  }
+
+function updateStep(){
+  $.ajax({
+      type: "GET",
+      url: '{% url 'cyka:get_json_step' %}?member={{member.uuid}}&step={{step.step}}',
+      complete: function (response) {
+	var obj = $.parseJSON(response.responseText);
+	if (obj.status != '{{step.status}}'){
+	    alert("Das Einreichen der Themenvorschläge wurde beendet. Sie können keine Themenvorschläge mehr einreichen oder unterstützen");
+	    aurl('{% url 'cyka:personal_schedule_jostle' member.uuid %}');
+	}
+	if (obj.active == false){
+	    alert("Die Themenwahl wurde gestartet");
+	    aurl('{% url 'cyka:personal_schedule_jostle' member.uuid %}');
+	}
+      }
+  });
+}
+
+function refreshStep(){
+  tmp = setInterval(function() {
+    updateStep();
+  }, 3000);
+  refreshs.push(tmp);
+}
+
+function add_asi(add, section, notsection, obj){
+  id = obj.cardid;
+  n_name = notsection + id;
+  name = section + id;
+  
+  if($("#" + n_name).length != 0) {
+    $("#" + n_name).remove();
+  }
+  if($("#" + name).length == 0) {
+    $(add).before(get_asi_html(name, obj));
+    //remove asi
+    if($("#_si_" + id).length != 0) {
+      $("#_si_" + id).empty();
+      $("#_si_" + id).removeClass();
+      $("#_si_" + id).addClass('card-placeholder');
+    }
+  } else {
+    //update progress
+    $("#_progress_" + id).css("width", obj.progress + "%");
+  }
+}
+
+function get_asi_html(name, table){
+    url = '{% url 'cyka:personal_join_table' member.uuid %}' + '?table=' + table.id;
+    html = '<div id="' + name + '" class="item card-panel mplanopen blue lighten-5" onmouseover="this.style.cursor=\'pointer\'" onclick="aurl(\'' + url + '\')"><div class="progress" style="margin-top: -10px;"><div id="_progress_' + table.cardid + '" class="determinate" style="width: ' + table.progress + '%"></div></div><span class="black-text card-title" STYLE="font-size:16px">' + table.name + '</span><br/><span class="grey-text text-darken-2">' + table.desc + '</span></div>';
+    return html;
+}
+         
+function updateAsi(){
+  $.ajax({
+      type: "GET",
+      url: '{% url 'cyka:get_json_asi' %}?member={{member.uuid}}',
+      complete: function (response) {
+	var obj = $.parseJSON(response.responseText);
+	$.each(obj , function(index, val) {
+	    console.log(val.name)
+	    if (val.progress == 100) {
+		add_asi('#_asi_fill', '_asi_', '_vasi_', val);
+	    } else {
+		add_asi('#_vasi_fill', '_vasi_', '_asi_', val);
+	    }
+        });
+      }
+  });
+}
+
+function refreshAsi(){
+  tmp = setInterval(function() {
+    updateAsi();
+  }, 2000);
+  refreshs.push(tmp);
+}
+
 </script>
 {% endblock %}
-<div class="headcontainer">
-    <div class="col actionarea">
-      <ul class="pagination center">
-        <li id="page_left"><a id="page_left_link"><i class="material-icons waves-effect">chevron_left</i></a></li>
-          {% for p in pages %}	
-	    <li id="page_{{ p }}"><a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:personal_table' member.uuid %}?page={{ p }}')">{{ p }}</a></li>
-	  {% endfor %}
-        <li id="page_right" class="waves-effect"><a id="page_right_link"><i class="material-icons">chevron_right</i></a></li>
-      </ul>
-      <div class="row valign">
+<div id='_asi_container' class="cardcontainer">
         {% for t in tables %}
-	    {% if step.done %}
-	    <a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:personal_join_table' member.uuid %}?table={{ t.table.id }}')">
-	    {% else %}
-	    <a href="{% url 'cyka:personal_join_table' member.uuid %}?table={{t.table.id}}">
-	    {% endif %}
-		<div class="col card mplan tooltipped" data-tooltip="Beitreten">
-                    <div class="card-content black-text">
-		      <div class="progress">
-			      <div class="determinate" style="width: {{t.progress}}%"></div>
-                      </div>
-		        <span class="card-title grey-text text-darken-2">{{t.table.card.heading}}</span>
-		        <p>{{t.table.card.desc}}</p>
+            {% if t.progress == 100 %}
+	    <div id="_asi_{{t.table.card.id}}" class="item card-panel mplanopen blue lighten-5" onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:personal_join_table' member.uuid %}?table={{ t.table.id }}')">
+		    <div class="progress" style="margin-top: -10px;">
+		        <div id="_progress_{{t.table.card.id}}" class="determinate" style="width: {{t.progress}}%"></div>
                     </div>
-                </div>
-	    </a>
+		    <span class="black-text card-title" STYLE="font-size:16px">{{t.table.card.heading}}</span><br/>
+		    <span class="grey-text text-darken-2">{{t.table.card.desc}}</span>
+            </div>
+            {% endif %}
 	{% endfor %}
-      </div>
-    </div>
-    <div class="col right navarea">
-            <div class="row">
-	        <a class="btn-floating btn-large blue right" onclick="get_agenda()"><i class="right material-icons tooltipped" data-tooltip="Agenda">menu</i></a>
+  <div id="_asi_fill" class="card-placeholder"></div>
+  <div class="card-placeholder"></div>
+  <div class="card-placeholder"></div>
+  <div class="card-placeholder"></div>
+  <div class="card-placeholder"></div>
+</div>
+<div class="divider"></div>
+<div id="_vasi_container" class="cardcontainer">
+        {% for t in tables %}
+            {% if t.progress != 100 %}
+	    <div id="_vasi_{{t.table.card.id}}" class="item card-panel mplanopen blue lighten-5" onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:personal_join_table' member.uuid %}?table={{ t.table.id }}')">
+		    <div class="progress" style="margin-top: -10px;">
+		        <div id="_progress_{{t.table.card.id}}" class="determinate" style="width: {{t.progress}}%"></div>
+                    </div>
+		    <span class="black-text card-title" STYLE="font-size:16px">{{t.table.card.heading}}</span><br/>
+		    <span class="grey-text text-darken-2">{{t.table.card.desc}}</span>
             </div>
-            <div class="row">
-                <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
+            {% endif %}
+	{% endfor %}
+  <div id="_vasi_fill" class="card-placeholder"></div>
+  <div class="card-placeholder"></div>
+  <div class="card-placeholder"></div>
+  <div class="card-placeholder"></div>
+  <div class="card-placeholder"></div>
+</div>
+<div class="divider"></div>
+<div class="cardcontainer">
+        {% for si in sis %}
+            {% if si.asi == 0 %}
+              {% if step.done %}
+	      <div id="_si_{{si.card.id}}" class="item card-panel mplanopen grey lighten-5">
+              {% else %}
+	      <div id="_si_{{si.card.id}}" class="item card-panel mplanopen tooltipped grey lighten-5" onmouseover="this.style.cursor='pointer'" onclick="createASI('{{si.card.heading}}', '{{si.card.id}}')" data-tooltip="Themenvorschlag erstellen">
+              {% endif %}
+		<span class="black-text card-title" STYLE="font-size:16px">{{si.card.heading}}</span><br/>
+		<span class="grey-text text-darken-2">{{si.card.desc}}</span>
             </div>
-            <div class="row">
-		    <a  onclick="aurl('{% url 'cyka:personal_table' member.uuid %}?table=new')" class="btn-floating btn-large blue right {% if step.done %}disabled tooltipped{% endif %}" data-tooltip="Neuer Themenvorschlag"><i class="material-icons">add_box</i></a>
-            </div>
-            <div class="row">
-	        <a  onclick="aurl('{% url 'cyka:personal_table' member.uuid %}')" class="btn-floating btn-large blue right {%if agreed == 'false' %}disabled{% endif %}"><i class="material-icons">content_copy</i></a>
-            </div>
-            <div class="row">
-	        <a  onclick="aurl('{% url 'cyka:personal_table' member.uuid %}?agreed=true')" class="btn-floating btn-large blue right {%if agreed == 'true' %}disabled{% endif %}"><i class="material-icons">star_border</i></a>
-            </div>
-    </div>
+            {% else %}
+            <div id="_si_{{si.card.id}}" class="card-placeholder"></div>
+            {% endif %}
+	{% endfor %}
+  <div class="card-placeholder"></div>
+  <div class="card-placeholder"></div>
+  <div class="card-placeholder"></div>
+  <div class="card-placeholder"></div>
+  <div class="card-placeholder"></div>
 </div>

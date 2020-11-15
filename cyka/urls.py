@@ -16,6 +16,8 @@ urlpatterns = [
 	url(r'^project/list/$', views.project_list, name="project_list"),
 	# ex: /cyka/project/5/moderator/problemjostle/
 	url(r'^(?P<project_id>[0-9]+)/moderator/problemjostle/$', views.moderator_problemjostle, name="moderator_problemjostle"),
+	#dev only
+        url(r'^(?P<project_id>[0-9]+)/moderator/delete/asi/$', views.moderator_delete_asi, name="moderator_delete_asi"),
         #navbar
 	# ex: /cyka/project/5/jostle/
 	url(r'^(?P<project_id>[0-9]+)/startjostle/$', views.admin_startjostle, name="admin_startjostle"),
@@ -26,6 +28,8 @@ urlpatterns = [
         #endstart
 	# ex: /cyka/member_start/uuid
         url(r'^member_start/(?P<uuid>[0-9A-Za-z\-]+)$', views.member_start, name="member_start"),
+        #schedule problem jostle
+        url(r'^member/schedule/(?P<uuid>[0-9A-Za-z\-]+)$', views.personal_schedule_jostle, name="personal_schedule_jostle"),
         #topicauction
 	# ex: /cyka/project/5/moderator/topicauction/
 	url(r'^(?P<project_id>[0-9]+)/moderator/topicauction/$', views.moderator_topicauction, name="moderator_topicauction"),
@@ -48,6 +52,8 @@ urlpatterns = [
         #end get data
         #get data
 	url(r'^(?P<project_id>[0-9]+)/getmembers/$', views.get_json_members, name="get_json_members"),
+        url(r'^data/step/$', views.get_json_step, name="get_json_step"),
+        url(r'^data/asi/$', views.get_json_asi, name="get_json_asi"),
         #end get data
 	# ex: /cyka/project/5/jostle/
 	url(r'^(?P<project_id>[0-9]+)/jostle/$', views.admin_jostle, name="admin_jostle"),

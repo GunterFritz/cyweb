@@ -6,12 +6,10 @@
   });
 </script>
 {% endblock %}
-<div class="headcontainer">
-<div class="col actionarea" style="overflow: hidden">
+<div class="col actionarea">
 {% for a in agenda %}
-    <div class="row">
-        <a onmouseover="this.style.cursor='pointer'" onclick="leave('{% url 'cyka:member_round' member.uuid %}?topic={{ a.0.topic.id }}')">
-	<div class="col card mplan">
+    <div class="row cardcontainer">
+	<div class="col card mplanopen" onmouseover="this.style.cursor='pointer'" onclick="leave('{% url 'cyka:member_round' member.uuid %}?topic={{ a.0.topic.id }}')">
             <div class="card-content black-text">
 	        <span class="card-title grey-text text-darken-2">{{ a.0.topic.name }} - {{ a.0.topic.color }}<i class="right material-icons icon-{{ a.0.topic.color }}">brightness_1</i></span>
             	{% for p in a.0.person %}
@@ -19,9 +17,7 @@
             	{% endfor %}
             </div>
         </div>
-	</a>
-        <a onmouseover="this.style.cursor='pointer'" onclick="leave('{% url 'cyka:member_round' member.uuid %}?topic={{ a.1.topic.id }}')">
-	<div class="col card mplan">
+	<div class="col card mplanopen" onmouseover="this.style.cursor='pointer'" onclick="leave('{% url 'cyka:member_round' member.uuid %}?topic={{ a.1.topic.id }}')">
             <div class="card-content black-text">
 	        <span class="card-title grey-text text-darken-2">{{ a.1.topic.name }} - {{ a.1.topic.color }}<i class="right material-icons icon-{{ a.1.topic.color }}">brightness_1</i></span>
             	{% for p in a.1.person %}
@@ -29,22 +25,6 @@
             	{% endfor %}
             </div>
         </div>
-	</a>
     </div>
 {% endfor %}
-</div>
-<div class="col navarea">
-    <div class="row">
-        <a class="btn-floating btn-large blue right" onclick="get_agenda()"><i class="right material-icons tooltipped" data-tooltip="Agenda">menu</i></a>
-    </div>
-    <div class="row">
-        <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
-    </div>
-    <div class="row">
-        <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="aurl('{% url 'cyka:member_priorization' member.uuid %}?function=priority_list')"><i class="left material-icons secondary-content">assignment</i></a>
-    </div>
-    <div class="row">
-        <a class="btn-floating btn-large waves-effect waves-light right blue disabled" onclick="aurl('{% url 'cyka:member_priorization' member.uuid %}?function=agenda')"><i class="left material-icons secondary-content">group_work</i></a>
-    </div>
-</div>
 </div>

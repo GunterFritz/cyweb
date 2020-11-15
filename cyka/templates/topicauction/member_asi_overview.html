@@ -1,3 +1,4 @@
+{% load material_form %}
 {% block extrahead %}
 {% endblock %}
 {% block javascript %}
@@ -11,11 +12,11 @@
           }
       });
     }
-  var interval = null;
   function refreshVotes(){
-    interval = setInterval(function() {
+    tmp = setInterval(function() {
 	getVotes();
     }, 3000);
+    refreshs.push(tmp);
   }
     function updateVotes(json){
 	var obj = $.parseJSON(json);
@@ -36,79 +37,103 @@
 	    }
         }
     }
-  var page = parseInt({{page}});
+function updateStep(){
+  $.ajax({
+      type: "GET",
+      url: '{% url 'cyka:get_json_step' %}?member={{member.uuid}}&step={{step.step}}',
+      complete: function (response) {
+	var obj = $.parseJSON(response.responseText);
+	if (obj.status != '{{step.status}}'){
+	    alert("Die Abstimmung wurde beendet, es können keine Stimmen mehr abgegeben werden");
+	    aurl('{% url 'cyka:personal_schedule_jostle' member.uuid %}');
+	}
+      }
+  });
+}
+
+function refreshStep(){
+  tmp = setInterval(function() {
+    updateStep();
+  }, 3000);
+  refreshs.push(tmp);
+}
+
   $(document).ready(function(){
-    small();
-    updateVotes('{{ json_votes }}');
-    document.getElementById("page_" + page).classList.add('class', "active");
-    if(page == 1){
-      //disable page left
-      document.getElementById("page_left").classList.add('class', "disabled");
-    } else {
-      //set url to page left
-      var left = (page.valueOf() - 1).valueOf();
-      var url = "{% url 'cyka:topicauction_asi_overview' member.uuid %}?project={{project.id}}&page=" + left.toString();
-      document.getElementById("page_left_link").setAttribute('onclick', "aurl('" + url + "')");
-    }
-    if(page == {{ pages|length }}){
-      //disable page right
-      document.getElementById("page_right").classList.add('class', "disabled");
-    } else {
-      //set url to page right
-      var right = (page.valueOf() + 1).valueOf();
-      var url = "{% url 'cyka:topicauction_asi_overview' member.uuid %}?project={{project.id}}&page=" + right.toString();
-      document.getElementById("page_right_link").setAttribute('onclick', "aurl('" + url + "')");
-    }
-    $('.tooltipped').tooltip({enterDelay: 1000});
+    getVotes();
+    {% if step.status == 'S' %}
     refreshVotes();
+    {% endif %}
+    refreshStep();
+    $('.tooltipped').tooltip({enterDelay: 1000});
   });
     function leave(url){
-        clearInterval(interval);
+        clearAll();
         aurl(url);
     }
-    function goAgenda(){
-        clearInterval(interval);
-        get_agenda();
-    }
+
 </script>
 {% endblock %}
-<div class="headcontainer">
-    <div class="col actionarea">
-      <ul class="pagination center">
-        <li id="page_left"><a id="page_left_link"><i class="material-icons waves-effect">chevron_left</i></a></li>
-          {% for p in pages %}	
-	    <li id="page_{{ p }}"><a onmouseover="this.style.cursor='pointer'" onclick="leave('{% url 'cyka:topicauction_asi_overview' member.uuid %}?page={{ p }}')">{{ p }}</a></li>
-	  {% endfor %}
-        <li id="page_right" class="waves-effect"><a id="page_right_link"><i class="material-icons">chevron_right</i></a></li>
-      </ul>
-      <div class="row valign">
+<div class="cardcontainer">
         {% for t in tables %}
-	    <a onmouseover="this.style.cursor='pointer'" onclick="leave('{% url 'cyka:topicauction_join_asi' member.uuid %}?table={{ t.table.id }}')">
-		<div class="col card mplan tooltipped" data-tooltip="Details">
-                    <div class="card-content black-text">
-		      <span class="card-title grey-text text-darken-2">{{t.table.card.heading}}</span>
-		        <p>{{t.table.card.desc}}</p>
-                        <div class="bottom-card">
-				<hr>
-				<p class="icon-text"><i class="material-icons icon-blue icon-text">fiber_manual_record</i>(<span id="_vote_{{t.table.id}}">{{t.votes}}</span>)</p>
-	                </div>
-                    </div>
+            {% if t.progress == 100 %}
+	    <div class="item card-panel mplanopen blue lighten-5" onmouseover="this.style.cursor='pointer'" onclick="leave('{% url 'cyka:topicauction_join_asi' member.uuid %}?table={{ t.table.id }}')" style="display:flex; flex-direction: column;">
+                <div style="flex-grow: 1;">
+		    <span class="black-text card-title" STYLE="font-size:16px">{{t.table.card.heading}}</span><br/>
+		    <span class="grey-text text-darken-2">{{t.table.card.desc}}</span>
                 </div>
-	    </a>
+                <div style="margin-bottom: -15px;">
+		    <p class="icon-text" style="margin-bottom: 0px;"><i class="material-icons icon-blue icon-text">fiber_manual_record</i>(<span id="_vote_{{t.table.id}}">{{t.votes}}</span>)</p>
+                </div>
+            </div>
+            {% endif %}
 	{% endfor %}
-      </div>
-    </div>
-    <div class="col navarea">
-        <div class="row">
-	    <a class="btn-floating btn-large waves-effect waves-light blue right" onclick="goAgenda()"><i class="right material-icons tooltipped" data-tooltip="Agenda">menu</i></a>
-        </div>
-        <div class="row">
-            <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
-        </div>
-    </div>
+  <div class="card-placeholder"></div>
+  <div class="card-placeholder"></div>
+  <div class="card-placeholder"></div>
+  <div class="card-placeholder"></div>
+  <div class="card-placeholder"></div>
+</div>
+<div class="divider"></div>
+<div class="cardcontainer">
+        {% for t in tables %}
+            {% if t.progress != 100 %}
+	      <div class="item card-panel mplanopen grey lighten-5">
+		<div class="progress" style="margin-top: -10px;">
+		      <div class="determinate" style="width: {{t.progress}}%"></div>
+                </div>
+                <div style="flex-grow: 1;">
+		    <span class="black-text card-title" STYLE="font-size:16px">{{t.table.card.heading}}</span><br/>
+		    <span class="grey-text text-darken-2">{{t.table.card.desc}}</span>
+                </div>
+            </div>
+            {% endif %}
+	{% endfor %}
+  <div class="card-placeholder"></div>
+  <div class="card-placeholder"></div>
+  <div class="card-placeholder"></div>
+  <div class="card-placeholder"></div>
+  <div class="card-placeholder"></div>
+</div>
+<div class="divider"></div>
+<div class="cardcontainer">
+        {% for si in sis %}
+            {% if si.asi == 0 %}
+	      <div class="item card-panel mplanopen grey lighten-5">
+		<span class="black-text card-title" STYLE="font-size:16px">{{si.card.heading}}</span><br/>
+		<span class="grey-text text-darken-2">{{si.card.desc}}</span>
+            </div>
+            {% endif %}
+	{% endfor %}
+  <div class="card-placeholder"></div>
+  <div class="card-placeholder"></div>
+  <div class="card-placeholder"></div>
+  <div class="card-placeholder"></div>
+  <div class="card-placeholder"></div>
+</div>
+    {% if step.status == 'S' %}
         <div class="row navarea bottom">
 	    {% for v in votes %}
 	        <i id="_vote-{{v}}" class="material-icons icon-blue">fiber_manual_record</i>
             {% endfor %}
 	</div>
-</div>
+    {% endif %}

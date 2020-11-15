@@ -4,6 +4,7 @@ from .models import Member, Table, Card, SIsign
 from .config import Jitsi, Pad
 from . import helpers
 from .workflow import Workflow
+from .htmlobjects import HTML_Si, HTMLAsi
 from django.db import transaction
 
 """
@@ -17,32 +18,6 @@ Used html member:
     cyka/table_added.html
     cyka/supporter.html
 """
-
-#wrapper
-class HTMLAsi:
-    def __init__(self, table, num):
-        self.table = table
-        self.supporter = len(self.table.sisign_set.all())
-        self.progress = 100
-        self.max = num
-        if self.supporter < num:
-            self.progress = int(self.supporter*100/num)
-    
-    @staticmethod
-    def getProjAsi(proj, agreed):
-        tables = proj.table_set.all()
-        n = Structure.factory(proj.ptype).getMinAgreedPersons(len(proj.member_set.all().filter(mtype='M')))
-        htables = []
-        for t in tables:
-            if agreed == "true":
-                h = HTMLAsi(t,n)
-                if h.progress == 100:
-                    htables.append(h)
-            else:
-                htables.append(HTMLAsi(t,n))
-        
-        return htables
-        
 
 #Member pages
 
@@ -95,12 +70,16 @@ class AgreedStatementImportance(helpers.MemberRequest):
         if func == 'sign':
             return self.sign()
         
-        if self.step.done: 
-            return render(self.request, 'problemjostle/member_join_asi_finished.html', {'project' : self.member.proj, 'member': self.member, 'table': self.table })
+        #if self.step.done: 
+        #    return render(self.request, 'problemjostle/member_join_asi_finished.html', {'project' : self.member.proj, 'member': self.member, 'table': self.table })
         
         #main page
         jitsi = Jitsi(self.table.uuid, self.table.card.heading, self.member.name)
-        return render(self.request, 'problemjostle/member_join_asi.html', {'project' : self.member.proj, 'member': self.member, 'table': self.table, 'jitsi': jitsi })
+        return render(self.request, 'problemjostle/member_join_asi.html', {'project' : self.member.proj, 
+            'member': self.member, 
+            'table': self.table, 
+            'jitsi': jitsi, 
+            'step': self.step })
 
     """
     Pad function, renders etherpad
@@ -147,41 +126,35 @@ class ASIOverview(helpers.MemberRequest):
 
     def get(self):
         table_id = self.request.GET.get('table', '')
-        page = int(self.request.GET.get('page', 1))
         #show only agreed
         agreed = self.request.GET.get('agreed', 'false')
         
         #render new page, select an card to create an asi
-        if table_id == 'new':
-            cards = self.member.proj.card_set.all()
-            page = int(self.request.GET.get('page', 1))
-            #ceil (instead of math.ceil)
-            pages = int(len(cards)/6) + 1
-            if len(cards) % 6 > 0:
-                pages = pages + 1
-            return render(self.request, 'problemjostle/member_select_si.html', {'project' : self.member.proj, 
-                'member': self.member, 
-                'cards': cards[(page-1)*6:page*6], 
-                'pages': range(1, pages), 
-                'page':page})
+        #if table_id == 'new':
+        #    cards = self.member.proj.card_set.all()
+        #    page = int(self.request.GET.get('page', 1))
+        #    #ceil (instead of math.ceil)
+        #    pages = int(len(cards)/6) + 1
+        #    if len(cards) % 6 > 0:
+        #        pages = pages + 1
+        #    return render(self.request, 'problemjostle/member_select_si.html', {'project' : self.member.proj, 
+        #        'member': self.member, 
+        #        'cards': cards, 
+        #        #'cards': cards[(page-1)*6:page*6], 
+        #        'pages': range(1, pages), 
+        #        'page':page})
     
         step = Workflow.getStep(self.member.proj, 70, self.request)
         
         #render tables overview
-        htables = HTMLAsi.getProjAsi(self.member.proj, agreed)
-        
-        #ceil (instead of math.ceil)
-        pages = int(len(htables)/6) + 1
-        if len(htables) % 6 > 0:
-            pages = pages + 1
+        htables = HTMLAsi.get_proj_asi(self.member.proj, agreed)
+        sis = HTML_Si.get_proj_si(self.member.proj)
         
         return render(self.request, 'problemjostle/member_asi_overview.html', {'project' : self.member.proj, 
             'member': self.member, 
             'tables': htables,
-            'tables': htables[(page-1)*6:page*6], 
+            'sis': sis,
             'agreed': agreed,
-            'pages': range(1, pages), 
-            'page':page,
             'step': step})
 
 #moderator pages
@@ -197,7 +170,7 @@ class ModeratorASIOverview(helpers.ModeratorRequest):
         #step is needed to render different when step is finished
         step = Workflow.getStep(self.proj, 70, self.request)
         
-        htables = HTMLAsi.getProjAsi(self.proj, agreed)
+        htables = HTMLAsi.get_proj_asi(self.proj, agreed)
         
         #calculate paging ceil (instead of math.ceil)
         pages = int(len(htables)/6) + 1

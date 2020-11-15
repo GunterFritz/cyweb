@@ -4,8 +4,7 @@
 {% block javascript %}
 <script>
   $(document).ready(function(){
-    small();
-	  console.log("Id: {{form.cardid.value}}");
+    refreshStep();
     $('.tooltipped').tooltip({enterDelay: 1000});
   });
   function submit(del){
@@ -26,18 +25,40 @@
       });
     }
 
+function updateStep(){
+  $.ajax({
+      type: "GET",
+      url: '{% url 'cyka:get_json_step' %}?member={{member.uuid}}&step={{step.step}}',
+      complete: function (response) {
+	var obj = $.parseJSON(response.responseText);
+	if (obj.status != '{{step.status}}'){
+	    alert("Das Brainwriting wurde beendet, Sie können keine Eingaben mehr vornehmen");
+	    aurl('{% url 'cyka:personal_schedule_jostle' member.uuid %}');
+	}
+	if (obj.active == false){
+	    alert("Der nächste Schritt wurde gestartet");
+	    aurl('{% url 'cyka:personal_schedule_jostle' member.uuid %}');
+	}
+      }
+  });
+}
+
+var interval = null;
+function refreshStep(){
+  interval = setInterval(function() {
+    updateStep();
+  }, 3000);
+}
+
 function delete_card(){
 	if (confirm("Möchten Sie die Karte löschen?")){
-		submit('true');
+	    submit('true');
 	}
-  }
-</script>
+}
 </script>
 {% endblock %}
-<div class="headcontainer">
-    <div class="col actionarea">
       {% if not step.done and not all %}
-      <div class="card-panel mplanopen">
+      <div class="item card-panel mplanopen">
         <dmc-form><form method="POST" enctype="multipart/form-data" id="post-form">
             <div class="card-content">
                 {% csrf_token %}
@@ -72,20 +93,9 @@ function delete_card(){
 		    <span class="grey-text text-darken-2">{{card.desc}}</span>
             </div>
 	{% endfor %}
+  <div class="card-placeholder"></div>
+  <div class="card-placeholder"></div>
+  <div class="card-placeholder"></div>
+  <div class="card-placeholder"></div>
+  <div class="card-placeholder"></div>
       </div>
-    </div>
-    <div class="col right navarea">
-        <div class="row">
-	    <a class="btn-floating btn-large blue right" onclick="get_agenda()"><i class="right material-icons tooltipped" data-tooltip="Agenda">menu</i></a>
-        </div>
-        <div class="row">
-            <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
-        </div>
-        <div class="row">
-	    <a  onclick="aurl('{% url 'cyka:personal_card' member.uuid %}')" class="btn-floating btn-large blue right {% if not all %}disabled{% endif %}"><i class="material-icons tooltipped" data-tooltip="Nur meine anzeigen">perm_identity</i></a>
-        </div>
-        <div class="row">
-	    <a  onclick="aurl('{% url 'cyka:personal_card' member.uuid %}?cards=all')" class="btn-floating btn-large blue right {% if all %}disabled{% endif %}"><i class="material-icons tooltipped" data-tooltip="Alle anzeigen">people_outline</i></a>
-        </div>
-    </div>
-</div>

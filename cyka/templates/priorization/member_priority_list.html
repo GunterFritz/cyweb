@@ -80,7 +80,6 @@ function send_sorting() {
 
 </script>
 {% endblock %}
-<div class="headcontainer">
     <div class="col actionarea">
         <div id="themen" >
             <div class="card">
@@ -105,18 +104,3 @@ function send_sorting() {
             </div>
         </div>
     </div>
-    <div class="col navarea">
-        <div class="row">
-	    <a class="btn-floating btn-large blue right" onclick="goAgenda()"><i class="right material-icons tooltipped" data-tooltip="Agenda">menu</i></a>
-        </div>
-        <div class="row">
-            <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
-        </div>
-        <div class="row">
-            <a class="btn-floating btn-large waves-effect waves-light right blue disabled" onclick="aurl()"><i class="left material-icons secondary-content">assignment</i></a>
-        </div>
-        <div class="row">
-            <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="aurl('{% url 'cyka:member_priorization' member.uuid %}?function=agenda')"><i class="left material-icons secondary-content">group_work</i></a>
-        </div>
-    </div>
-</div>

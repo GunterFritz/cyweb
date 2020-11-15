@@ -7,6 +7,18 @@ from . import helpers
 """
 File to render the topicauction
 """
+class HTML_Si:
+    def __init__(self, card):
+        self.card = card
+        self.asi = len(card.table_set.all())
+
+    @staticmethod
+    def get_proj_si(proj):
+        si = []
+        for c in proj.card_set.all():
+            si.append(HTML_Si(c))
+
+        return si
 
 #wrapper
 class HTMLAsi:
@@ -21,9 +33,24 @@ class HTMLAsi:
         if self.supporter < num:
             self.progress = int(self.supporter*100/num)
         self.votes = len(self.table.asivotes_set.all())
+
+    def to_json(self):
+        return {
+            'id': self.table.id,
+            'cardid': self.table.card.id,
+            'name': self.name,
+            'desc': self.table.card.desc,
+            'progress' : self.progress,
+            'votes' : self.votes
+        }
     
+    """
+    returns a specific HTMLAsi, or if no id is given all
+    params
+        tid: table_id, 
+    """
     @staticmethod
-    def getProjAsi(proj, tid = None):
+    def get_proj_asi_id(proj, tid = None):
         tables = proj.table_set.all() if tid == None else proj.table_set.all().filter(id=tid)
         n = Structure.factory(proj.ptype).getMinAgreedPersons(len(proj.member_set.all().filter(mtype='M')))
         htables = []
@@ -32,6 +59,33 @@ class HTMLAsi:
             if h.progress == 100:
                 htables.append(h)
         
+        return htables
+
+    """
+    returns all project asi
+    ---
+    params
+    agreed: bool, if true, return only agreed
+    json: bool, if true return asi as json
+    """
+    def get_proj_asi(proj, agreed=False, json=False):
+        tables = proj.table_set.all()
+        n = Structure.factory(proj.ptype).getMinAgreedPersons(len(proj.member_set.all().filter(mtype='M')))
+        htables = []
+        for t in tables:
+            if agreed == "true":
+                h = HTMLAsi(t,n)
+                if h.progress == 100:
+                    if json:
+                        htables.append(h.to_json())
+                    else:
+                        htables.append(h)
+            else:
+                if json:
+                    htables.append(HTMLAsi(t,n).to_json())
+                else:
+                    htables.append(HTMLAsi(t,n))
+
         return htables
     
     """

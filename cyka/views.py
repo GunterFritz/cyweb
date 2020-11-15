@@ -1,3 +1,5 @@
+import json
+from django.utils.safestring import SafeString
 from lib.structure import Structure2 as Structure
 from lib.structure import Topic as A_Topic
 from django.shortcuts import render, redirect
@@ -16,7 +18,7 @@ from . import start as Start
 from . import brainwriting
 from . import round as Round
 from .helpers import Agenda, HtmlCard
-from .htmlobjects import HTMLMember
+from .htmlobjects import HTMLMember, HTMLAsi
 from .workflow import Workflow
 from .config import Jitsi, Pad
 from .problemjostle import AgreedStatementImportance, ASIOverview, ModeratorASIOverview, ModeratorScheduler
@@ -426,6 +428,21 @@ def topicauction_join_asi(request, uuid):
 
 #asi overview and creating
 def topicauction_asi_overview(request, uuid):
+    #30, 70, 80
+    #brainwriting
+    member = helpers.get_member_by_uuid(request, uuid)
+    step = Workflow.getStep(member.proj, 30, self.request)
+    if step.status == 'S':
+        return personal_card(request, uuid)
+    
+    #problemjostle
+    step = Workflow.getStep(member.proj, 70, self.request)
+    step_t = Workflow.getStep(member.proj, 80, self.request)
+    if step.status == 'S' and step_t == 'O':
+        asio = ASIOverview(request, uuid)
+
+        return asio.process()
+    
     asio = TopicAuction.ASIOverview(request, uuid)
 
     return asio.process()
@@ -439,6 +456,33 @@ def join_table(request, uuid):
 #asi overview and creating
 def personal_table(request, uuid):
     asio = ASIOverview(request, uuid)
+ 
+    return asio.process()
+
+
+#scheduling
+def personal_schedule_jostle(request, uuid):
+    #30, 70, 80
+    #brainwriting
+    member = helpers.get_member_by_uuid(uuid)
+    step_b = Workflow.getStep(member.proj, 40, request)
+    step_p = Workflow.getStep(member.proj, 70, request)
+    step_t = Workflow.getStep(member.proj, 80, request)
+    
+    if step_b.status == 'S':
+        return personal_card(request, uuid)
+    
+    if step_b.status == 'B' and step_p.status == 'O':
+        return personal_card(request, uuid)
+    
+    #problemjostle
+    if step_p.status == 'S' or step_p.status == 'B' and step_t.status == 'O':
+        asio = ASIOverview(request, uuid)
+
+        return asio.process()
+    
+    #Topicacution
+    asio = TopicAuction.ASIOverview(request, uuid)
 
     return asio.process()
 
@@ -492,7 +536,31 @@ def get_json_members(request, project_id):
 
     return JsonResponse(data, safe=False)
 
+#get state of a step
+def get_json_step(request):
+    uuid = request.GET.get('member', '')
+    member = get_member_by_uuid(uuid)
+    step_id = int(request.GET.get('step', ''))
 
+    step = Workflow.get_json_step(member.proj, step_id)
+    
+    return JsonResponse(step, safe=False)
+    
+def get_json_asi(request):
+    uuid = request.GET.get('member', '')
+    member = get_member_by_uuid(uuid)
+    asi = HTMLAsi.get_proj_asi(member.proj, False, True)
+    
+    return JsonResponse(asi, safe=False)
+    
+#dev only
+@login_required
+def moderator_delete_asi(request, project_id):
+    asi = request.GET.get('asi', '')
+    Table.objects.get(pk=asi).delete()
+
+    return moderator_problem_jostle(request, project_id) 
+    
 
 def personal_workflow(request, uuid):
     member = get_member_by_uuid(uuid)

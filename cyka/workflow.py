@@ -50,7 +50,7 @@ workflow = [
             'short': 'Brainwriting',
             'desc' : 'Die Teilnehmer schreiben Ihre Gedanken zur Ausgangsfrage auf', 
             'link' : 'cyka:moderator_brainwriting',
-            'memberlink' : 'cyka:personal_card',
+            'memberlink' : 'cyka:personal_schedule_jostle',
             'icon' : 'create',
             'todo' : 'Lassen Sie den Teilnehmern 5 - 15 Minuten Zeit, um ihre Gedanken zur Ausgangsfrage aufzuschreiben. Die Teilnehmer sehen nur ihre eigenen Karten.', 
             'formtype' : 'radio'
@@ -80,7 +80,7 @@ workflow = [
             'short': 'Themenvorschläge',
             'desc' : 'Die Teilnehmer erarbeiten selbständig Themenvorschläge', 
             'link' : 'cyka:moderator_problemjostle',
-            'memberlink' : 'cyka:personal_table',
+            'memberlink' : 'cyka:personal_schedule_jostle',
             'icon' : 'explore',
             'todo' : 'Die Teilnehmer erarbeiten selbständig Themenvorschläge', 
             'formtype' : 'radio'
@@ -90,7 +90,7 @@ workflow = [
             'short': 'Themenwahl',
             'desc' : 'Die Teilnehmer wählen die zu bearbeiteten Themen', 
             'link' : 'cyka:moderator_topicauction',
-            'memberlink' : 'cyka:topicauction_asi_overview',
+            'memberlink' : 'cyka:personal_schedule_jostle',
             'icon' : 'select_all',
             'todo' : 'Die Teilnehmer wählen die zu bearbeiteten Themen', 
             'formtype' : 'radio'
@@ -190,6 +190,45 @@ class Workflow:
                 sections.append(Section(d, proj))
         return sorted(sections, key=attrgetter('order'))
 
+    def get_json(proj):
+        agenda = []
+        sections = Workflow.get(false)
+
+        for sect in sections:
+            for s in sect:
+                elem = proj.workflowelement_set.all().filter(step=s.step)[0]
+                active = elem.status == 'S'
+                if s.step == '40' and elem.status == 'B':
+                    e = proj.workflowelement_set.all().filter(step=70)[0]
+                    if e.status == 'O':
+                        active = True
+                if s.step == '70' and elem.status == 'B':
+                    e = proj.workflowelement_set.all().filter(step=80)[0]
+                    if e.status == 'O':
+                        active = True
+                agenda.append({'sid':s.step, 'short': s.short, 'desc': s.desc, 'status': elem.status, 'active':active})
+
+        return agenda
+
+    def get_json_step(proj, step_id):
+        elem = proj.workflowelement_set.all().filter(step=step_id)[0]
+        active = elem.status == 'S'
+        if step_id == 40 and elem.status == 'B':
+            e = proj.workflowelement_set.all().filter(step=70)[0]
+            if e.status == 'O':
+                active = True
+        
+        if step_id == 70 and elem.status == 'B':
+            e = proj.workflowelement_set.all().filter(step=80)[0]
+            if e.status == 'O':
+                active = True
+       
+        if step_id == 80:
+            active = True
+
+        return {'id':step_id, 'status': elem.status, 'active':active}
+
+
     """
     returns a single step
     """
@@ -229,7 +268,7 @@ class Workflow:
             else:
                 step.form = WorkflowElementFormProgress(initial={'status': step.status})
         return step
-
+    
     @staticmethod
     def getActive():
         return None

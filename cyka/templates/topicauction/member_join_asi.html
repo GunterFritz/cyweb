@@ -28,7 +28,6 @@
       });
     }
     function updateVotes(json){
-	console.log(json)
 	var obj = $.parseJSON(json);
 	var mvoted = 0
 	$.each(obj.table , function(index, val) { 
@@ -59,16 +58,41 @@
         }
     }
   
-  var interval = null;
   function refreshVotes(){
-    interval = setInterval(function() {
+    tmp = setInterval(function() {
 	getVotes();
     }, 3000);
+    refreshs.push(tmp);
   }
+
+function updateStep(){
+  $.ajax({
+      type: "GET",
+      url: '{% url 'cyka:get_json_step' %}?member={{member.uuid}}&step={{step.step}}',
+      complete: function (response) {
+	var obj = $.parseJSON(response.responseText);
+	if (obj.status != '{{step.status}}'){
+	    alert("Die Abstimmung wurde beendet, es können keine Stimmen mehr abgegeben werden");
+	    leave('{% url 'cyka:personal_schedule_jostle' member.uuid %}');
+	}
+      }
+  });
+}
+
+function refreshStep(){
+  tmp = setInterval(function() {
+    updateStep();
+  }, 3000);
+  refreshs.push(tmp);
+}
+
   $(document).ready(function(){
-    small();
+    $("#_navbase").hide();
+    {% if step.status == 'S' %}
     updateVotes('{{ json_votes }}');
     refreshVotes();
+    refreshStep();
+    {% endif %}
     $('.tooltipped').tooltip({enterDelay: 1000});
     });
     function aurl2(myurl, where) {
@@ -81,13 +105,12 @@
         }); 
     }
     function leave(url){
-        clearInterval(interval);
+        $("#_navbase").show(0);
         aurl(url);
     }   
 </script>
 {% endblock %}
 {% block content %}
-<div class="headcontainer">
     <div class="col actionarea">
 <div class="col padplan">
     <div class="card row">
@@ -99,7 +122,7 @@
 	    <div id="_supporter">
 		    <p class="icon-text"><i class="material-icons icon-blue icon-text">fiber_manual_record</i>(<span id="_topic_voted">{{asi.votes}}</span>)
 	            {% for s in supporter %}
-	            <span class="badge blue">{{s.member.name}}</span>
+	            <span class="badge blue lighten-4">{{s.member.name}}</span>
 		    {% endfor %}</p>
 	    </div>
         </div>
@@ -117,22 +140,23 @@
     </div>
     <div class="col navarea">
         <div class="row">
-            <a class="btn-floating waves-effect waves-light btn-large red right" onclick="leave('{% url 'cyka:topicauction_asi_overview' member.uuid %}')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">exit_to_app</i></a>
+            <a class="btn-floating waves-effect waves-light btn-large red right" onclick="leave('{% url 'cyka:personal_schedule_jostle' member.uuid %}')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">exit_to_app</i></a>
         </div>
         <div class="row">
             <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
         </div>
         <div id="_plus" class="row">
-            <a id="_plus-btn" class="btn-floating waves-effect waves-light btn-large blue right" onclick="submit('plus')"><i class="right material-icons tooltipped" data-tooltip="Stimme abgeben">add</i></a>
+		<a id="_plus-btn" class="btn-floating waves-effect waves-light btn-large blue right {% if step.status != 'S' %}disabled{% endif %}" onclick="submit('plus')"><i class="right material-icons tooltipped" data-tooltip="Stimme abgeben">add</i></a>
         </div>
         <div id="_minus" class="row">
-            <a id="_minus-btn" class="btn-floating waves-effect waves-light btn-large blue right" onclick="submit('minus')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">remove</i></a>
+            <a id="_minus-btn" class="btn-floating waves-effect waves-light btn-large blue right {% if step.status != 'S' %}disabled{% endif %}" onclick="submit('minus')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">remove</i></a>
         </div>
     </div>
+    {% if step.status == 'S' %}
         <div id="_votes" class="row navarea bottom">
 	    {% for v in votes %}
 	    <i id="_vote-{{v}}" class="material-icons icon-blue">fiber_manual_record</i>
             {% endfor %}
 	</div>
-</div>
+    {% endif %}
 {% endblock %}

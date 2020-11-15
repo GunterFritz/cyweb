@@ -87,6 +87,9 @@
             <div class="row">
                 <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
             </div>
+        <div class="row">
+		<a class="btn-floating btn-large waves-effect waves-light right red" onclick="aurl('{% url 'cyka:moderator_delete_asi' project.id %}?asi={{table.id}}')"><i class="left material-icons secondary-content">delete</i></a>
+        </div>
         </div>
     </div>
 </div>
