@@ -70,9 +70,6 @@ class AgreedStatementImportance(helpers.MemberRequest):
         if func == 'sign':
             return self.sign()
         
-        #if self.step.done: 
-        #    return render(self.request, 'problemjostle/member_join_asi_finished.html', {'project' : self.member.proj, 'member': self.member, 'table': self.table })
-        
         #main page
         jitsi = Jitsi(self.table.uuid, self.table.card.heading, self.member.name)
         return render(self.request, 'problemjostle/member_join_asi.html', {'project' : self.member.proj, 
@@ -129,21 +126,6 @@ class ASIOverview(helpers.MemberRequest):
         #show only agreed
         agreed = self.request.GET.get('agreed', 'false')
         
-        #render new page, select an card to create an asi
-        #if table_id == 'new':
-        #    cards = self.member.proj.card_set.all()
-        #    page = int(self.request.GET.get('page', 1))
-        #    #ceil (instead of math.ceil)
-        #    pages = int(len(cards)/6) + 1
-        #    if len(cards) % 6 > 0:
-        #        pages = pages + 1
-        #    return render(self.request, 'problemjostle/member_select_si.html', {'project' : self.member.proj, 
-        #        'member': self.member, 
-        #        'cards': cards, 
-        #        #'cards': cards[(page-1)*6:page*6], 
-        #        'pages': range(1, pages), 
-        #        'page':page})
-    
         step = Workflow.getStep(self.member.proj, 70, self.request)
         
         #render tables overview
