@@ -7,11 +7,13 @@
       hangup();
       connectRoom('{{jitsi.room}}');
       aurl2('{% url 'cyka:member_round' member.uuid %}?topic={{topic.id}}&function=pad', '#_pad');
+      $("#_navbase").hide(0);
       $('.tooltipped').tooltip({enterDelay: 1000});
     });
     function leave(url){
         hangup();
 	connectVideo();
+        $("#_navbase").show(0);
         aurl(url);
     }   
 </script>
