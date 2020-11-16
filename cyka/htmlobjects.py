@@ -4,6 +4,15 @@ from lib.structure import Structure2 as Structure
 from .models import Member, Table, Card, SIsign
 from . import helpers
 
+class HTML_Proj:
+    def __init__(self, proj):
+        self.proj = proj
+
+    def to_json(self):
+        return {
+                'hasagenda': self.proj.hasagenda
+        }
+
 """
 File to render the topicauction
 """

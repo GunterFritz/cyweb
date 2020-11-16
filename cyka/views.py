@@ -18,7 +18,7 @@ from . import start as Start
 from . import brainwriting
 from . import round as Round
 from .helpers import Agenda, HtmlCard
-from .htmlobjects import HTMLMember, HTMLAsi
+from .htmlobjects import HTMLMember, HTMLAsi, HTML_Proj
 from .workflow import Workflow
 from .config import Jitsi, Pad
 from .problemjostle import AgreedStatementImportance, ASIOverview, ModeratorASIOverview, ModeratorScheduler
@@ -552,6 +552,13 @@ def get_json_asi(request):
     asi = HTMLAsi.get_proj_asi(member.proj, False, True)
     
     return JsonResponse(asi, safe=False)
+    
+def get_json_proj(request):
+    uuid = request.GET.get('member', '')
+    member = get_member_by_uuid(uuid)
+    project = HTML_Proj(member.proj).to_json()
+    
+    return JsonResponse(project, safe=False)
     
 #dev only
 @login_required

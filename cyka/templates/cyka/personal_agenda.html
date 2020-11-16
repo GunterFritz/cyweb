@@ -4,6 +4,52 @@
 {% block javascript %}
 <script src='{{jitsi.api}}'></script>
 <script>
+
+function updateProject(){
+  $.ajax({
+      type: "GET",
+      url: '{% url 'cyka:get_json_proj' %}?member={{member.uuid}}',
+      complete: function (response) {
+	var obj = $.parseJSON(response.responseText);
+	if (obj.hasagenda){
+	    $("#_agenda").removeClass('disabled');
+	} else {
+	    $("#_agenda").addClass('disabled');
+	}
+      }
+  });
+}
+
+function updateButtons(stepid, divid){
+  $.ajax({
+      type: "GET",
+      url: '{% url 'cyka:get_json_step' %}?member={{member.uuid}}&step=' + stepid,
+      complete: function (response) {
+	var obj = $.parseJSON(response.responseText);
+	if (obj.status == 'O'){
+	    $(divid).addClass('disabled');
+	} else {
+	    $(divid).removeClass('disabled');
+	}
+      }
+  });
+}
+
+function refreshButtons(){
+  updateProject();
+  updateButtons(90, "#_priorization");
+  updateButtons(40, "#_schedule");
+  setInterval(function() {
+    updateProject();
+  }, 5000);
+  setInterval(function() {
+    updateButtons(40, "#_schedule");
+  }, 5000);
+  setInterval(function() {
+    updateButtons(90, "#_priorization");
+  }, 5000);
+}
+
   //video functions
   var api = null;
   function connectRoom(room){
@@ -36,7 +82,7 @@
     } 
   } 
   function refreshAgenda(){
-    interval = setInterval(function() {
+    tmp = setInterval(function() {
         $.ajax({
             type: "GET",
             url: '{% url 'cyka:get_more_agenda' member.uuid %}',
@@ -45,9 +91,11 @@
             $('#_appendHere').html(response);
         }); 
     }, 7000);
+    refreshs.push(tmp);
   }
   $(document).ready(function(){
     big();
+    refreshButtons();
     connectVideo();
     $('.tooltipped').tooltip({enterDelay: 1000});
     get_agenda();
@@ -81,7 +129,7 @@
         })
         .done(function(response) {
             $('#_appendHere').html(response);
-            //refreshAgenda();
+            refreshAgenda();
         }); 
     }
     //leave page
@@ -145,13 +193,13 @@
             <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
         </div>
         <div class="row">
-	    <a  onclick="aurl('{% url 'cyka:personal_schedule_jostle' member.uuid %}')" class="btn-floating btn-large blue right"><i class="material-icons">content_copy</i></a>
+	    <a  id="_schedule" onclick="aurl('{% url 'cyka:personal_schedule_jostle' member.uuid %}')" class="btn-floating btn-large blue right"><i class="material-icons">content_copy</i></a>
         </div>
         <div class="row">
-            <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="aurl('{% url 'cyka:member_priorization' member.uuid %}?function=priority_list')"><i class="left material-icons secondary-content">assignment</i></a>
+            <a id="_priorization" class="btn-floating btn-large waves-effect waves-light right blue" onclick="aurl('{% url 'cyka:member_priorization' member.uuid %}?function=priority_list')"><i class="left material-icons secondary-content">assignment</i></a>
         </div>
         <div class="row">
-            <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="aurl('{% url 'cyka:member_priorization' member.uuid %}?function=agenda')"><i class="left material-icons secondary-content">group_work</i></a>
+            <a id="_agenda" class="btn-floating btn-large waves-effect waves-light right blue" onclick="aurl('{% url 'cyka:member_priorization' member.uuid %}?function=agenda')"><i class="left material-icons secondary-content">group_work</i></a>
         </div>
       </div>
     </div>
