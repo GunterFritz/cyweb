@@ -102,7 +102,7 @@ class Moderator(helpers.ModeratorRequest):
         self.step = Workflow.getStep(self.proj, 90, request)
     
     def post(self):
-        return render(self.request, 'priorization/moderator_scheduler.html', {'project' : self.proj, 'step': self.step })
+        return self.renderMemberOverview()
     
     def get(self):
         function = self.request.GET.get('function', '')

@@ -17,6 +17,13 @@
     api.executeCommand ('displayName', '{{jitsi.name}}'); 
     api.executeCommand ('subject', '{{jitsi.subject}}');
   }
+  var refreshs = [];
+  function clearAll(){
+    var i = refreshs.length
+    while (i--) {
+      clearInterval(refreshs.pop());
+    } 
+  } 
   function connectVideo(){
 	connectRoom("{{jitsi.room}}");
   }
@@ -24,6 +31,23 @@
 	api.executeCommand('hangup');
 	document.getElementById("jitsi-container").innerHTML = "";
   }   
+    function submit(stat, _url, _step){
+      $.ajax({
+          type: "POST",
+	  url: _url,
+	  data:{
+              status:stat,
+	      step: _step,
+              csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+              action: 'post'
+          },
+      })
+      .done(function(response) {
+	clearAll();
+	$('.tooltipped').tooltip('close');
+        $('#_appendHere').html(response);
+      });
+    }
   $(document).ready(function(){
     connectVideo();
     small();
@@ -54,6 +78,7 @@
 	}
     }
     function aurl(myurl) {
+	clearAll();
 	$('.tooltipped').tooltip('close');
         $.ajax({
             type: "GET",
@@ -111,8 +136,22 @@
         </div>
     </div>
     <div id="stepcontent" class="col" style="height: 100%; overflow: auto">
-        <div id="_appendHere">
+      <div id="_appendHere" class="col actionarea" style="padding-right:80px">
+      </div>
+      <div id="_navbase" class="col right navarea">
+        <div class="row">
+	    <a class="btn-floating btn-large blue right" onclick="get_agenda()"><i class="right material-icons tooltipped" data-tooltip="Agenda">menu</i></a>
         </div>
+        <div class="row">
+            <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
+        </div>
+        <div class="row">
+	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="aurl('{% url 'cyka:moderator_brainwriting' project.id %}?function=si')"><i class="left material-icons secondary-content">content_copy</i></a>
+        </div>
+        <div class="row">
+	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="aurl('{% url 'cyka:moderator_topicauction' project.id %}?function=table')"><i class="left material-icons secondary-content">assessment</i></a>
+        </div>
+      </div>
     </div>
 </div>
 {% endblock %}

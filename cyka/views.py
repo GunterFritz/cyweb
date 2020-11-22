@@ -548,15 +548,30 @@ def get_json_step(request):
     
 def get_json_asi(request):
     uuid = request.GET.get('member', '')
-    member = get_member_by_uuid(uuid)
-    asi = HTMLAsi.get_proj_asi(member.proj, False, True)
+    proj_id = request.GET.get('project', '')
+    proj = None
+    if uuid != '':
+        member = get_member_by_uuid(uuid)
+        proj = member.proj
+    if proj_id != '':
+        proj = get_project(request, proj_id, True)
+    
+    
+    asi = HTMLAsi.get_proj_asi(proj, False, True)
     
     return JsonResponse(asi, safe=False)
     
 def get_json_proj(request):
     uuid = request.GET.get('member', '')
-    member = get_member_by_uuid(uuid)
-    project = HTML_Proj(member.proj).to_json()
+    proj_id = request.GET.get('project', '')
+    proj = None
+    if uuid != '':
+        member = get_member_by_uuid(uuid)
+        proj = member.proj
+    if proj_id != '':
+        proj = get_project(request, proj_id, True)
+
+    project = HTML_Proj(proj).to_json()
     
     return JsonResponse(project, safe=False)
     

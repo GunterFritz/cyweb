@@ -167,7 +167,7 @@ class ModeratorScheduler(helpers.ModeratorRequest):
         self.step = Workflow.getStep(self.proj, 80, request)
     
     def post(self):
-        return render(self.request, 'topicauction/moderator_scheduler.html', {'project' : self.proj, 'step': self.step })
+        return self.renderTable()
     
     def get(self):
         function = self.request.GET.get('function', '')
@@ -190,7 +190,8 @@ class ModeratorScheduler(helpers.ModeratorRequest):
             tid = self.request.GET.get('table', '')
             if tid == '':
                 tid = None
-            data = HTMLAsi.getProjAsiJson(self.proj, tid)
+            #data = HTMLAsi.get_proj_asi_id(self.proj, tid).to_json()
+            data = HTMLAsi.getProjAsiJson(self.proj)
             return JsonResponse(data, safe=False)
         
         if function == 'createtopics':
@@ -243,15 +244,20 @@ class ModeratorScheduler(helpers.ModeratorRequest):
             })
             
     def renderTable(self):
-        data = HTMLAsi.getProjAsiJson(self.proj)
-        t = HTMLAsi.get_proj_asi(self.proj)
+        table_json = HTMLAsi.getProjAsiJson(self.proj)
+        t = HTMLAsi.get_proj_asi(self.proj, True)
+        member_json = self.jsonMember()
+        mem = HTMLMember.getProjMember(self.proj)
 
         return render(self.request, 'topicauction/moderator_asi_sorted.html', {'project' : self.proj, 
             'table' : sorted(t, key=lambda HTMLAsi: HTMLAsi.votes, reverse=True),
-            'count': range(len(t)),
             'active': self.step.isActive(),
+            'step': self.step,
             'threshold' : Structure.factory(self.proj.ptype).getNumTopics(),
-            'json_table':SafeString(json.dumps(data))
+            'json_table':SafeString(json.dumps(table_json)),
+            'member' : mem,
+            'votes' : range(HTMLMember.getNumVotes(self.proj)),
+            'json_member':SafeString(json.dumps(member_json))
             })
 
 class ModeratorJoinASI:
@@ -266,7 +272,7 @@ class ModeratorJoinASI:
         pad = Pad(self.table.uuid, self.request.user.get_username)
         pad.setReadOnly()
         asis = self.table.sisign_set.all()
-        data = HTMLAsi.getProjAsiJson(self.proj, self.table.id)
+        data = HTMLAsi.get_proj_asi_id(self.proj, self.table.id).to_json()
         
         return render(self.request, 'topicauction/moderator_join_asi.html', {
             'project' : self.proj, 

@@ -82,7 +82,7 @@ class HTMLAsi:
         n = Structure.factory(proj.ptype).getMinAgreedPersons(len(proj.member_set.all().filter(mtype='M')))
         htables = []
         for t in tables:
-            if agreed == "true":
+            if agreed:
                 h = HTMLAsi(t,n)
                 if h.progress == 100:
                     if json:
@@ -107,8 +107,8 @@ class HTMLAsi:
       dictonary
     """
     @staticmethod
-    def getProjAsiJson(proj, tid = None):
-        t = HTMLAsi.getProjAsi(proj, tid)
+    def getProjAsiJson(proj):
+        t = HTMLAsi.get_proj_asi(proj, True)
         retval = []
         i = 0
         for e in sorted(t, key=lambda HTMLAsi: HTMLAsi.votes, reverse=True):

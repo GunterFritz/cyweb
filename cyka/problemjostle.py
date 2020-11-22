@@ -143,28 +143,24 @@ class ASIOverview(helpers.MemberRequest):
 class ModeratorASIOverview(helpers.ModeratorRequest):
     def __init__(self, request, pid):
         helpers.ModeratorRequest.__init__(self,request, pid)
-
+        self.step = Workflow.getStep(self.proj, 70, self.request)
+    
+    def post(self):
+        return self.get()
+    
     def get(self):
         #show only agreed
         agreed = self.request.GET.get('agreed', 'false')
-        page = int(self.request.GET.get('page', 1))
        
-        #step is needed to render different when step is finished
-        step = Workflow.getStep(self.proj, 70, self.request)
-        
         htables = HTMLAsi.get_proj_asi(self.proj, agreed)
-        
-        #calculate paging ceil (instead of math.ceil)
-        pages = int(len(htables)/6) + 1
-        if len(htables) % 6 > 0:
-            pages = pages + 1
+        sis = HTML_Si.get_proj_si(self.proj)
         
         return render(self.request, 'problemjostle/moderator_asi_overview.html', {'project' : self.proj, 
-            'tables': htables[(page-1)*6:page*6], 
+            'tables': htables, 
             'agreed': agreed,
-            'pages': range(1, pages), 
-            'page':page,
-            'step': step})
+            'sis': sis,
+            'step': self.step
+            })
 
 class ModeratorScheduler(helpers.ModeratorRequest):
     def __init__(self, request, pid):
@@ -173,7 +169,8 @@ class ModeratorScheduler(helpers.ModeratorRequest):
         self.step = Workflow.getStep(self.proj, 70, request)
     
     def post(self):
-        return render(self.request, 'problemjostle/moderator_scheduler.html', {'project' : self.proj, 'step': self.step })
+        m = ModeratorASIOverview(self.request, self.proj.id)
+        return m.process()
     
     def get(self):
         function = self.request.GET.get('function', '')
@@ -197,10 +194,10 @@ class ModeratorScheduler(helpers.ModeratorRequest):
         if function == 'join':
             m = ModeratorJoinASI(self.request, self.proj)
             return m.joinAsi(self.step)
+            
+        m = ModeratorASIOverview(self.request, self.proj.id)
+        return m.process()
         
-        #scheduling page requested
-        return render(self.request, 'problemjostle/moderator_scheduler.html', {'project' : self.proj, 'step': self.step })
-
 class ModeratorJoinASI:
     def __init__(self, request, proj):
         self.request = request

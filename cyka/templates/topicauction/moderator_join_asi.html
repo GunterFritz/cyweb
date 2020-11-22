@@ -23,9 +23,10 @@
   
   var interval = null;
   function refreshVotes(){
-    interval = setInterval(function() {
+    tmp = setInterval(function() {
 	getVotes();
     }, 3000);
+    refreshs.push(tmp)
   }
   $(document).ready(function(){
     small();

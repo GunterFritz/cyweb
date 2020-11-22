@@ -7,66 +7,50 @@
 {% endblock %}
 {% block javascript %}
 <script>
-  var page = parseInt({{page}});
   $(document).ready(function(){
-    small();
-    queryString = window.location.search;
-    document.getElementById("page_" + page).classList.add('class', "active");
-    if(page == 1){
-      //disable page left
-      document.getElementById("page_left").classList.add('class', "disabled");
-    } else {
-      //set url to page left
-      var left = (page.valueOf() - 1).valueOf();
-      var url = "{% url 'cyka:moderator_brainwriting' project.id %}?function=si&page=" + left.toString();
-      document.getElementById("page_left_link").setAttribute('onclick', "aurl('" + url + "')");
-    }
-    if(page == {{ pages|length }}){
-      //disable page right
-      document.getElementById("page_right").classList.add('class', "disabled");
-    } else {
-      //set url to page right
-      var right = (page.valueOf() + 1).valueOf();
-      var url = "{% url 'cyka:moderator_brainwriting' project.id %}?function=si&page=" + right.toString();
-      document.getElementById("page_right_link").setAttribute('onclick', "aurl('" + url + "')");
-      //document.getElementById("page_right_link").setAttribute('href', url);
-    }
     $('.tooltipped').tooltip({enterDelay: 1000});
   });
 </script>
 {% endblock %}
-<div class="headcontainer">
-    <div class="col actionarea">
-      <ul class="pagination center">
-        <li id="page_left"><a id="page_left_link"><i class="material-icons waves-effect">chevron_left</i></a></li>
-          {% for p in pages %}	
-	    <li id="page_{{ p }}"><a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:moderator_brainwriting' project.id %}?function=si&page={{ p }}')">{{ p }}</a></li>
-	  {% endfor %}
-        <li id="page_right" class="waves-effect"><a id="page_right_link"><i class="material-icons">chevron_right</i></a></li>
-      </ul>
-      <div class="row valign">
-        {% for card in cards %}
-	    <div class="col card mplan">
-                <div class="card-content black-text">
-		    <span class="card-title grey-text text-darken-2">{{card.heading}}</span>
-		    <p>{{card.desc}}</p>
-                </div>
-            </div>
-	{% endfor %}
+<div class="col actionarea">
+  <div class="col">
+    <div class="card">
+      <div class="row" style="padding-top: 1px;">
+        <ul class="pagination center">
+          <li class="active waves-effect blue"><a href="#!">Brainwriting</a></li>
+          <li class="waves-effect disabled"><a href="#!">Themenvorschlag</a></li>
+          <li class="waves-effect disabled"><a href="#!">Themenwahl</a></li>
+          <li class="waves-effect disabled"><a href="#!">Priorisierung</a></li>
+          </ul>
+      </div>
+      <div class="row center" style="padding-bottom: 10px;">
+        <a class="waves-effect waves-light btn-floating blue disabled"><i class="material-icons tooltipped" data-tooltip="Schritt zurücksetzen">fast_rewind</i></a>
+	<a onmouseover="this.style.cursor='pointer'" onclick="submit('O','{% url 'cyka:moderator_brainwriting' project.id %}', '{{step.step}}')"
+	     class="waves-effect waves-light btn-floating blue {% if step.status == 'O' %}disabled{% endif%}">
+		<i class="material-icons tooltipped" data-tooltip="Starten">replay</i>
+        </a>
+        <a onmouseover="this.style.cursor='pointer'" onclick="submit('S', '{% url 'cyka:moderator_brainwriting' project.id %}', '{{step.step}}')"
+	     class="waves-effect waves-light btn-floating blue {% if step.status != 'O' %}disabled{% endif%}"><i class="material-icons tooltipped" data-tooltip="Starten">play_arrow</i>
+        </a>
+        <a onmouseover="this.style.cursor='pointer'" onclick="submit('B', '{% url 'cyka:moderator_brainwriting' project.id %}', '{{step.step}}')"
+	     class="waves-effect waves-light btn-floating blue {% if step.status != 'S' %}disabled{% endif%}"><i class="material-icons tooltipped" data-tooltip="Stoppen">stop</i>
+        </a>
+        <a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:moderator_problemjostle' project.id %}')"
+	     class="waves-effect waves-light btn-floating blue {% if step.status != 'B' %}disabled{% endif%}"><i class="material-icons tooltipped" data-tooltip="nächster Schritt">fast_forward</i></a>
       </div>
     </div>
-    <div class="col right navarea">
-        <div class="row">
-	    <a class="btn-floating btn-large blue right" onclick="get_agenda()"><i class="right material-icons tooltipped" data-tooltip="Agenda">menu</i></a>
-        </div>
-        <div class="row">
-            <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
-        </div>
-        <div class="row">
-	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="aurl('{% url 'cyka:moderator_brainwriting' project.id %}')"><i class="left material-icons secondary-content">schedule</i></a>
-        </div>
-        <div class="row">
-	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="aurl('{% url 'cyka:moderator_brainwriting' project.id %}?function=si')"><i class="left material-icons secondary-content">content_copy</i></a>
-        </div>
-    </div>
+      <div class="cardcontainer">
+        {% for card in cards %}
+	    <div class="item card-panel mplanopen blue lighten-5">
+		<span class="black-text card-title" STYLE="font-size:16px">{{card.heading}}</span><br/>
+		<span class="grey-text text-darken-2">{{card.desc}}</span>
+            </div>
+	{% endfor %}
+        <div class="card-placeholder"></div>
+        <div class="card-placeholder"></div>
+        <div class="card-placeholder"></div>
+        <div class="card-placeholder"></div>
+        <div class="card-placeholder"></div>
+      </div>
+  </div>
 </div>

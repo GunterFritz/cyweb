@@ -2,8 +2,7 @@
 {% endblock %}
 {% block javascript %}
 <script>
-  function updateVotes(json){
-    console.log(json)
+  function updateVotesMember(json){
     var obj = $.parseJSON(json);
     $.each(obj.member , function(index, val) { 
 	var j = val.member_votes_left    
@@ -23,7 +22,7 @@
     });
   }
   var interval = null;
-  function getVotes(){
+  function getVotesMember){
     $.ajax({
         type: "GET",
         url: '{% url 'cyka:get_json_members' project.id %}',
@@ -32,10 +31,11 @@
       }
     });
   }
-  function refreshVotes(){
-    interval = setInterval(function() {
+  function refreshVotesMember(){
+    tmp = setInterval(function() {
 	getVotes();
     }, 3000);
+    refreshs.push(tmp);
   }
   $(document).ready(function(){
     updateVotes('{{json_member}}')

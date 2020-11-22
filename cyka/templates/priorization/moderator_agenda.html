@@ -16,7 +16,6 @@
     }   
 </script>
 {% endblock %}
-<div class="headcontainer">
 <div class="col actionarea" style="overflow: hidden">
 {% for a in agenda %}
     <div class="row">
@@ -60,4 +59,3 @@
 	    <a class="btn-floating btn-large waves-effect waves-light right blue disabled" onclick="leave('{% url 'cyka:moderator_priorization' project.id %}?function=agenda')"><i class="left material-icons secondary-content disabled">group_work</i></a>
         </div>
     </div>
-</div>
