@@ -17,6 +17,32 @@
 </script>
 {% endblock %}
 <div class="col actionarea" style="overflow: hidden">
+      <div>
+        <ul class="pagination center">
+          <li class="waves-effect disabled"><a href="#!">Brainwriting</a></li>
+          <li class="waves-effect disabled"><a href="#!">Themenvorschlag</a></li>
+          <li class="waves-effect disabled"><a href="#!">Themenwahl</a></li>
+          <li class="waves-effect disabled"><a href="#!">Priorisierung</a></li>
+          <li class="waves-effect active blue"><a href="#!">Agenda</a></li>
+        </ul>
+      </div>
+      <div class="row center">
+        <a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:moderator_priorization' project.id %}?function=member')"
+		class="waves-effect waves-light btn-floating blue"><i class="material-icons tooltipped" data-tooltip="Schritt zurücksetzen">fast_rewind</i>
+	</a>
+	<a onmouseover="this.style.cursor='pointer'" onclick="submit('O','{% url 'cyka:moderator_priorization' project.id %}', '{{step.step}}')"
+	     class="waves-effect waves-light btn-floating blue disabled">
+		<i class="material-icons tooltipped" data-tooltip="Starten">replay</i>
+        </a>
+	<a onmouseover="this.style.cursor='pointer'" onclick="submit('S','{% url 'cyka:moderator_priorization' project.id %}', '{{step.step}}')"
+	     class="waves-effect waves-light btn-floating blue disabled"><i class="material-icons tooltipped" data-tooltip="Starten">play_arrow</i>
+        </a>
+        <a onmouseover="this.style.cursor='pointer'" onclick="submit('B','{% url 'cyka:moderator_priorization' project.id %}', '{{step.step}}')"
+	     class="waves-effect waves-light btn-floating blue disabled"><i class="material-icons tooltipped" data-tooltip="Stoppen">stop</i>
+        </a>
+        <a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:moderator_priorization' project.id %}?function=agenda')"
+	     class="waves-effect waves-light btn-floating blue disabled"><i class="material-icons tooltipped" data-tooltip="nächster Schritt">fast_forward</i></a>
+      </div>
 {% for a in agenda %}
     <div class="row">
         <a onmouseover="this.style.cursor='pointer'" onclick="leave('{% url 'cyka:moderator_round' project.id %}?topic={{ a.0.topic.id }}')">
@@ -42,20 +68,4 @@
     </div>
 {% endfor %}
 </div>
-    <div class="col right navarea">
-        <div class="row">
-	    <a class="btn-floating btn-large blue right" onclick="leave_agenda()"><i class="right material-icons tooltipped" data-tooltip="Agenda">menu</i></a>
-        </div>
-        <div class="row">
-            <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
-        </div>
-        <div class="row">
-	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="leave('{% url 'cyka:moderator_priorization' project.id %}')"><i class="left material-icons secondary-content">schedule</i></a>
-        </div>
-        <div class="row">
-	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="leave('{% url 'cyka:moderator_priorization' project.id %}?function=member')"><i class="left material-icons secondary-content">people_outline</i></a>
-        </div>
-        <div class="row">
-	    <a class="btn-floating btn-large waves-effect waves-light right blue disabled" onclick="leave('{% url 'cyka:moderator_priorization' project.id %}?function=agenda')"><i class="left material-icons secondary-content disabled">group_work</i></a>
-        </div>
-    </div>
+</div>

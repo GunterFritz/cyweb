@@ -73,15 +73,16 @@
 </script>
 {% endblock %}
 <div class="col actionarea">
-      <div class="row" style="padding-top: 1px;">
+      <div>
         <ul class="pagination center">
           <li class="waves-effect disabled"><a href="#!">Brainwriting</a></li>
           <li class="waves-effect disabled"><a href="#!">Themenvorschlag</a></li>
           <li class="waves-effect active blue"><a href="#!">Themenwahl</a></li>
           <li class="waves-effect disabled"><a href="#!">Priorisierung</a></li>
-          </ul>
+          <li class="waves-effect disabled"><a href="#!">Agenda</a></li>
+        </ul>
       </div>
-      <div class="row center" style="padding-bottom: 10px;">
+      <div class="row center">
         <a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:moderator_problemjostle' project.id %}')"
 		class="waves-effect waves-light btn-floating blue {% if step.status != 'O' %}disabled{% endif%}"><i class="material-icons tooltipped" data-tooltip="Schritt zurücksetzen">fast_rewind</i>
 	</a>
