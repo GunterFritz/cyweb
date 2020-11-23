@@ -45,13 +45,15 @@ returns project to an id and checks, if user has authorization
 params
 ------
 request: http request
-pid: privat key of project
+pid: privat key of project, if None take id from request
 
 return
 ------
 Models.Project
 """
 def get_project(request, pid, auth = True):
+    if pid == None:
+        pid = request.GET.get('project', '')
     try:
         project = Project.objects.get(pk=pid)
     except Project.DoesNotExist:
@@ -61,7 +63,6 @@ def get_project(request, pid, auth = True):
         raise Http404("No workshop")
     
     return project
-
 
 class HtmlPerson:
     def __init__(self, db):

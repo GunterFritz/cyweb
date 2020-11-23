@@ -14,7 +14,6 @@
 {% endblock %}
 <div class="col actionarea">
   <div class="col">
-    <div class="card">
       <div class="row" style="padding-top: 1px;">
         <ul class="pagination center">
           <li class="active waves-effect blue"><a href="#!">Brainwriting</a></li>
@@ -38,7 +37,6 @@
         <a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:moderator_problemjostle' project.id %}')"
 	     class="waves-effect waves-light btn-floating blue {% if step.status != 'B' %}disabled{% endif%}"><i class="material-icons tooltipped" data-tooltip="nächster Schritt">fast_forward</i></a>
       </div>
-    </div>
       <div class="cardcontainer">
         {% for card in cards %}
 	    <div class="item card-panel mplanopen blue lighten-5">

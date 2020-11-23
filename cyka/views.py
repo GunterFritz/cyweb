@@ -459,7 +459,6 @@ def personal_table(request, uuid):
  
     return asio.process()
 
-
 #scheduling
 def personal_schedule_jostle(request, uuid):
     #30, 70, 80
@@ -485,6 +484,33 @@ def personal_schedule_jostle(request, uuid):
     asio = TopicAuction.ASIOverview(request, uuid)
 
     return asio.process()
+
+@login_required
+def moderator_schedule_jostle(request):
+    proj = helpers.get_project(request, None, True)
+    step_bw = Workflow.getStep(proj, 40, request)
+    step_pj = Workflow.getStep(proj, 70, request)
+    step_ta = Workflow.getStep(proj, 80, request)
+    step_pr = Workflow.getStep(proj, 90, request)
+
+    if step_bw.status != 'B':
+        m = brainwriting.ModeratorScheduler(request, proj.id)
+        return m.process()
+    
+    if step_pj.status != 'B':
+        m = ModeratorScheduler(request, proj.id)
+        return m.process()
+    
+    if step_ta.status != 'B':
+        m = TopicAuction.ModeratorScheduler(request, proj.id)
+        return m.process()
+    
+    if step_pr.status != 'B':
+        m = Priorization.Moderator(request, proj.id)
+        return m.process()
+    
+    m = Priorization.Moderator(request, proj.id)
+    return m.showAgenda()
 
 #asi overview and creating
 @login_required

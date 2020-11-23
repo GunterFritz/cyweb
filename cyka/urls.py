@@ -30,6 +30,7 @@ urlpatterns = [
         url(r'^member_start/(?P<uuid>[0-9A-Za-z\-]+)$', views.member_start, name="member_start"),
         #schedule problem jostle
         url(r'^member/schedule/(?P<uuid>[0-9A-Za-z\-]+)$', views.personal_schedule_jostle, name="personal_schedule_jostle"),
+        url(r'^moderator/schedule/$', views.moderator_schedule_jostle, name="moderator_schedule"),
         #topicauction
 	# ex: /cyka/project/5/moderator/topicauction/
 	url(r'^(?P<project_id>[0-9]+)/moderator/topicauction/$', views.moderator_topicauction, name="moderator_topicauction"),

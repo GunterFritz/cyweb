@@ -197,8 +197,7 @@ class ModeratorScheduler(helpers.ModeratorRequest):
         if function == 'createtopics':
             return self.createTopics()
         
-        #scheduling page requested
-        return render(self.request, 'topicauction/moderator_scheduler.html', {'project' : self.proj, 'step': self.step })
+        return self.renderTable()
 
     """
     the function creates from the first ASIs topics
