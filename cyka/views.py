@@ -493,15 +493,15 @@ def moderator_schedule_jostle(request):
     step_ta = Workflow.getStep(proj, 80, request)
     step_pr = Workflow.getStep(proj, 90, request)
 
-    if step_bw.status != 'B':
+    if step_bw.status != 'B' or step_pj.status == 'O':
         m = brainwriting.ModeratorScheduler(request, proj.id)
         return m.process()
     
-    if step_pj.status != 'B':
+    if step_pj.status != 'B' or step_ta.status == 'O':
         m = ModeratorScheduler(request, proj.id)
         return m.process()
     
-    if step_ta.status != 'B':
+    if step_ta.status != 'B' or step_pr.status == 'O':
         m = TopicAuction.ModeratorScheduler(request, proj.id)
         return m.process()
     

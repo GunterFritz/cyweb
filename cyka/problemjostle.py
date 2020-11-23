@@ -218,7 +218,12 @@ class ModeratorJoinASI:
     
     def joinAsi(self, step):
         #main page
-        if step.done:
-            return render(self.request, 'problemjostle/moderator_join_asi_finished.html', {'project' : self.proj, 'table': self.table })
+        step = Workflow.getStep(self.proj, 70, self.request)
+        
         jitsi = Jitsi(self.table.uuid, self.table.card.heading, self.name)
-        return render(self.request, 'problemjostle/moderator_join_asi.html', {'project' : self.proj, 'table': self.table, 'jitsi': jitsi })
+        return render(self.request, 'problemjostle/moderator_join_asi.html', {
+            'project' : self.proj, 
+            'table': self.table, 
+            'jitsi': jitsi, 
+            'step': step 
+            })

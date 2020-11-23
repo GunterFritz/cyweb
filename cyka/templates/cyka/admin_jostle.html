@@ -52,13 +52,7 @@
     connectVideo();
     small();
     $('.tooltipped').tooltip({enterDelay: 1000});
-    {% if start == "asi" %}
-	  aurl('{% url 'cyka:moderator_schedule' %}?project={{project.id}}');
-    //aurl('{% url 'cyka:moderator_problemjostle' project.id %}?function=asi');
-    {% else %}
-	  aurl('{% url 'cyka:moderator_schedule' %}?project={{project.id}}');
-    //aurl('{% url 'cyka:admin_jostle' project.id %}?function=agenda');
-    {% endif %}
+    aurl('{% url 'cyka:moderator_schedule' %}?project={{project.id}}');
   });
     //resize
     var size = 0;

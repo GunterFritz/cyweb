@@ -1,96 +1,38 @@
-{% extends 'cyka/full_base.html' %}
 {% block extrahead %}
-<style type="text/css">
-  @media only screen and (min-width : 601px) {
-      #id_card_type_container {
-          margin-top: 40px;
-          margin-left: 50px;
-      }
-      }
-      .meet {
-	  width:75%
-      }
-</style>
 {% endblock %}
 {% block javascript %}
-<script src="https://meet.cyiko.org/external_api.js"></script>
 <script>
-  var interval = null;
   function refreshSupporter(){
-    interval = setInterval(function() {
-	aurl('{% url 'cyka:moderator_problemjostle' project.id %}?table={{table.id}}&function=supporter', '#_supporter')
+    tmp = setInterval(function() {
+	aurl2('{% url 'cyka:moderator_problemjostle' project.id %}?table={{table.id}}&function=supporter', '#_supporter')
     }, 3000);
+    refreshs.push(tmp);
   }
   $(document).ready(function(){
-    small();
-    var container = document.querySelector('#jitsi-container');
-    var domain = "{{jitsi.domain}}";
-    var options = {
-	roomName: "{{jitsi.room}}",
-        height: 700,
-        parentNode: container,
-    };
-    var api = new JitsiMeetExternalAPI(domain, options);
-    api.executeCommand ('displayName', '{{jitsi.name}}'); 
-    api.executeCommand ('subject', '{{jitsi.subject}}');
-    aurl('{% url 'cyka:moderator_problemjostle' project.id %}?table={{table.id}}&function=pad', '#_appendHere');
-    $('.tooltipped').tooltip({enterDelay: 1000});
-    refreshSupporter();
+      small();
+      {% if not step.done %}
+      refreshSupporter();
+      hangup();
+      connectRoom('{{jitsi.room}}');
+      {% endif %}
+      aurl2('{% url 'cyka:moderator_problemjostle' project.id %}?table={{table.id}}&function=pad', '#_pad');
+      $('.tooltipped').tooltip({enterDelay: 1000});
     });
-    //resize
-    var size = 0;
-    function small() {
-        $("#meetcontent").outerWidth('25%');
-        $("#stepcontent").outerWidth('75%');
-        size = 1;
-    } 
-    function big() {
-        $("#meetcontent").outerWidth('75%');
-        $("#stepcontent").outerWidth('25%');
-	size = 0;
-    }
-    function resize() {
-	if (size == 0) {
-	    small();
-	} else {
-	    big();
-	}
-    }
-    function aurl(myurl, where) {
-        $.ajax({
-            type: "GET",
-		url: myurl,
-        })
-        .done(function(response) {
-            $(where).html(response);
-        }); 
-    }
     function leave(url){
-        clearInterval(interval);
-        window.location.href = url;
-    }   
+        {% if not step.done %}
+        hangup();
+	connectVideo();
+        {% endif %}
+        aurl(url);
+    }
 </script>
 {% endblock %}
 {% block content %}
-<div class="row">
-    <div id="meetcontent" class="col meet">
-        <div id="jitsi-container">
-        </div>
+    <div id="_pad" class="col actionarea" style="padding-right: 55px">
     </div>
-    <div id="stepcontent" class="col headcontainer">
-        <div id="_appendHere" class="col actionarea">
-        </div>
-        <div class="col navarea">
-            <div class="row">
-	        <a class="btn-floating btn-large red right" onclick="leave('{% url 'cyka:admin_jostle' project.id %}?start=asi')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">exit_to_app</i></a>
-            </div>
-            <div class="row">
-                <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
-            </div>
+    <div class="col navarea right">
         <div class="row">
-		<a class="btn-floating btn-large waves-effect waves-light right red" onclick="aurl('{% url 'cyka:moderator_delete_asi' project.id %}?asi={{table.id}}')"><i class="left material-icons secondary-content">delete</i></a>
-        </div>
+	    <a class="btn-floating red right" onclick="leave('{% url 'cyka:moderator_schedule' %}?project={{project.id}}')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">exit_to_app</i></a>
         </div>
     </div>
-</div>
 {% endblock %}
