@@ -10,7 +10,6 @@
     var domain = "{{jitsi.domain}}";
     var options = {
 	roomName: room,
-        height: 700,
         parentNode: container,
     };
     api = new JitsiMeetExternalAPI(domain, options);
@@ -133,7 +132,7 @@
         </div>
     </div>
     <div id="stepcontent" class="col" style="height: 100%; overflow: auto">
-      <div id="_appendHere" class="col actionarea">
+      <div id="_appendHere" class="col actionarea" style="height: 100%">
       </div>
     </div>
 </div>
