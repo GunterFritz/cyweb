@@ -1,0 +1,33 @@
+version: "3.5"
+   
+services:
+  db:
+    image: postgres:9.6
+    container_name: postgres
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    networks:
+      - infranet
+
+  cyweb:
+    build:
+      context: .
+      dockerfile: cyweb.dockerfile
+      network: infranet
+    image: icyweb
+    container_name: cyweb
+    command: gunicorn --bind 0.0.0.0:8000 cyweb.wsgi
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    networks:
+      - infranet
+    depends_on:
+      - db
+
+networks:
+  infranet:
+    name: infranet
