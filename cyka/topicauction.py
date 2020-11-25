@@ -190,8 +190,9 @@ class ModeratorScheduler(helpers.ModeratorRequest):
             tid = self.request.GET.get('table', '')
             if tid == '':
                 tid = None
-            #data = HTMLAsi.get_proj_asi_id(self.proj, tid).to_json()
-            data = HTMLAsi.getProjAsiJson(self.proj)
+                data = HTMLAsi.getProjAsiJson(self.proj)
+            else:
+                data = { 'asi' : [ HTMLAsi.get_proj_asi_id(self.proj, tid)[0].to_json() ] }
             return JsonResponse(data, safe=False)
         
         if function == 'createtopics':
@@ -271,7 +272,7 @@ class ModeratorJoinASI:
         pad = Pad(self.table.uuid, self.request.user.get_username)
         pad.setReadOnly()
         asis = self.table.sisign_set.all()
-        data = HTMLAsi.get_proj_asi_id(self.proj, self.table.id).to_json()
+        data = HTMLAsi.get_proj_asi_id(self.proj, self.table.id)[0].to_json()
         
         return render(self.request, 'topicauction/moderator_join_asi.html', {
             'project' : self.proj, 

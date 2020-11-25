@@ -21,7 +21,6 @@
         });
     }
   
-  var interval = null;
   function refreshVotes(){
     tmp = setInterval(function() {
 	getVotes();
@@ -43,16 +42,11 @@
             $(where).html(response);
         }); 
     }
-    function leave(url){
-        clearInterval(interval);
-        aurl(url);
-    }   
 </script>
 {% endblock %}
 {% block content %}
-<div class="headcontainer">
-    <div class="col actionarea">
-<div class="col padplan">
+<div class="col actionarea" style="padding-right: 55px">
+  <div class="col padplan">
     <div class="card row">
         <div class="card-content black-text">
 	    <span class="card-title grey-text text-darken-2">{{asi.table.card.heading}}</span>
@@ -76,24 +70,11 @@
             height="550px">
 	</iframe>
     </div>
+  </div>
 </div>
-    </div>
-    <div class="col right navarea">
-        <div class="row">
-	    <a class="btn-floating btn-large blue right" onclick="leave_agenda()"><i class="right material-icons tooltipped" data-tooltip="Agenda">menu</i></a>
-        </div>
-        <div class="row">
-            <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
-        </div>
-        <div class="row">
-	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="leave('{% url 'cyka:moderator_topicauction' project.id %}')"><i class="left material-icons secondary-content">schedule</i></a>
-        </div>
-        <div class="row">
-	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="leave('{% url 'cyka:moderator_topicauction' project.id %}?function=table')"><i class="left material-icons secondary-content">assessment</i></a>
-        </div>
-        <div class="row">
-	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="leave('{% url 'cyka:moderator_topicauction' project.id %}?function=member')"><i class="left material-icons secondary-content">people_outline</i></a>
-        </div>
+<div class="col right navarea">
+    <div class="row">
+        <a class="btn-floating red right" onclick="aurl('{% url 'cyka:moderator_topicauction' project.id %}?function=table')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">exit_to_app</i></a>
     </div>
 </div>
 {% endblock %}
