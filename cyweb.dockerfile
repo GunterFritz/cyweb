@@ -14,6 +14,7 @@ COPY . /code/
 RUN python manage.py makemigrations
 RUN python manage.py makemigrations cyka
 RUN python manage.py migrate
+RUN python manage.py shell -c "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'admin')"
 
 CMD ["gunicorn", "--bind", "0.0.0.0:8000",  "cyweb.wsgi"]
 
