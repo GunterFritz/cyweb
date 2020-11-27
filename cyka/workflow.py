@@ -167,6 +167,29 @@ class Step:
             self.elem.status = 'S'
         self.status = self.elem.status
         self.elem.save()
+    
+    """
+    executes post request and saves it
+    """
+    def post(self, request):
+        if request.method == 'POST':
+            if 'step' in request.POST:
+                self.form = WorkflowElementFormProgress(request.POST)
+                if self.form.is_valid():
+                    self.form.save(self)
+                    self.save()
+
+    """
+    returns the status from request
+    """
+    def get_post_status(self, request):
+        self.form = WorkflowElementFormProgress(request.POST)
+        
+        self.form.is_valid()
+        #self.form.save(self)
+
+        return self.form.get_post_status()
+
 
 class Section:
     def __init__(self, d, proj):
@@ -228,9 +251,19 @@ class Workflow:
 
         return {'id':step_id, 'status': elem.status, 'active':active}
 
+    """
+    returns a single step and creates if not existing
+    """
+    @staticmethod
+    def get_step(proj, num):
+        step = None
+        for d in workflow:
+            for st in d['steps']:
+                if st['step'] == num:
+                    return Step(st, proj)
 
     """
-    returns a single step
+    returns a single step and manipulates it in case of POST
     """
     @staticmethod
     def getStep(proj, num, request):

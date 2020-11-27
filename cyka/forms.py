@@ -53,6 +53,10 @@ class WorkflowElementFormProgress(forms.Form):
         wf.status = self.cleaned_data['status']
         return wf
 
+    def get_post_status(self):
+        return self.cleaned_data['status']
+
+
 class WorkflowElementForm(forms.Form):
     done = forms.BooleanField(label='erledigt', required=False)
 

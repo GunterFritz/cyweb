@@ -164,9 +164,22 @@ class ModeratorScheduler(helpers.ModeratorRequest):
     def __init__(self, request, pid):
         helpers.ModeratorRequest.__init__(self,request, pid)
         #wf post request is handled by workflow itself
-        self.step = Workflow.getStep(self.proj, 80, request)
+        self.step = Workflow.get_step(self.proj, 80)
+
+        self.created  = len(self.proj.topic_set.all()) > 0 
+        #self.step = Workflow.getStep(self.proj, 80, request)
     
     def post(self):
+        #change the step, but do not finish the step if topics not yet created
+        if self.created or self.step.get_post_status(self.request) != 'B':
+            print("CHANGE")
+            self.step.post(self.request)
+        
+        #reset, delete the steps
+        if self.created and self.step.get_post_status(self.request) == 'O':
+            print("DELETED")
+            self.proj.topic_set.all().delete()
+        
         return self.renderTable()
     
     def get(self):
@@ -255,6 +268,7 @@ class ModeratorScheduler(helpers.ModeratorRequest):
             'step': self.step,
             'threshold' : Structure.factory(self.proj.ptype).getNumTopics(),
             'json_table':SafeString(json.dumps(table_json)),
+            'created' : self.created,
             'member' : mem,
             'votes' : range(HTMLMember.getNumVotes(self.proj)),
             'json_member':SafeString(json.dumps(member_json))

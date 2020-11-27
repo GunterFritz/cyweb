@@ -1,46 +1,22 @@
 {% extends 'cyka/project_base.html' %}
 {% load material_form %}
+{% load static %}
 
 {% block extrahead %}
-<style type="text/css">
-  @media only screen and (min-width : 601px) {
-      #id_card_type_container {
-          margin-top: 40px;
-          margin-left: 50px;
-      }
-}
-</style>
 {% endblock %}
 
 {% block javascript %}
-<script>
-  $(document).ready(function(){
-    alert("Hallo");
-  });
+<script src="{% static 'meet/meet.js' %}"></script>
 </script>
 {% endblock %}
 
 {% block content %}
-<div class="row valign change-form" style="height: 100%">
-    <div class="{% block formclass %}col s12 m8 offset-m2 l8 offset-l2{% endblock %}" style="height: 100%">
-        <div class="card">
-                <div class="card-content">
-                    <span class="card-title grey-text text-darken-2">{% block formtitle %}Plenum{% endblock %}</span>
-                </div>
-                <div class="card-action">
-                    {% block actions %}
-                    <div class="right-align">
-	    		<form method="GET" action="{% url 'cyka:join_room' project.uuid %}" target="_blank">
-			    <input type="hidden" name="project" value="{{project.id}}" /> 
-                            <button class="btn btn-primary" name='workshop' type="submit">Beitreten</button>
-			</form>
-                    </div>
-                    {% endblock %}
-                </div>
-        </div>
-        <div style="height:100%">
-		<iframe src='http://localhost:9001/p/123?showChat=false&showLineNumbers=false' style="height: 100%; width: 100%; border: none"></iframe>
-        </div>
+<div class="row">
+    <div class="card">
+      <div class="card-content">
+        <span class="card-title grey-text text-darken-2">Hello</span>
+        <a class="btn-floating waves-effect waves-light red" onclick="hello()"><i class="material-icons">call_end</i></a>
+      </div>
     </div>
 </div>
 {% endblock %}
