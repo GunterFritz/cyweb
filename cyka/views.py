@@ -28,7 +28,7 @@ from .problemjostle import AgreedStatementImportance, ASIOverview, ModeratorASIO
 @login_required
 def project(request):
     username = None
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         username = request.user.username
     else:
         return HttpResponse("Permission denied")
@@ -36,7 +36,7 @@ def project(request):
     #projects = Project.objects.get()
     #projects = request.user.
 
-    return HttpResponse(username)
+    return redirect('cyka:project_list')
     
 @login_required
 def project_details(request, project_id):
