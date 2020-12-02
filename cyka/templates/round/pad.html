@@ -1,0 +1,20 @@
+    <div class="card vertbox0">
+        <div class="card-content black-text">
+	    <span class="card-title grey-text text-darken-2">{{table.card.heading}}</span>
+	    <p>{{table.card.desc}}<p>
+	    <div id="_supporter">
+	    {% for a in assign %}
+	    <span class="badge blue lighten-4">{{a.member.name}}</span>
+	    {% endfor %}
+	    </div>
+        </div>
+    </div>
+    <div class="vertbox1">
+	<iframe  frameborder="0" 
+            marginheight="0" 
+            marginwidth="0" 
+	    scrolling="auto" name="{{etherpad.name}}" src="{{etherpad.domain}}/{{etherpad.pad}}?showChat=false&showLineNumbers=false&userName={{etherpad.user}}" 
+	    width="100%" 
+            height="100%">
+	</iframe>
+    </div>
