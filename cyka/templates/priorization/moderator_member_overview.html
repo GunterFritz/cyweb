@@ -3,17 +3,21 @@
 {% block javascript %}
 <script>
   function updateMembers(json){
+    var finished = true;
     var obj = $.parseJSON(json);
     $.each(obj.member , function(index, val) {
-	console.log(val.id);
 	if(val.status){
-	    console.log("True");
             $( "#_member_" + val.id + "_icon").text('check');
 	} else {
-	    console.log("False");
+	    finished = false;
             $( "#_member_" + val.id + "_icon").text('remove');
 	}
     });
+    if(finished && !obj.project.hasagenda){
+	    $("#_finish_step").removeClass("disabled");
+    } else {
+	    $("#_finish_step").addClass("disabled");
+    }
   }
   function getMembers(){
     $.ajax({
@@ -31,8 +35,7 @@
     refreshs.push(tmp);
   }
   $(document).ready(function(){
-    small();
-    //refreshMembers();
+    refreshMembers();
     $('.tooltipped').tooltip({enterDelay: 1000});
   });
     function resolve(){
@@ -45,11 +48,11 @@
 <div class="col actionarea" style="overflow: hidden">
       <div>
         <ul class="pagination center">
-          <li class="waves-effect disabled"><a href="#!">Brainwriting</a></li>
-          <li class="waves-effect disabled"><a href="#!">Themenvorschlag</a></li>
-          <li class="waves-effect disabled"><a href="#!">Themenwahl</a></li>
-          <li class="waves-effect active blue"><a href="#!">Priorisierung</a></li>
-          <li class="waves-effect disabled"><a href="#!">Agenda</a></li>
+          <li class="waves-effect disabled"><a>Brainwriting</a></li>
+          <li class="waves-effect disabled"><a>Themenvorschlag</a></li>
+          <li class="waves-effect disabled"><a>Themenwahl</a></li>
+          <li class="waves-effect active blue"><a>Priorisierung</a></li>
+          <li class="waves-effect disabled"><a>Agenda</a></li>
         </ul>
       </div>
       <div class="row center">
@@ -57,16 +60,16 @@
 		class="waves-effect waves-light btn-floating blue {% if step.status != 'O' %}disabled{% endif%}"><i class="material-icons tooltipped" data-tooltip="Schritt zurücksetzen">fast_rewind</i>
 	</a>
 	<a onmouseover="this.style.cursor='pointer'" onclick="submit('O','{% url 'cyka:moderator_priorization' project.id %}', '{{step.step}}')"
-	     class="waves-effect waves-light btn-floating blue {% if step.status == 'O' %}disabled{% endif%}">
+	     class="waves-effect waves-light btn-floating red {% if step.status == 'O' %}disabled{% endif%}">
 		<i class="material-icons tooltipped" data-tooltip="Reset">replay</i>
         </a>
 	<a onmouseover="this.style.cursor='pointer'" onclick="submit('S','{% url 'cyka:moderator_priorization' project.id %}', '{{step.step}}')"
 	     class="waves-effect waves-light btn-floating blue {% if step.status != 'O' %}disabled{% endif%}"><i class="material-icons tooltipped" data-tooltip="Starten">play_arrow</i>
         </a>
-        <a onmouseover="this.style.cursor='pointer'" onclick="submit('B','{% url 'cyka:moderator_priorization' project.id %}', '{{step.step}}')"
-	     class="waves-effect waves-light btn-floating blue {% if step.status != 'S' %}disabled{% endif%}"><i class="material-icons tooltipped" data-tooltip="Stoppen">stop</i>
+        <a id="_finish_step" onmouseover="this.style.cursor='pointer'" onclick="submit('B','{% url 'cyka:moderator_priorization' project.id %}', '{{step.step}}')"
+	     class="waves-effect waves-light btn-floating blue disabled"><i class="material-icons tooltipped" data-tooltip="Stoppen">stop</i>
         </a>
-        <a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:moderator_priorization' project.id %}?function=agenda')"
+        <a id="_next_step" onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:moderator_priorization' project.id %}?function=agenda')"
 	     class="waves-effect waves-light btn-floating blue {% if step.status != 'B' or not project.hasagenda %}disabled{% endif%}"><i class="material-icons tooltipped" data-tooltip="nächster Schritt">fast_forward</i></a>
       </div>
       <div class="card">
@@ -79,10 +82,6 @@
 		  </span>
 	  </div></a>
 	  {% endfor %}
-        </div>
-	<div class="card-action">
-		<a class="btn blue{% if project.hasagenda %} disabled{% endif %}" onclick="aurl('{% url 'cyka:moderator_priorization' project.id %}?function=assign')">Themen Zuteilen</a>
-		<a class="btn blue{% if not project.hasagenda %} disabled{% endif %}" onclick="resolve()">Zuteilung löschen</a>
         </div>
       </div>
 </div>

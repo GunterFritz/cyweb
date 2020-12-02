@@ -166,6 +166,26 @@ class HTMLMember:
             retval.append(HTMLMember(m).getVotesJson())
 
         return {'member':retval}
+   
+    """
+    resets the status from all members
+    """
+    @staticmethod
+    def reset_status(proj):
+        for m in proj.member_set.all().filter(mtype='M'):
+            m.status = False
+            m.save()
+        return None
+
+    """
+    returns true, if status from all members are true
+    """
+    @staticmethod
+    def get_status(proj):
+        for m in proj.member_set.all().filter(mtype='M'):
+            if not m.status:
+                return False
+        return True
 
 
     #creates a vote relation between member and asi

@@ -99,9 +99,22 @@ class Moderator(helpers.ModeratorRequest):
     def __init__(self, request, pid):
         helpers.ModeratorRequest.__init__(self,request, pid)
         #wf post request is handled by workflow itself
-        self.step = Workflow.getStep(self.proj, 90, request)
+        self.step = Workflow.get_step(self.proj, 90)
     
     def post(self):
+        #reset, clear agenda and personal ready status
+        if self.step.get_post_status(self.request) == 'O':
+            agenda = helpers.Agenda(self.proj)
+            agenda.resolve_agenda()
+            HTMLMember.reset_status(self.proj) 
+        
+        if self.step.get_post_status(self.request) == 'B':
+            if HTMLMember.get_status(self.proj):
+                self.createAgenda()
+            else:
+                return self.renderMemberOverview()
+        
+        self.step.post(self.request)
         return self.renderMemberOverview()
     
     def get(self):
@@ -116,9 +129,12 @@ class Moderator(helpers.ModeratorRequest):
             return self.showAgenda()
         
         #assign topics to edges and persons to struts
-        if function == 'assign':
-            self.createAgenda()
-            return self.showAgenda()
+        #if function == 'assign':
+        #    if HTMLMember.get_status(self.proj):
+        #        self.createAgenda()
+        #        return self.showAgenda()
+        
+        #    return self.renderMemberOverview()
         
         if function == 'resolve':
             agenda = helpers.Agenda(self.proj)
@@ -129,11 +145,7 @@ class Moderator(helpers.ModeratorRequest):
         if function == 'details':
             return self.renderMemberDetails()
         
-        #scheduling page requested
-        return render(self.request, 'priorization/moderator_scheduler.html', {
-            'project' : self.proj,
-            'step': self.step
-            })
+        return self.renderMemberOverview()
     """
     assigns each topic to an edge and each person to a strut
     """

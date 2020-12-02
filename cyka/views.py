@@ -558,7 +558,7 @@ def get_member_details(request, project_id):
 @login_required
 def get_json_members(request, project_id):
     proj = helpers.get_project(request, project_id)
-    data = HTMLMember.jsonMember(proj)
+    data = { **HTMLMember.jsonMember(proj), 'project': HTML_Proj(proj).to_json()}
 
     return JsonResponse(data, safe=False)
 

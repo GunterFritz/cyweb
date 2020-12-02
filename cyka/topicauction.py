@@ -171,15 +171,13 @@ class ModeratorScheduler(helpers.ModeratorRequest):
     
     def post(self):
         #change the step, but do not finish the step if topics not yet created
-        if self.created or self.step.get_post_status(self.request) != 'B':
-            print("CHANGE")
-            self.step.post(self.request)
         
         #reset, delete the steps
         if self.created and self.step.get_post_status(self.request) == 'O':
-            print("DELETED")
             self.proj.topic_set.all().delete()
         
+        self.step.post(self.request)
+
         return self.renderTable()
     
     def get(self):
@@ -217,10 +215,6 @@ class ModeratorScheduler(helpers.ModeratorRequest):
     the function creates from the first ASIs topics
     """
     def createTopics(self):
-        #create topics only if step is active
-        if not self.step.isActive():
-            self.renderTable()
-
         num = Structure.factory(self.proj.ptype).getNumTopics()
         asi = sorted(HTMLAsi.get_proj_asi(self.proj), key=lambda HTMLAsi: HTMLAsi.votes, reverse=True)
         #not enough ASI to create topics
@@ -236,7 +230,8 @@ class ModeratorScheduler(helpers.ModeratorRequest):
         #create new
         for i in range(1, num +1):
             topic = self.proj.topic_set.create(number=i, asi=asi[i-1].table, name=asi[i-1].name, desc=asi[i-1].table.card.desc)
-    
+        self.created = True
+
         return self.renderTable()
 
     def jsonMember(self):
@@ -264,7 +259,6 @@ class ModeratorScheduler(helpers.ModeratorRequest):
 
         return render(self.request, 'topicauction/moderator_asi_sorted.html', {'project' : self.proj, 
             'table' : sorted(t, key=lambda HTMLAsi: HTMLAsi.votes, reverse=True),
-            'active': self.step.isActive(),
             'step': self.step,
             'threshold' : Structure.factory(self.proj.ptype).getNumTopics(),
             'json_table':SafeString(json.dumps(table_json)),

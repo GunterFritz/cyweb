@@ -90,7 +90,7 @@
 		class="waves-effect waves-light btn-floating blue {% if step.status != 'O' %}disabled{% endif%}"><i class="material-icons tooltipped" data-tooltip="Schritt zurücksetzen">fast_rewind</i>
 	</a>
 	<a onmouseover="this.style.cursor='pointer'" onclick="submit('O','{% url 'cyka:moderator_topicauction' project.id %}', '{{step.step}}')"
-	     class="waves-effect waves-light btn-floating blue {% if step.status == 'O' %}disabled{% endif%}">
+	     class="waves-effect waves-light btn-floating red {% if step.status == 'O' %}disabled{% endif%}">
 		<i class="material-icons tooltipped" data-tooltip="Reset">replay</i>
         </a>
         <a onmouseover="this.style.cursor='pointer'" onclick="submit('S', '{% url 'cyka:moderator_topicauction' project.id %}', '{{step.step}}')"
@@ -100,7 +100,7 @@
 	     class="waves-effect waves-light btn-floating blue {% if step.status != 'S' %}disabled{% endif%}"><i class="material-icons tooltipped" data-tooltip="Stoppen">stop</i>
         </a>
         <a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:moderator_priorization' project.id %}?function=member')"
-	     class="waves-effect waves-light btn-floating blue {% if step.status != 'B' %}disabled{% endif%}">
+	     class="waves-effect waves-light btn-floating blue {% if not created %}disabled{% endif%}">
 		<i class="material-icons tooltipped" data-tooltip="nächster Schritt">fast_forward</i>
 	</a>
       </div>
@@ -135,7 +135,7 @@
       </div>
     </div>
     <div class="card-action">
-      <a class="btn btn-medium blue waves-effect" {% if not active %}disabled="true"{% endif %}  onclick="aurl('{% url 'cyka:moderator_topicauction' project.id %}?function=createtopics')">Themen übernehmen</a>
+      <a class="btn btn-medium blue waves-effect" {% if step.status != 'B' or created %}disabled="true"{% endif %}  onclick="aurl('{% url 'cyka:moderator_topicauction' project.id %}?function=createtopics')">Themen übernehmen</a>
     </div>
     </div>
     <div id="__member">

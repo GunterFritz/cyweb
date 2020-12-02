@@ -19,26 +19,12 @@
 </script>
 {% endblock %}
 
-<div class="headcontainer">
-<div class="col actionarea">
+<div class="col actionarea" style="padding-right: 55px">
     <div id="_memberDetails">
     </div>
 </div>
 <div class="col right navarea">
     <div class="row">
-        <a class="btn-floating btn-large blue right" onclick="get_agenda()"><i class="right material-icons tooltipped" data-tooltip="Agenda">menu</i></a>
+        <a class="btn-floating blue right" onclick="aurl('{% url 'cyka:moderator_priorization' project.id %}?function=member')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">arrow_back</i></a>
     </div>
-    <div class="row">
-        <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
-    </div>
-    <div class="row">
-	    <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="aurl('{% url 'cyka:moderator_priorization' project.id %}')"><i class="left material-icons secondary-content">schedule</i></a>
-    </div>
-    <div class="row">
-        <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="aurl('{% url 'cyka:moderator_priorization' project.id %}?function=member')"><i class="left material-icons secondary-content">people_outline</i></a>
-    </div>
-    <div class="row">
-        <a class="btn-floating btn-large waves-effect waves-light right blue{% if not project.hasagenda %} disabled{% endif %}" onclick="leave('{% url 'cyka:moderator_priorization' project.id %}?function=agenda')"><i class="left material-icons secondary-content">group_work</i></a>
-    </div>
-</div>
 </div>

@@ -84,8 +84,8 @@ class Agenda:
     def __init__(self, proj):
         self.project = proj
 
-        if not self.project.hasagenda:
-            self.create_agenda()
+        #if not self.project.hasagenda:
+        #    self.create_agenda()
 
     """
     creates the agenda
