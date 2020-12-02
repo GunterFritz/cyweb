@@ -128,19 +128,6 @@ class Moderator(helpers.ModeratorRequest):
         if function == 'agenda':
             return self.showAgenda()
         
-        #assign topics to edges and persons to struts
-        #if function == 'assign':
-        #    if HTMLMember.get_status(self.proj):
-        #        self.createAgenda()
-        #        return self.showAgenda()
-        
-        #    return self.renderMemberOverview()
-        
-        if function == 'resolve':
-            agenda = helpers.Agenda(self.proj)
-            agenda.resolve_agenda()
-            return self.renderMemberOverview()
-        
         #show details of an specific members
         if function == 'details':
             return self.renderMemberDetails()
