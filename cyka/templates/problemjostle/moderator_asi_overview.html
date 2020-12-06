@@ -84,7 +84,7 @@ function refreshAsi(){
 		class="waves-effect waves-light btn-floating blue {% if step.status != 'O' %}disabled{% endif%}"><i class="material-icons tooltipped" data-tooltip="Schritt zurücksetzen">fast_rewind</i>
 	</a>
 	<a onmouseover="this.style.cursor='pointer'" onclick="submit('O','{% url 'cyka:moderator_problemjostle' project.id %}', '{{step.step}}')"
-	     class="waves-effect waves-light btn-floating blue {% if step.status == 'O' %}disabled{% endif%}">
+	     class="waves-effect waves-light btn-floating red {% if step.status == 'O' %}disabled{% endif%}">
 		<i class="material-icons tooltipped" data-tooltip="Reset">replay</i>
         </a>
 	<a onmouseover="this.style.cursor='pointer'" onclick="submit('S', '{% url 'cyka:moderator_problemjostle' project.id %}', '{{step.step}}')"

@@ -361,14 +361,6 @@ def personal_edit_up(request, uuid, priority):
 
     return redirect('cyka:personal_edit', uuid)
 
-def member_start(request, uuid):
-    try:
-        member = Member.objects.all().filter(uuid=uuid)[0]
-
-    except Member.DoesNotExist:
-        raise Http404("Member does not exist")
-    return render(request, 'start/member_start.html', {'project' : member.proj, 'member': member})
-
 def test(request, uuid):
     member = Member.objects.all().filter(uuid=uuid)[0]
     return render(request, 'cyka/test2.html', {'project' : member.proj, 'member': member})
@@ -414,6 +406,11 @@ def personal_votes(request, uuid):
 
     return render(request, 'cyka/personal_votes.html', {'project' : member.proj, 'member': member, 'cards': cards[(page-1)*6:page*6], 'pages': range(1, pages), 'page':page, 'step': step})
 
+#Brainwriting
+def member_start(request, uuid):
+    start = Start.MemberStart(request, uuid)
+
+    return start.process()
 #Brainwriting
 def personal_card(request, uuid):
     brain = brainwriting.MemberBrainwriting(request, uuid)
@@ -566,11 +563,14 @@ def get_json_members(request, project_id):
 def get_json_step(request):
     uuid = request.GET.get('member', '')
     member = get_member_by_uuid(uuid)
-    step_id = int(request.GET.get('step', ''))
-
-    step = Workflow.get_json_step(member.proj, step_id)
+    step_id = request.GET.get('step', '')
     
-    return JsonResponse(step, safe=False)
+    if(step_id == ''):
+        data = Workflow.get_json(member.proj)
+    else:
+        data = Workflow.get_json_step(member.proj, int(step_id))
+    
+    return JsonResponse(data, safe=False)
     
 def get_json_asi(request):
     uuid = request.GET.get('member', '')

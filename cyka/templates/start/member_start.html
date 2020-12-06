@@ -3,29 +3,71 @@
 {% block javascript %}
 <script>
   $(document).ready(function(){
-    full();
     $('.tooltipped').tooltip({enterDelay: 1000});
+    $('.modal').modal({dismissible: false});
+    refreshStep();
   });
-    function full() {
-        $("#meetcontent").outerWidth('90%');
-        $("#stepcontent").outerWidth('10%');
-	size = 0;
-    }
-    function goAgenda(){
-	console.log("hallo");
-        get_agenda();
-    }
+
+function refreshStep(){
+  updateStep();
+  tmp = setInterval(function() {
+    updateStep();
+  }, 3000);
+  refreshs.push(tmp);
+}
+
+function updateStep(){
+  $.ajax({
+      type: "GET",
+      url: '{% url 'cyka:get_json_step' %}?member={{member.uuid}}',
+      complete: function (response) {
+	var obj = $.parseJSON(response.responseText);
+	var next = false;
+        $.each(obj.steps , function(index, val) {
+	  if (val.sid == {{step.step}} && val.status != 'S'){
+	    next = true;
+	  }else if (next && val.status != 'O'){
+            $('#modal1').modal('open');
+	  }
+        });
+      }
+  });
+}
 </script>
+
 {% endblock %}
-<div class="headcontainer">
-    <div class="col actionarea">
+<div class="col actionarea" style="height: 100%">
+  <div class="vertcontainer">
+    <div class="row center vertbox0">
+        <ul class="pagination center">
+          <li class="active waves-effect blue"><a>Begrüßung</a></li>
+          <li class="disabled"><a>Brainwriting</a></li>
+          <li class="disabled"><a>Themenvorschlag</a></li>
+          <li class="disabled"><a>Themenwahl</a></li>
+          <li class="disabled"><a>Priorisierung</a></li>
+          <li class="disabled"><a>Agenda</a></li>
+        </ul>
     </div>
-    <div class="col navarea">
-        <div class="row">
-	    <a class="btn-floating btn-large blue right" onclick="get_agenda()"><i class="right material-icons tooltipped" data-tooltip="Agenda">group_work</i></a>
+    <div class="row center vertbox1">
+      <div class="row center">
+	    <p>Bitte warten Sie, bis der Moderator den Workshop startet</p>
+      </div>
+      <div class="row center valign">
+        <div class="progress">
+          <div class="indeterminate"></div>
         </div>
-        <div class="row">
-            <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
-        </div>
+      </div>
     </div>
+  </div>
+</div>
+
+<!-- Modal Structure -->
+<div id="modal1" class="modal">
+  <div class="modal-content">
+    <h4>Weiter</h4>
+    <p>Der Workshop wurde gestartet</p>
+  </div>
+  <div class="modal-footer">
+      <a class="modal-close waves-effect blue btn" onclick="aurl('{% url 'cyka:personal_schedule_jostle' member.uuid %}')">OK</a>
+  </div>
 </div>

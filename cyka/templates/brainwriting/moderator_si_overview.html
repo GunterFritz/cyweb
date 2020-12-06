@@ -16,17 +16,17 @@
   <div class="col">
       <div>
         <ul class="pagination center">
-          <li class="active waves-effect blue"><a href="#!">Brainwriting</a></li>
-          <li class="waves-effect disabled"><a href="#!">Themenvorschlag</a></li>
-          <li class="waves-effect disabled"><a href="#!">Themenwahl</a></li>
-          <li class="waves-effect disabled"><a href="#!">Priorisierung</a></li>
-          <li class="waves-effect disabled"><a href="#!">Agenda</a></li>
+          <li class="active waves-effect blue"><a>Brainwriting</a></li>
+          <li class="waves-effect disabled"><a>Themenvorschlag</a></li>
+          <li class="waves-effect disabled"><a>Themenwahl</a></li>
+          <li class="waves-effect disabled"><a>Priorisierung</a></li>
+          <li class="waves-effect disabled"><a>Agenda</a></li>
         </ul>
       </div>
       <div class="row center">
         <a class="waves-effect waves-light btn-floating blue disabled"><i class="material-icons tooltipped" data-tooltip="Schritt zurücksetzen">fast_rewind</i></a>
 	<a onmouseover="this.style.cursor='pointer'" onclick="submit('O','{% url 'cyka:moderator_brainwriting' project.id %}', '{{step.step}}')"
-	     class="waves-effect waves-light btn-floating blue {% if step.status == 'O' %}disabled{% endif%}">
+	     class="waves-effect waves-light btn-floating red {% if step.status == 'O' %}disabled{% endif%}">
 		<i class="material-icons tooltipped" data-tooltip="Reset">replay</i>
         </a>
         <a onmouseover="this.style.cursor='pointer'" onclick="submit('S', '{% url 'cyka:moderator_brainwriting' project.id %}', '{{step.step}}')"

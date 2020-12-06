@@ -215,23 +215,14 @@ class Workflow:
 
     def get_json(proj):
         agenda = []
-        sections = Workflow.get(false)
+        sections = Workflow.get(proj, False)
 
         for sect in sections:
-            for s in sect:
+            for s in sect.steps:
                 elem = proj.workflowelement_set.all().filter(step=s.step)[0]
-                active = elem.status == 'S'
-                if s.step == '40' and elem.status == 'B':
-                    e = proj.workflowelement_set.all().filter(step=70)[0]
-                    if e.status == 'O':
-                        active = True
-                if s.step == '70' and elem.status == 'B':
-                    e = proj.workflowelement_set.all().filter(step=80)[0]
-                    if e.status == 'O':
-                        active = True
-                agenda.append({'sid':s.step, 'short': s.short, 'desc': s.desc, 'status': elem.status, 'active':active})
+                agenda.append({'sid':s.step, 'short': s.short, 'desc': s.desc, 'status': elem.status})
 
-        return agenda
+        return { 'steps': agenda }
 
     def get_json_step(proj, step_id):
         elem = proj.workflowelement_set.all().filter(step=step_id)[0]

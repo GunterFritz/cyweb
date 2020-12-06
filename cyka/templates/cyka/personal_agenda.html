@@ -183,24 +183,7 @@ function refreshButtons(){
         </div>
     </div>
     <div id="stepcontent" class="col" style="height: 100%; overflow: auto">
-      <div id="_appendHere" class="col actionarea" style="padding-right:80px">
-      </div>
-      <div id="_navbase" class="col right navarea">
-        <div class="row">
-	    <a class="btn-floating btn-large blue right" onclick="get_agenda()"><i class="right material-icons tooltipped" data-tooltip="Agenda">menu</i></a>
-        </div>
-        <div class="row">
-            <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
-        </div>
-        <div class="row">
-	    <a  id="_schedule" onclick="aurl('{% url 'cyka:personal_schedule_jostle' member.uuid %}')" class="btn-floating btn-large blue right"><i class="material-icons">content_copy</i></a>
-        </div>
-        <div class="row">
-            <a id="_priorization" class="btn-floating btn-large waves-effect waves-light right blue" onclick="aurl('{% url 'cyka:member_priorization' member.uuid %}?function=priority_list')"><i class="left material-icons secondary-content">assignment</i></a>
-        </div>
-        <div class="row">
-            <a id="_agenda" class="btn-floating btn-large waves-effect waves-light right blue" onclick="aurl('{% url 'cyka:member_priorization' member.uuid %}?function=agenda')"><i class="left material-icons secondary-content">group_work</i></a>
-        </div>
+      <div id="_appendHere" class="col actionarea" style="height: 100%">
       </div>
     </div>
 </div>
