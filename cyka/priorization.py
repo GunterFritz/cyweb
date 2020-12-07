@@ -20,6 +20,7 @@ GET: render page with all tables
 class Member(helpers.MemberRequest):
     def __init__(self, request, uuid):
         helpers.MemberRequest.__init__(self,request, uuid)
+        self.step = Workflow.get_step(self.member.proj, 90)
 
     def post(self):
         func = self.request.POST.get('function', '')
@@ -65,7 +66,7 @@ class Member(helpers.MemberRequest):
         
         #votes
         if func == 'agenda':
-            return self.renderAgenda()
+            return self.showAgenda()
         
         return self.renderPriority()
     
@@ -76,10 +77,11 @@ class Member(helpers.MemberRequest):
         return render(self.request, 'priorization/member_priority_list.html', {
             'project' : self.member.proj, 
             'member': self.member, 
+            'step': self.step, 
             'priority_list': prio
             })
     
-    def renderAgenda(self):
+    def showAgenda(self):
         if not self.member.proj.hasagenda:
             return None
 

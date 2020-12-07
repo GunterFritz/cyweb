@@ -50,26 +50,6 @@ function updateStep(){
   });
 }
 
-function updateStep2(){
-  $.ajax({
-      type: "GET",
-      url: '{% url 'cyka:get_json_step' %}?member={{member.uuid}}&step={{step.step}}',
-      complete: function (response) {
-	var obj = $.parseJSON(response.responseText);
-	if (obj.status != '{{step.status}}'){
-	    alert("Das Brainwriting wurde beendet, Sie können keine Eingaben mehr vornehmen");
-	    aurl('{% url 'cyka:personal_schedule_jostle' member.uuid %}');
-	}
-	if (obj.active == false){
-	    alert("Der nächste Schritt wurde gestartet");
-	    aurl('{% url 'cyka:personal_schedule_jostle' member.uuid %}');
-	}
-      }
-  });
-}
-
-var interval = null;
-
 function refreshStep(){
   tmp = setInterval(function() {
     updateStep();
@@ -77,13 +57,18 @@ function refreshStep(){
   refreshs.push(tmp);
 }
 
-function delete_card(){
-	if (confirm("Möchten Sie die Karte löschen?")){
-	    submit('true');
-	}
-}
 </script>
 {% endblock %}
+    <div class="row center vertbox0">
+        <ul class="pagination center">
+          <li class="disabled"><a>Begrüßung</a></li>
+          <li class="active blue lighten-4"><a>Brainwriting</a></li>
+          <li class="disabled"><a>Themenvorschlag</a></li>
+          <li class="disabled"><a>Themenwahl</a></li>
+          <li class="disabled"><a>Priorisierung</a></li>
+          <li class="disabled"><a>Agenda</a></li>
+        </ul>
+    </div>
 {% if not step.done and not all %}
 <div class="item card-panel mplanopen">
     <dmc-form><form method="POST" enctype="multipart/form-data" id="post-form">

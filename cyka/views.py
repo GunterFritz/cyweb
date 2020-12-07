@@ -424,25 +424,25 @@ def topicauction_join_asi(request, uuid):
     return asi.process()
 
 #asi overview and creating
-def topicauction_asi_overview(request, uuid):
-    #30, 70, 80
-    #brainwriting
-    member = helpers.get_member_by_uuid(request, uuid)
-    step = Workflow.getStep(member.proj, 30, self.request)
-    if step.status == 'S':
-        return personal_card(request, uuid)
-    
-    #problemjostle
-    step = Workflow.getStep(member.proj, 70, self.request)
-    step_t = Workflow.getStep(member.proj, 80, self.request)
-    if step.status == 'S' and step_t == 'O':
-        asio = ASIOverview(request, uuid)
-
-        return asio.process()
-    
-    asio = TopicAuction.ASIOverview(request, uuid)
-
-    return asio.process()
+#def topicauction_asi_overview(request, uuid):
+#    #30, 70, 80
+#    #brainwriting
+#    member = helpers.get_member_by_uuid(request, uuid)
+#    step = Workflow.getStep(member.proj, 30, self.request)
+#    if step.status == 'S':
+#        return personal_card(request, uuid)
+#    
+#    #problemjostle
+#    step = Workflow.getStep(member.proj, 70, self.request)
+#    step_t = Workflow.getStep(member.proj, 80, self.request)
+#    if step.status == 'S' and step_t == 'O':
+#        asio = ASIOverview(request, uuid)
+#
+#        return asio.process()
+#    
+#    asio = TopicAuction.ASIOverview(request, uuid)
+#
+#    return asio.process()
 
 #working on asi
 def join_table(request, uuid):
@@ -461,26 +461,39 @@ def personal_schedule_jostle(request, uuid):
     #30, 70, 80
     #brainwriting
     member = helpers.get_member_by_uuid(uuid)
-    step_b = Workflow.getStep(member.proj, 40, request)
-    step_p = Workflow.getStep(member.proj, 70, request)
-    step_t = Workflow.getStep(member.proj, 80, request)
+    step_bw = Workflow.getStep(member.proj, 40, request)
+    step_pj = Workflow.getStep(member.proj, 70, request)
+    step_ta = Workflow.getStep(member.proj, 80, request)
+    step_pr = Workflow.getStep(member.proj, 90, request)
     
-    if step_b.status == 'S':
-        return personal_card(request, uuid)
+    #Welcome
+    if step_bw.status == 'O':
+        return member_start(request, uuid)
     
-    if step_b.status == 'B' and step_p.status == 'O':
+    #Brainwriting
+    if step_bw.status != 'B' or step_pj.status == 'O':
         return personal_card(request, uuid)
     
     #problemjostle
-    if step_p.status == 'S' or step_p.status == 'B' and step_t.status == 'O':
+    if step_pj.status != 'B' or step_ta.status == 'O':
         asio = ASIOverview(request, uuid)
 
         return asio.process()
     
     #Topicacution
-    asio = TopicAuction.ASIOverview(request, uuid)
+    if step_ta.status != 'B' or step_pr.status == 'O':
+        asio = TopicAuction.ASIOverview(request, uuid)
 
-    return asio.process()
+        return asio.process()
+   
+    #Priorization
+    if step_pr.status != 'B':
+        return member_priorization(request, uuid);
+    
+    #Agenda
+    m = Priorization.Member(request, proj.id)
+    return m.showAgenda()
+
 
 @login_required
 def moderator_schedule_jostle(request):

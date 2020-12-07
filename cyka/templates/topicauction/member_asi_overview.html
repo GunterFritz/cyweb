@@ -37,16 +37,27 @@
 	    }
         }
     }
+
 function updateStep(){
   $.ajax({
       type: "GET",
-      url: '{% url 'cyka:get_json_step' %}?member={{member.uuid}}&step={{step.step}}',
+      url: '{% url 'cyka:get_json_step' %}?member={{member.uuid}}',
       complete: function (response) {
 	var obj = $.parseJSON(response.responseText);
-	if (obj.status != '{{step.status}}'){
-	    alert("Die Abstimmung wurde beendet, es können keine Stimmen mehr abgegeben werden");
-	    aurl('{% url 'cyka:personal_schedule_jostle' member.uuid %}');
-	}
+	var next = false;
+	var open = false;
+        $.each(obj.steps , function(index, val) {
+	  if (val.sid == {{step.step}} && val.status != '{{step.status}}'){
+            open = true;
+	  } else if (val.sid == {{step.step}} && val.status != 'O'){
+	    next = true;
+	  } else if (next && val.status != 'O'){
+            open = true;
+	  }
+        });
+	if(open){      
+	  $('#modal_step').modal('open');
+        }
       }
   });
 }
@@ -65,6 +76,7 @@ function refreshStep(){
     {% endif %}
     refreshStep();
     $('.tooltipped').tooltip({enterDelay: 1000});
+    $('.modal').modal({dismissible: false});
   });
     function leave(url){
         clearAll();
@@ -73,6 +85,16 @@ function refreshStep(){
 
 </script>
 {% endblock %}
+    <div class="row center vertbox0">
+        <ul class="pagination center">
+          <li class="disabled"><a>Begrüßung</a></li>
+          <li class="disabled"><a>Brainwriting</a></li>
+          <li class="disabled"><a>Themenvorschlag</a></li>
+          <li class="active blue lighten-4"><a>Themenwahl</a></li>
+          <li class="disabled"><a>Priorisierung</a></li>
+          <li class="disabled"><a>Agenda</a></li>
+        </ul>
+    </div>
 <div class="cardcontainer">
         {% for t in tables %}
             {% if t.progress == 100 %}
@@ -137,3 +159,18 @@ function refreshStep(){
             {% endfor %}
 	</div>
     {% endif %}
+
+<!-- Modal Structure -->
+<div id="modal_step" class="modal">
+  <div class="modal-content">
+    <h4>Weiter</h4>
+    {% if step.status == 'S' %}
+    <p>Die Abstimmung wurde beendet, es können keine Stimmen mehr abgegeben werden</p>
+    {% else %}
+    <p>Weiter zur nächsten Aktion</p>
+    {% endif %}
+  </div>
+  <div class="modal-footer">
+      <a class="modal-close waves-effect blue btn" onclick="aurl('{% url 'cyka:personal_schedule_jostle' member.uuid %}')">OK</a>
+  </div>
+</div>

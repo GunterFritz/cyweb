@@ -5,9 +5,9 @@
 <script>
   $(document).ready(function(){
     refreshStep();
-    //refreshAsi();
     refreshAsi();
     $('.tooltipped').tooltip({enterDelay: 1000});
+    $('.modal').modal({dismissible: false});
   });
   
   function createASI(name, id){
@@ -19,17 +19,23 @@
 function updateStep(){
   $.ajax({
       type: "GET",
-      url: '{% url 'cyka:get_json_step' %}?member={{member.uuid}}&step={{step.step}}',
+      url: '{% url 'cyka:get_json_step' %}?member={{member.uuid}}',
       complete: function (response) {
 	var obj = $.parseJSON(response.responseText);
-	if (obj.status != '{{step.status}}'){
-	    alert("Das Einreichen der Themenvorschläge wurde beendet. Sie können keine Themenvorschläge mehr einreichen oder unterstützen");
-	    aurl('{% url 'cyka:personal_schedule_jostle' member.uuid %}');
-	}
-	if (obj.active == false){
-	    alert("Die Themenwahl wurde gestartet");
-	    aurl('{% url 'cyka:personal_schedule_jostle' member.uuid %}');
-	}
+	var next = false;
+	var open = false;
+        $.each(obj.steps , function(index, val) {
+	  if (val.sid == {{step.step}} && val.status != '{{step.status}}'){
+            open = true;
+	  } else if (val.sid == {{step.step}} && val.status != 'O'){
+	    next = true;
+	  } else if (next && val.status != 'O'){
+            open = true;
+	  }
+        });
+	if(open){      
+	  $('#modal_step').modal('open');
+        }
       }
   });
 }
@@ -96,6 +102,16 @@ function refreshAsi(){
 
 </script>
 {% endblock %}
+    <div class="row center vertbox0">
+        <ul class="pagination center">
+          <li class="disabled"><a>Begrüßung</a></li>
+          <li class="disabled"><a>Brainwriting</a></li>
+          <li class="active blue lighten-4"><a>Themenvorschlag</a></li>
+          <li class="disabled"><a>Themenwahl</a></li>
+          <li class="disabled"><a>Priorisierung</a></li>
+          <li class="disabled"><a>Agenda</a></li>
+        </ul>
+    </div>
 <div id='_asi_container' class="cardcontainer">
         {% for t in tables %}
             {% if t.progress == 100 %}
@@ -155,3 +171,19 @@ function refreshAsi(){
   <div class="card-placeholder"></div>
   <div class="card-placeholder"></div>
 </div>
+
+<!-- Modal Structure -->
+<div id="modal_step" class="modal">
+  <div class="modal-content">
+    <h4>Weiter</h4>
+    {% if step.status == 'S' %}
+    <p>Das Einreichen von Themenvorschläge wurde beendet, es können keine weiteren Eingaben gemacht werden</p>
+    {% else %}
+    <p>Weiter zur nächsten Aktion</p>
+    {% endif %}
+  </div>
+  <div class="modal-footer">
+      <a class="modal-close waves-effect blue btn" onclick="aurl('{% url 'cyka:personal_schedule_jostle' member.uuid %}')">OK</a>
+  </div>
+</div>
+
