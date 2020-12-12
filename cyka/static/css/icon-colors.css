@@ -108,6 +108,12 @@ div.mplan {
     height: 190px;
 }
 
+div.vertcontainer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+}
+
 div.cardcontainer {
     display: flex;
     flex-wrap: wrap;
