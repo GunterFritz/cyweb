@@ -92,6 +92,36 @@
             $(where).html(response);
         }); 
     }
+function set_active_label(label){
+    $("#_brain_label").addClass("disabled");
+    $("#_topic_label").addClass("disabled");
+    $("#_vote_label").addClass("disabled");
+    $("#_prio_label").addClass("disabled");
+    $("#_agenda_label").addClass("disabled");
+    $(label).removeClass("disabled");
+}
+
+function activate_buttons(status){
+	if (status != 'O'){
+	    $('#_back_button').addClass('disabled');
+	    $('#_reset_button').removeClass('disabled');
+	    $('#_start_button').addClass('disabled');
+	} else {
+	    $('#_back_button').removeClass('disabled');
+	    $('#_reset_button').addClass('disabled');
+	    $('#_start_button').removeClass('disabled');
+	}
+	if (status == 'S'){
+	    $('#_stop_button').removeClass('disabled');
+	} else {
+	    $('#_stop_button').addClass('disabled');
+	}
+	if (status == 'B'){
+	    $('#_next_button').removeClass('disabled');
+	} else {
+	    $('#_next_button').addClass('disabled');
+	}
+}
     function get_agenda(){
 	$('.tooltipped').tooltip('close');
         aurl('{% url 'cyka:admin_jostle' project.id %}?function=agenda')
@@ -122,16 +152,16 @@
             }
         }
     });
+
 </script>
 {% endblock %}
 {% block content %}
 <div class="row" style="height: 100%" style="overflow: hidden">
     <div id="meetcontent" class="col" style="height: 100%; overflow: hidden">
-        <a class="btn-floating left waves-effect waves-light blue" style="position: absolute; margin-top: 5px; margin-left: 5px" onclick="resize()"><i class="left material-icons secondary-content">zoom_out_map</i></a>
         <div style="height: 100%;" id="jitsi-container">
         </div>
     </div>
-    <div id="stepcontent" class="col" style="height: 100%; overflow: auto">
+    <div id="stepcontent" class="col" style="height: 100%; overflow: auto; float: left">
       <div id="_appendHere" class="col actionarea" style="height: 100%">
       </div>
     </div>

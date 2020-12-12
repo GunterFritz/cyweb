@@ -63,6 +63,13 @@
     refreshs.push(tmp);
   }
   $(document).ready(function(){
+    $('#_back_button').attr('onclick',"aurl('{% url 'cyka:moderator_problemjostle' project.id %}')");
+    $('#_reset_button').attr('onclick',"submit('O','{% url 'cyka:moderator_topicauction' project.id %}', '{{step.step}}')");
+    $('#_start_button').attr('onclick',"submit('S', '{% url 'cyka:moderator_topicauction' project.id %}', '{{step.step}}')");
+    $('#_stop_button').attr('onclick',"submit('B', '{% url 'cyka:moderator_topicauction' project.id %}', '{{step.step}}')");
+    $('#_next_button').attr('onclick',"aurl('{% url 'cyka:moderator_priorization' project.id %}?function=member')");
+    set_active_label('#_vote_label');
+    activate_buttons('{{step.status}}');
     updateVotes('{{json_table}}')
     refreshVotes();
     refreshVotesMember();
@@ -76,34 +83,6 @@
 </script>
 {% endblock %}
 <div class="col actionarea">
-      <div>
-        <ul class="pagination center">
-          <li class="waves-effect disabled"><a href="#!">Brainwriting</a></li>
-          <li class="waves-effect disabled"><a href="#!">Themenvorschlag</a></li>
-          <li class="waves-effect active blue"><a href="#!">Themenwahl</a></li>
-          <li class="waves-effect disabled"><a href="#!">Priorisierung</a></li>
-          <li class="waves-effect disabled"><a href="#!">Agenda</a></li>
-        </ul>
-      </div>
-      <div class="row center">
-        <a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:moderator_problemjostle' project.id %}')"
-		class="waves-effect waves-light btn-floating blue {% if step.status != 'O' %}disabled{% endif%}"><i class="material-icons tooltipped" data-tooltip="Schritt zurücksetzen">fast_rewind</i>
-	</a>
-	<a onmouseover="this.style.cursor='pointer'" onclick="submit('O','{% url 'cyka:moderator_topicauction' project.id %}', '{{step.step}}')"
-	     class="waves-effect waves-light btn-floating red {% if step.status == 'O' %}disabled{% endif%}">
-		<i class="material-icons tooltipped" data-tooltip="Reset">replay</i>
-        </a>
-        <a onmouseover="this.style.cursor='pointer'" onclick="submit('S', '{% url 'cyka:moderator_topicauction' project.id %}', '{{step.step}}')"
-	     class="waves-effect waves-light btn-floating blue {% if step.status != 'O' %}disabled{% endif%}"><i class="material-icons tooltipped" data-tooltip="Starten">play_arrow</i>
-        </a>
-        <a onmouseover="this.style.cursor='pointer'" onclick="submit('B', '{% url 'cyka:moderator_topicauction' project.id %}', '{{step.step}}')"
-	     class="waves-effect waves-light btn-floating blue {% if step.status != 'S' %}disabled{% endif%}"><i class="material-icons tooltipped" data-tooltip="Stoppen">stop</i>
-        </a>
-        <a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:moderator_priorization' project.id %}?function=member')"
-	     class="waves-effect waves-light btn-floating blue {% if not created %}disabled{% endif%}">
-		<i class="material-icons tooltipped" data-tooltip="nächster Schritt">fast_forward</i>
-	</a>
-      </div>
     <div class="card">
     <ul class="tabs">
         <li class="tab col s3"><a class="active" href="#__topics">Themen</a></li>
@@ -133,9 +112,6 @@
 	  {% endfor %}
         </div>
       </div>
-    </div>
-    <div class="card-action">
-      <a class="btn btn-medium blue waves-effect" {% if step.status != 'B' or created %}disabled="true"{% endif %}  onclick="aurl('{% url 'cyka:moderator_topicauction' project.id %}?function=createtopics')">Themen übernehmen</a>
     </div>
     </div>
     <div id="__member">

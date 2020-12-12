@@ -176,6 +176,10 @@ class ModeratorScheduler(helpers.ModeratorRequest):
         if self.created and self.step.get_post_status(self.request) == 'O':
             self.proj.topic_set.all().delete()
         
+        if not self.created and self.step.get_post_status(self.request) == 'B':
+            self.step.post(self.request)
+            return self.createTopics()
+        
         self.step.post(self.request)
 
         return self.renderTable()

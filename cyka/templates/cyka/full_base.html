@@ -46,37 +46,56 @@
   </head>
   <body >
       <header>
-            {% block header %}
-            {% block topbar %}
-	    <div class="navbar-fixed">
-              <nav class="topbar">
-                <div class="nav-wrapper">
-                    <dmc-sidenav-trigger><a href="#" data-target="slide-out" class="sidenav-trigger">Menu<i class="material-icons">menu</i></a></dmc-sidenav-trigger>
-                    <div class="brand-logo">
-			<a href="#" class="brand-logo">Cyiko</a>
-                        {% block page_title %}{% endblock %}
-                    </div>
-                    <div>
-                    {% block topbar_links %}
-                        <ul id="nav-mobile" class="right hide-on-med-and-down">
-                    <li>
-			    <a href="{% url 'cyka:project_details' project.id %}" data-turbolinks="false">{{project.name}}<i class="material-icons left">home</i></a>
-                    </li>
-			    <li><a href="{% url 'cyka:project_list' %}" data-turbolinks="false">Workshops<i class="material-icons left">account_balance</i></a></li>
-			    <li><a href="{% url 'cyka:project_new' %}" data-turbolinks="false">Neuer Workshop<i class="material-icons left">add</i></a></li>
-                            {% if user.is_authenticated %}
-                            <li><a href="{% url 'cyka:logout'%}" data-turbolinks="false"><i class="material-icons right">exit_to_app</i>Logout</a></li>
-                            {% else %}
-                            <li><a href="{% url 'cyka:login'%}" data-turbolinks="false"><i class="material-icons right">lock_open</i>Login</a></li>
-                            {% endif %}
-                        </ul>
-                    {% endblock %}
-                    </div>
-                </div>
-            </nav>
-            </div>
-            {% endblock topbar %}
-            {% endblock header %}
+      <div class="grey lighten-3 valign-wrapper cardcontainer" style="width: 100%; opacity: 0.9;">
+        <ul style="padding-left: 20px">
+          <li style="display: inline">
+            <a class="hoverable valign btn-floating waves-effect waves-light blue" onclick="resize()">
+		  <i class="left material-icons secondary-content">zoom_out_map</i>
+	    </a>
+	  </li>
+          <li style="display: inline">
+            <a class="hoverable valign btn-floating waves-effect waves-light red" href="{% url 'cyka:project_details' project.id %}">
+		  <i class="left material-icons secondary-content">call_end</i>
+            </a>
+          </li>
+        </ul>
+        <div class="center-align valign-wrapper">
+          <ul class="pagination center center-align">
+            <li id="_brain_label"  class="disabled"><a>Brainwriting</a></li>
+            <li id="_topic_label"  class="disabled"><a>Themenvorschlag</a></li>
+            <li id="_vote_label"   class="disabled"><a>Themenwahl</a></li>
+            <li id="_prio_label"   class="disabled"><a>Priorisierung</a></li>
+            <li id="_agenda_label" class="disabled"><a>Agenda</a></li>
+          </ul>
+        </div>
+      <ul class="right" style="padding-right: 20px">
+        <li style="display: inline">
+            <a id="_back_button" class="hoverable waves-effect waves-light btn-floating blue disabled">
+		  <i class="material-icons tooltipped" data-tooltip="Schritt zurücksetzen">fast_rewind</i>
+	  </a>
+	</li>
+          <li style="display: inline">
+	    <a id="_reset_button" onmouseover="this.style.cursor='pointer'"
+	     class="hoverable waves-effect waves-light btn-floating red disabled">
+		<i class="material-icons tooltipped" data-tooltip="Reset">replay</i>
+        </a>
+	  </li>
+          <li style="display: inline">
+            <a id="_start_button" onmouseover="this.style.cursor='pointer'"
+	     class="hoverable waves-effect waves-light btn-floating blue disabled"><i class="material-icons tooltipped" data-tooltip="Starten">play_arrow</i>
+        </a>
+	  </li>
+          <li style="display: inline">
+            <a id="_stop_button" onmouseover="this.style.cursor='pointer'"
+	     class="hoverable waves-effect waves-light btn-floating blue disabled"><i class="material-icons tooltipped" data-tooltip="Stoppen">stop</i>
+        </a>
+	  </li>
+          <li style="display: inline">
+            <a id="_next_button" onmouseover="this.style.cursor='pointer'"
+	     class="hoverable waves-effect waves-light btn-floating blue disabled"><i class="material-icons tooltipped" data-tooltip="nächster Schritt">fast_forward</i></a>
+	</li>
+      </ul>
+    </div>
       </header>
 
       <main style="flex-grow: 1; overflow:hidden">

@@ -71,7 +71,7 @@ function add_asi(add, section, notsection, obj){
 
 function get_asi_html(name, table){
     url = '{% url 'cyka:personal_join_table' member.uuid %}' + '?table=' + table.id;
-    html = '<div id="' + name + '" class="item card-panel mplanopen blue lighten-5" onmouseover="this.style.cursor=\'pointer\'" onclick="aurl(\'' + url + '\')"><div class="progress" style="margin-top: -10px;"><div id="_progress_' + table.cardid + '" class="determinate" style="width: ' + table.progress + '%"></div></div><span class="black-text card-title" STYLE="font-size:16px">' + table.name + '</span><br/><span class="grey-text text-darken-2">' + table.desc + '</span></div>';
+    html = '<div id="' + name + '" class="item card-panel mplanopen blue lighten-5" onmouseover="this.style.cursor=\'pointer\'" onclick="aurl(\'' + url + '\')"><div class="progress blue lighten-3" style="margin-top: -10px;"><div id="_progress_' + table.cardid + '" class="determinate blue" style="width: ' + table.progress + '%"></div></div><span class="black-text card-title" STYLE="font-size:16px">' + table.name + '</span><br/><span class="grey-text text-darken-2">' + table.desc + '</span></div>';
     return html;
 }
          
@@ -94,6 +94,7 @@ function updateAsi(){
 }
 
 function refreshAsi(){
+  updateAsi();
   tmp = setInterval(function() {
     updateAsi();
   }, 2000);
@@ -117,7 +118,7 @@ function refreshAsi(){
             {% if t.progress == 100 %}
 	    <div id="_asi_{{t.table.card.id}}" class="item card-panel mplanopen blue lighten-5" onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:personal_join_table' member.uuid %}?table={{ t.table.id }}')">
 		    <div class="progress" style="margin-top: -10px;">
-		        <div id="_progress_{{t.table.card.id}}" class="determinate" style="width: {{t.progress}}%"></div>
+		        <div id="_progress_{{t.table.card.id}}" class="determinate blue" style="width: {{t.progress}}%"></div>
                     </div>
 		    <span class="black-text card-title" STYLE="font-size:16px">{{t.table.card.heading}}</span><br/>
 		    <span class="grey-text text-darken-2">{{t.table.card.desc}}</span>
@@ -136,7 +137,7 @@ function refreshAsi(){
             {% if t.progress != 100 %}
 	    <div id="_vasi_{{t.table.card.id}}" class="item card-panel mplanopen blue lighten-5" onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:personal_join_table' member.uuid %}?table={{ t.table.id }}')">
 		    <div class="progress" style="margin-top: -10px;">
-		        <div id="_progress_{{t.table.card.id}}" class="determinate" style="width: {{t.progress}}%"></div>
+		        <div id="_progress_{{t.table.card.id}}" class="determinate blue" style="width: {{t.progress}}%"></div>
                     </div>
 		    <span class="black-text card-title" STYLE="font-size:16px">{{t.table.card.heading}}</span><br/>
 		    <span class="grey-text text-darken-2">{{t.table.card.desc}}</span>

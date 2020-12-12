@@ -4,6 +4,13 @@
 {% block javascript %}
 <script>
   $(document).ready(function(){
+    $('#_back_button').attr('onclick',"aurl('{% url 'cyka:moderator_brainwriting' project.id %}?function=si')");
+    $('#_reset_button').attr('onclick',"submit('O','{% url 'cyka:moderator_problemjostle' project.id %}', '{{step.step}}')");
+    $('#_start_button').attr('onclick',"submit('S', '{% url 'cyka:moderator_problemjostle' project.id %}', '{{step.step}}')");
+    $('#_stop_button').attr('onclick',"submit('B', '{% url 'cyka:moderator_problemjostle' project.id %}', '{{step.step}}')");
+    $('#_next_button').attr('onclick',"aurl('{% url 'cyka:moderator_topicauction' project.id %}?function=table')");
+    set_active_label('#_topic_label');
+    activate_buttons('{{step.status}}');
     refreshAsi();
     $('.tooltipped').tooltip({enterDelay: 1000});
   });
@@ -39,7 +46,7 @@ function add_asi(add, section, notsection, obj){
 
 function get_asi_html(name, table){
     url = '{% url 'cyka:moderator_problemjostle' project.id %}' + '?function=join&table=' + table.id;
-    html = '<div id="' + name + '" class="item card-panel mplanopen blue lighten-5" onmouseover="this.style.cursor=\'pointer\'" onclick="aurl(\'' + url + '\')"><div class="progress" style="margin-top: -10px;"><div id="_progress_' + table.cardid + '" class="determinate" style="width: ' + table.progress + '%"></div></div><span class="black-text card-title" STYLE="font-size:16px">' + table.name + '</span><br/><span class="grey-text text-darken-2">' + table.desc + '</span></div>';
+    html = '<div id="' + name + '" class="hoverable item card-panel mplanopen blue lighten-5" onmouseover="this.style.cursor=\'pointer\'" onclick="aurl(\'' + url + '\')"><div class="progress blue lighten-3" style="margin-top: -10px;"><div id="_progress_' + table.cardid + '" class="determinate blue" style="width: ' + table.progress + '%"></div></div><span class="black-text card-title" STYLE="font-size:16px">' + table.name + '</span><br/><span class="grey-text text-darken-2">' + table.desc + '</span></div>';
     return html;
 }
          
@@ -61,6 +68,7 @@ function updateAsi(){
 }
 
 function refreshAsi(){
+  updateAsi();
   tmp = setInterval(function() {
     updateAsi();
   }, 2000);
@@ -70,44 +78,15 @@ function refreshAsi(){
 </script>
 {% endblock %}
   <div class="col">
-      <div>
-        <ul class="pagination center">
-          <li class="waves-effect disabled"><a href="#!">Brainwriting</a></li>
-          <li class="waves-effect active blue"><a href="#!">Themenvorschlag</a></li>
-          <li class="waves-effect disabled"><a href="#!">Themenwahl</a></li>
-          <li class="waves-effect disabled"><a href="#!">Priorisierung</a></li>
-          <li class="waves-effect disabled"><a href="#!">Agenda</a></li>
-        </ul>
-      </div>
-      <div class="row center">
-        <a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:moderator_brainwriting' project.id %}?function=si')"
-		class="waves-effect waves-light btn-floating blue {% if step.status != 'O' %}disabled{% endif%}"><i class="material-icons tooltipped" data-tooltip="Schritt zurücksetzen">fast_rewind</i>
-	</a>
-	<a onmouseover="this.style.cursor='pointer'" onclick="submit('O','{% url 'cyka:moderator_problemjostle' project.id %}', '{{step.step}}')"
-	     class="waves-effect waves-light btn-floating red {% if step.status == 'O' %}disabled{% endif%}">
-		<i class="material-icons tooltipped" data-tooltip="Reset">replay</i>
-        </a>
-	<a onmouseover="this.style.cursor='pointer'" onclick="submit('S', '{% url 'cyka:moderator_problemjostle' project.id %}', '{{step.step}}')"
-	     class="waves-effect waves-light btn-floating blue {% if step.status != 'O' %}disabled{% endif%}"><i class="material-icons tooltipped" data-tooltip="Starten">play_arrow</i>
-        </a>
-	<a onmouseover="this.style.cursor='pointer'" onclick="submit('B', '{% url 'cyka:moderator_problemjostle' project.id %}', '{{step.step}}')"
-	     class="waves-effect waves-light btn-floating blue {% if step.status != 'S' %}disabled{% endif%}">
-		<i class="material-icons tooltipped" data-tooltip="Stoppen">stop</i>
-        </a>
-        <a onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:moderator_topicauction' project.id %}?function=table')"
-	     class="waves-effect waves-light btn-floating blue {% if step.status != 'B' %}disabled{% endif%}">
-		<i class="material-icons tooltipped" data-tooltip="nächster Schritt">fast_forward</i>
-	</a>
-      </div>
 <div id='_asi_container' class="cardcontainer">
         {% for t in tables %}
             {% if t.progress == 100 %}
-	    <div id="_asi_{{t.table.card.id}}" class="item card-panel mplanopen blue lighten-5" onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:moderator_problemjostle' project.id %}?table={{t.table.id}}&function=join')">
+	    <div id="_asi_{{t.table.card.id}}" class="hoverable item card-panel mplanopen blue lighten-2" onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:moderator_problemjostle' project.id %}?table={{t.table.id}}&function=join')">
 		    <div class="progress" style="margin-top: -10px;">
-		        <div id="_progress_{{t.table.card.id}}" class="determinate" style="width: {{t.progress}}%"></div>
+		        <div id="_progress_{{t.table.card.id}}" class="determinate blue" style="width: {{t.progress}}%"></div>
                     </div>
 		    <span class="black-text card-title" STYLE="font-size:16px">{{t.table.card.heading}}</span><br/>
-		    <span class="grey-text text-darken-2">{{t.table.card.desc}}</span>
+		    <span class="black-text text-darken-2">{{t.table.card.desc}}</span>
             </div>
             {% endif %}
 	{% endfor %}
@@ -122,8 +101,8 @@ function refreshAsi(){
         {% for t in tables %}
             {% if t.progress != 100 %}
 	    <div id="_vasi_{{t.table.card.id}}" class="item card-panel mplanopen blue lighten-5" onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:moderator_problemjostle' project.id %}?table={{t.table.id}}&function=join')">
-		    <div class="progress" style="margin-top: -10px;">
-		        <div id="_progress_{{t.table.card.id}}" class="determinate" style="width: {{t.progress}}%"></div>
+		    <div class="progress blue lighten-3" style="margin-top: -10px;">
+		        <div id="_progress_{{t.table.card.id}}" class="determinate blue" style="width: {{t.progress}}%"></div>
                     </div>
 		    <span class="black-text card-title" STYLE="font-size:16px">{{t.table.card.heading}}</span><br/>
 		    <span class="grey-text text-darken-2">{{t.table.card.desc}}</span>
