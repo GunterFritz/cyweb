@@ -70,6 +70,7 @@ function sendOrder(d){
 $(document).ready(function(){
     $('.tooltipped').tooltip({enterDelay: 1000});
     $('.modal').modal({dismissible: false});
+    set_active_label('#_prio_label');
     refreshStep();
 });
 
@@ -110,16 +111,6 @@ function send_sorting() {
 
 </script>
 {% endblock %}
-    <div class="row center vertbox0">
-        <ul class="pagination center">
-          <li class="disabled"><a>Begrüßung</a></li>
-          <li class="disabled"><a>Brainwriting</a></li>
-          <li class="disabled"><a>Themenvorschlag</a></li>
-          <li class="disabled"><a>Themenwahl</a></li>
-          <li class="active blue lighten-4"><a>Priorisierung</a></li>
-          <li class="disabled"><a>Agenda</a></li>
-        </ul>
-    </div>
     <div class="col actionarea">
         <div id="themen" >
             <div class="card">

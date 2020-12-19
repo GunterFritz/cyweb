@@ -28,20 +28,10 @@
     refreshs.push(tmp)
   }
   $(document).ready(function(){
-    small();
     updateVotes('{{ json_votes }}');
     refreshVotes();
     $('.tooltipped').tooltip({enterDelay: 1000});
   });
-    function aurl2(myurl, where) {
-        $.ajax({
-            type: "GET",
-		url: myurl,
-        })
-        .done(function(response) {
-            $(where).html(response);
-        }); 
-    }
 </script>
 {% endblock %}
 {% block content %}

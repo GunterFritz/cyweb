@@ -56,6 +56,7 @@ class AgreedStatementImportance(helpers.MemberRequest):
             'step':self.step,
             'asi': HTMLAsi(self.table, 0),
             'table': self.table, 
+            'step': self.step,
             'votes':range(v),
             'json_votes':SafeString(json.dumps(data))
             })

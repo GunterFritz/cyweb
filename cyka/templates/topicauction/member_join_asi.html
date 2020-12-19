@@ -68,13 +68,23 @@
 function updateStep(){
   $.ajax({
       type: "GET",
-      url: '{% url 'cyka:get_json_step' %}?member={{member.uuid}}&step={{step.step}}',
+      url: '{% url 'cyka:get_json_step' %}?member={{member.uuid}}',
       complete: function (response) {
 	var obj = $.parseJSON(response.responseText);
-	if (obj.status != '{{step.status}}'){
-	    alert("Die Abstimmung wurde beendet, es können keine Stimmen mehr abgegeben werden");
-	    leave('{% url 'cyka:personal_schedule_jostle' member.uuid %}');
-	}
+	var next = false;
+	var open = false;
+        $.each(obj.steps , function(index, val) {
+	  if (val.sid == {{step.step}} && val.status != '{{step.status}}'){
+            open = true;
+	  } else if (val.sid == {{step.step}} && val.status != 'O'){
+	    next = true;
+	  } else if (next && val.status != 'O'){
+            open = true;
+	  }
+        });
+	if(open){
+	  $('#modal_step').modal('open');
+        }
       }
   });
 }
@@ -87,27 +97,38 @@ function refreshStep(){
 }
 
   $(document).ready(function(){
-    $("#_navbase").hide();
+    $('#_right_nav').append('<ul>' + get_buttons() + '</ul>');
     {% if step.status == 'S' %}
     updateVotes('{{ json_votes }}');
     refreshVotes();
-    refreshStep();
     {% endif %}
-    $('.tooltipped').tooltip({enterDelay: 1000});
-    });
-    function aurl2(myurl, where) {
-        $.ajax({
-            type: "GET",
-		url: myurl,
-        })
-        .done(function(response) {
-            $(where).html(response);
-        }); 
-    }
+    refreshStep();
+    $('.modal').modal({dismissible: false});
+    //$('.tooltipped').tooltip({enterDelay: 1000});
+  });
     function leave(url){
-        $("#_navbase").show(0);
+        $('#_right_nav').empty();
         aurl(url);
-    }   
+    }
+
+function get_buttons(){
+        html = '<li style="display: inline">' +
+                  '<a class="btn-floating waves-effect waves-light red" style="margin-right: 5px"' +
+		    'onclick="leave(\'{% url 'cyka:personal_schedule_jostle' member.uuid %}\')">' + 
+		    '<i class="right material-icons tooltipped" data-tooltip="Verlassen">exit_to_app</i></a>' +
+               '</li>' +
+               '<li style="display: inline">' +
+		  '<a id="_plus-btn" style="margin-right: 5px" class="btn-floating waves-effect waves-light blue {% if step.status != 'S' %}disabled{% endif %}"' +
+		    'onclick="submit(\'plus\')">' + 
+		    '<i class="material-icons tooltipped" data-tooltip="Stimme abgeben">add</i></a>' +
+               '</li>' +
+               '<li style="display: inline">' +
+                 '<a id="_minus-btn" style="margin-right: 5px" class="btn-floating waves-effect waves-light blue {% if step.status != 'S' %}disabled{% endif %}"' +
+		    'onclick="submit(\'minus\')">' + 
+		    '<i class="material-icons tooltipped" data-tooltip="Verlassen">remove</i></a>' +
+               '</li>'; 
+	return html;
+}
 </script>
 {% endblock %}
 {% block content %}
@@ -139,18 +160,6 @@ function refreshStep(){
 </div>
     </div>
     <div class="col navarea">
-        <div class="row">
-            <a class="btn-floating waves-effect waves-light btn-large red right" onclick="leave('{% url 'cyka:personal_schedule_jostle' member.uuid %}')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">exit_to_app</i></a>
-        </div>
-        <div class="row">
-            <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
-        </div>
-        <div id="_plus" class="row">
-		<a id="_plus-btn" class="btn-floating waves-effect waves-light btn-large blue right {% if step.status != 'S' %}disabled{% endif %}" onclick="submit('plus')"><i class="right material-icons tooltipped" data-tooltip="Stimme abgeben">add</i></a>
-        </div>
-        <div id="_minus" class="row">
-            <a id="_minus-btn" class="btn-floating waves-effect waves-light btn-large blue right {% if step.status != 'S' %}disabled{% endif %}" onclick="submit('minus')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">remove</i></a>
-        </div>
     </div>
     {% if step.status == 'S' %}
         <div id="_votes" class="row navarea bottom">
@@ -159,4 +168,19 @@ function refreshStep(){
             {% endfor %}
 	</div>
     {% endif %}
+
+<!-- Modal Structure -->
+<div id="modal_step" class="modal">
+  <div class="modal-content">
+    <h4>Weiter</h4>
+    {% if step.status == 'S' %}
+    <p>Die Abstimmung wurde beendet</p>
+    {% else %}
+    <p>Weiter zur nächsten Aktion</p>
+    {% endif %}
+  </div>
+  <div class="modal-footer">
+      <a class="modal-close waves-effect blue btn" onclick="leave('{% url 'cyka:personal_schedule_jostle' member.uuid %}')">OK</a>
+  </div>
+</div>
 {% endblock %}
