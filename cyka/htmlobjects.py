@@ -246,6 +246,16 @@ class HTMLMember:
         
         return PrioList(self.member)
         return self.member.priority_set.all().order_by('priority')
+
+
+    """
+    creates a random priority list and saves it directly
+    """
+    def get_and_finish(self):
+        self.get_priority_list()
+        self.member.status = True
+        self.member.save()
+        return PrioList(self.member)
    
     """
     create a random order for priority list

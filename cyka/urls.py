@@ -114,6 +114,8 @@ urlpatterns = [
         url(r'^personal_edit/(?P<uuid>[0-9A-Za-z\-]+)$', views.personal_edit, name="personal_edit"),
 	# ex: /cyka/personal_edit_up/5/member/edit
 	url(r'^(?P<uuid>[0-9A-Za-z\-]+)/personal/edit/up/(?P<priority>[0-9]+)$', views.personal_edit_up, name="personal_edit_up"),
+        #debugging
+        url(r'^debug/proj/save_all_priorities/$', views.save_all_priorities, name="save_all_priorities"),
 ]
 
 #Add Django site authentication urls (for login, logout, password management)

@@ -1,7 +1,7 @@
 {% block javascript %}
 <script>
   $(document).ready(function(){
-    set_active_label('#_prio_label');
+    set_active_label('#_agenda_label');
     $('.tooltipped').tooltip({enterDelay: 1000});
   });
 </script>
@@ -9,7 +9,9 @@
 <div class="col actionarea">
 {% for a in agenda %}
     <div class="row cardcontainer">
-	<div class="col card mplanopen" onmouseover="this.style.cursor='pointer'" onclick="leave('{% url 'cyka:member_round' member.uuid %}?topic={{ a.0.topic.id }}')">
+	<div class="col card mplanopen hoverable" 
+		onmouseover="this.style.cursor='pointer'" 
+		onclick="aurl('{% url 'cyka:member_round' member.uuid %}?topic={{ a.0.topic.id }}')">
             <div class="card-content black-text">
 	        <span class="card-title grey-text text-darken-2">{{ a.0.topic.name }} - {{ a.0.topic.color }}<i class="right material-icons icon-{{ a.0.topic.color }}">brightness_1</i></span>
             	{% for p in a.0.person %}
@@ -17,7 +19,9 @@
             	{% endfor %}
             </div>
         </div>
-	<div class="col card mplanopen" onmouseover="this.style.cursor='pointer'" onclick="leave('{% url 'cyka:member_round' member.uuid %}?topic={{ a.1.topic.id }}')">
+	<div class="col card mplanopen hoverable" 
+		onmouseover="this.style.cursor='pointer'" 
+		onclick="aurl('{% url 'cyka:member_round' member.uuid %}?topic={{ a.1.topic.id }}')">
             <div class="card-content black-text">
 	        <span class="card-title grey-text text-darken-2">{{ a.1.topic.name }} - {{ a.1.topic.color }}<i class="right material-icons icon-{{ a.1.topic.color }}">brightness_1</i></span>
             	{% for p in a.1.person %}

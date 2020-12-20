@@ -1,106 +1,34 @@
-<!DOCTYPE html>
-{% load static %}
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://unpkg.com/material-components-web@v4.0.0/dist/material-components-web.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="{% static 'css/icon-colors.css' %}">
-    <script src="https://unpkg.com/material-components-web@v4.0.0/dist/material-components-web.min.js"></script>
+{% extends 'cyka/project_base.html' %}
 
-    <title>{% block title %}Cyiko Workshops{% endblock %}</title>
-
-    {% block head %}
-    {% include 'material/includes/material_css.html' %}
-      {% block js %}
-      <script src="{% static 'material/js/jquery.js' %}"></script>
-      {% include 'material/includes/material_js.html' %}
-      <script src="{% static 'material/js/turbolinks.js' %}"></script>
-      {% block extrajs %}{% endblock %}
-      {% endblock %}
-      <style type="text/css">
-	.vcenter {
-          vertical-align: middle;
-        }
-	.brand-logo {
-          margin-left: 5px;
-        }
-	.content {
-	  padding-left: 250px;
-          height: 100%;
-          width: 100%;
-        }
-	.sidenav{
-          top: 65px;
-          width: 250px;
-          height: 100%;
-        }
-      </style>
-
-    <style type="text/css">
-      html, body {
-          background: #FFF;
-      }
-    </style>
-    {% block extrahead %}{% endblock %}
-    {% endblock %}
-  </head>
-<div class="box">
-
-  <div class="row header">
-
-    <p><b>header</b>
-
-      <br />
-
-      <br />(sized to content)</p>
-
-  </div>
-
-  <div class="row content">
-
-    <p>
-
-      <b>content</b>
-{% block content %}
-    <div class="row valign change-form">
-        <div class="col s12 m8 offset-m2 l8 offset-l2">
-            {% for section in workflow %}
-            <div class="card">
-                <div class="card-content"><script>var counter = 0;</script>
-		    <span class="card-title grey-text text-darken-2">{{section.name}}</span>
-		    <div class="collection">
-                    {% for step in section.steps %}
-		      <a href="{% url step.link project.id %}" data-turbolinks="false" class="collection-item avatar">
-			 <i class="material-icons circle {% if step.done %}blue{% endif %}">{{step.icon}}</i>
-                         <span class="title">{{step.short}}</span>
-                         <p class="listel">{{step.desc}}</p>
-			 </i><i class="material-icons right secondary-content">{% if step.done %}done{% else %}close{% endif %}</i>
-		      </a>
-		      {% endfor %}
-                    </div>
-                </div>
-                <div class="card-action">
-                {% block actions %}
-                {% endblock %}
-                </div>
-            </div>
-	   {% endfor %}
-        </div>
-    </div>
+{% block extrahead %}
+</style>
 {% endblock %}
 
+{% block javascript %}
+<script>
+function execute(myurl) {
+    $.ajax({
+        type: "GET",
+        url: myurl,
+    })
+}
+</script>
+{% endblock %}
 
-    </p>
-
+{% block content %}
+<div class="row valign">
+  <div class="col s12 m8 offset-m2 l8 offset-l2">
+    <div class="card">
+        <div class="card-content">
+            <span class="card-title grey-text text-darken-2">Allen Teilnehmern Themen zuordnen</span>
+        </div>
+        <div class="card-action">
+        <div class="right-align">
+            <a id="_start_button" onmouseover="this.style.cursor='pointer'"
+				  onclick="execute('{% url 'cyka:save_all_priorities' %}?project={{project.id}}')"
+	     class="hoverable waves-effect waves-light btn blue">Zuordnen</a>
+        </div>
+    </div>
   </div>
-
-  <div class="row footer">
-
-    <p><b>footer</b> (fixed height)</p>
-
-  </div>
-
 </div>
+{% endblock %}

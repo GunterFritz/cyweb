@@ -468,6 +468,7 @@ def personal_schedule_jostle(request, uuid):
     
     #Welcome
     if step_bw.status == 'O':
+        print("Welcome")
         return member_start(request, uuid)
     
     #Brainwriting
@@ -491,7 +492,7 @@ def personal_schedule_jostle(request, uuid):
         return member_priorization(request, uuid);
     
     #Agenda
-    m = Priorization.Member(request, proj.id)
+    m = Priorization.Member(request, uuid)
     return m.showAgenda()
 
 
@@ -615,6 +616,16 @@ def get_json_proj(request):
     return JsonResponse(project, safe=False)
     
 #dev only
+@login_required
+def save_all_priorities(request):
+    project_id = request.GET.get('project', '')
+    proj = get_project(request, project_id)
+    for m in proj.member_set.all().filter(mtype='M'):
+        HTMLMember(m).get_and_finish()
+    
+    return JsonResponse({}, safe=False)
+
+
 @login_required
 def moderator_delete_asi(request, project_id):
     asi = request.GET.get('asi', '')

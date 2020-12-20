@@ -19,14 +19,11 @@
 </script>
 {% endblock %}
 {% block content %}
-    <div id="_pad" class="col actionarea">
+    <div id="_pad" class="col actionarea vertcontainer" style="padding-right: 50px;">
     </div>
     <div class="col navarea right">
         <div class="row">
-	    <a class="btn-floating btn-large red right" onclick="leave('{% url 'cyka:member_priorization' member.uuid %}?function=agenda')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">exit_to_app</i></a>
-        </div>
-        <div class="row">
-            <a class="btn-floating btn-large waves-effect waves-light right blue" onclick="resize()"><i class="left material-icons secondary-content">code</i></a>
+	    <a class="btn-floating btn red right" onclick="leave('{% url 'cyka:member_priorization' member.uuid %}?function=agenda')"><i class="right material-icons tooltipped" data-tooltip="Verlassen">exit_to_app</i></a>
         </div>
     </div>
 {% endblock %}

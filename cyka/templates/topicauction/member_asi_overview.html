@@ -85,10 +85,10 @@ function refreshStep(){
 <div class="cardcontainer">
         {% for t in tables %}
             {% if t.progress == 100 %}
-	    <div class="item card-panel mplanopen blue lighten-5" onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:topicauction_join_asi' member.uuid %}?table={{ t.table.id }}')" style="display:flex; flex-direction: column;">
+	    <div class="item hoverable card-panel mplanopen blue lighten-3" onmouseover="this.style.cursor='pointer'" onclick="aurl('{% url 'cyka:topicauction_join_asi' member.uuid %}?table={{ t.table.id }}')" style="display:flex; flex-direction: column;">
                 <div style="flex-grow: 1;">
 		    <span class="black-text card-title" STYLE="font-size:16px">{{t.table.card.heading}}</span><br/>
-		    <span class="grey-text text-darken-2">{{t.table.card.desc}}</span>
+		    <span class="grey-text text-darken-4">{{t.table.card.desc}}</span>
                 </div>
                 <div style="margin-bottom: -15px;">
 		    <p class="icon-text" style="margin-bottom: 0px;"><i class="material-icons icon-blue icon-text">fiber_manual_record</i>(<span id="_vote_{{t.table.id}}">{{t.votes}}</span>)</p>

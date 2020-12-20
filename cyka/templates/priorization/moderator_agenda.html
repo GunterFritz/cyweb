@@ -15,7 +15,7 @@
     $('#_stop_button').addClass('disabled');
     $('#_next_button').attr('onclick',"");
     $('#_next_button').addClass('disabled');
-    set_active_label('#_prio_label');
+    set_active_label('#_agenda_label');
     //activate_buttons('{{step.status}}');
     $('.tooltipped').tooltip({enterDelay: 1000});
   });
@@ -31,7 +31,7 @@
 {% for a in agenda %}
     <div class="row">
         <a onmouseover="this.style.cursor='pointer'" onclick="leave('{% url 'cyka:moderator_round' project.id %}?topic={{ a.0.topic.id }}')">
-	<div class="col card mplan">
+	<div class="col card mplan hoverable">
             <div class="card-content black-text">
 	        <span class="card-title grey-text text-darken-2">{{ a.0.topic.name }}<i class="right material-icons icon-{{ a.0.topic.color }}">brightness_1</i></span>
             	{% for p in a.0.person %}
@@ -41,7 +41,7 @@
         </div>
 	</a>
         <a onmouseover="this.style.cursor='pointer'" onclick="leave('{% url 'cyka:moderator_round' project.id %}?topic={{ a.1.topic.id }}')">
-	<div class="col card mplan">
+	<div class="col card mplan hoverable">
             <div class="card-content black-text">
 	        <span class="card-title grey-text text-darken-2">{{ a.1.topic.name }}<i class="right material-icons icon-{{ a.1.topic.color }}">brightness_1</i></span>
             	{% for p in a.1.person %}
