@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://unpkg.com/material-components-web@v4.0.0/dist/material-components-web.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="{% static 'css/icon-colors.css' %}">
+    <link rel="stylesheet" href="{% static 'css/iframe.css' %}">
+    <script src="https://unpkg.com/material-components-web@v4.0.0/dist/material-components-web.min.js"></script>
+
+    <title>{% block title %}Cyiko Workshops{% endblock %}</title>
+
+    {% block head %}
+    {% include 'material/includes/material_css.html' %}
+      {% block js %}
+      <script src="{% static 'material/js/jquery.js' %}"></script>
+      {% include 'material/includes/material_js.html' %}
+      <script src="{% static 'material/js/turbolinks.js' %}"></script>
+      {% block extrajs %}{% endblock %}
+      {% endblock %}
+      <style type="text/css">
+	.vcenter {
+          vertical-align: middle;
+        }
+	.hright {
+          margin-right: 5px;
+        }
+	.brand-logo {
+          margin-left: 5px;
+        }
+	.content {
+          height: 100%;
+          width: 100%;
+        }
+	.sidenav{
+          top: 65px;
+          width: 250px;
+        }
+      </style>
+
+    <style type="text/css">
+      html, body {
+          background: #FFF;
+	  display: flex;
+  	  flex-flow: column;
+          height: 100%;
+      }
+    </style>
+    {% block extrahead %}{% endblock %}
+    {% endblock %}
+  </head>
+  <body>
+      <header>
+      <div class="grey lighten-3 valign-wrapper cardcontainer" style="width: 100%; opacity: 0.9;">
+        <ul style="padding-left: 20px">
+          <li style="display: inline">
+            <a id="_resize_button" class="hoverable valign btn-floating waves-effect waves-light blue" onclick="resize()">
+		  <i class="left material-icons secondary-content">zoom_out_map</i>
+	    </a>
+	  </li>
+          <li style="display: inline">
+            <a class="hoverable valign btn-floating waves-effect waves-light red" href="{% url 'cyka:project_details' project.id %}">
+		  <i class="left material-icons secondary-content">call_end</i>
+            </a>
+          </li>
+        </ul>
+        <div class="center-align valign-wrapper">
+          <ul class="pagination center center-align">
+            <li id="_brain_label"  class="disabled"><a>Brainwriting</a></li>
+            <li id="_topic_label"  class="disabled"><a>Themenvorschlag</a></li>
+            <li id="_vote_label"   class="disabled"><a>Themenwahl</a></li>
+            <li id="_prio_label"   class="disabled"><a>Priorisierung</a></li>
+            <li id="_agenda_label" class="disabled"><a>Agenda</a></li>
+          </ul>
+        </div>
+        <div id="_right_nav" class="right valign" style="padding-right: 20px">
+        </div>
+      </div>
+      </header>
+
+      <main style="flex-grow: 1; overflow:hidden">
+      {% block main %}
+      <div style="height: 100%">
+          {% block main_content %}
+          <div class="content">
+          {% block content %}{% endblock %}
+          </div>
+          {% endblock main_content %}
+      </div>
+      {% endblock main %}
+      </main>
+      {% block javascript %}{% endblock %}
+  </body>
+</html>
