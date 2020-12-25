@@ -15,7 +15,10 @@
             <div class="card-content black-text">
 	        <span class="card-title grey-text text-darken-2">{{ a.0.topic.name }} - {{ a.0.topic.color }}<i class="right material-icons icon-{{ a.0.topic.color }}">brightness_1</i></span>
             	{% for p in a.0.person %}
-		<p>{{ p.name }} ({{p.priority}})</p>
+		    <p>{{ p.name }} ({{p.priority}})</p>
+            	{% endfor %}
+            	{% for p in a.0.critics %}
+		    <p class="grey-text">{{ p.name }} (Kritiker)</p>
             	{% endfor %}
             </div>
         </div>
@@ -25,7 +28,10 @@
             <div class="card-content black-text">
 	        <span class="card-title grey-text text-darken-2">{{ a.1.topic.name }} - {{ a.1.topic.color }}<i class="right material-icons icon-{{ a.1.topic.color }}">brightness_1</i></span>
             	{% for p in a.1.person %}
-		<p>{{ p.name }} ({{p.priority}})</p>
+		    <p>{{ p.name }} ({{p.priority}})</p>
+            	{% endfor %}
+            	{% for p in a.1.critics %}
+		    <p class="grey-text">{{ p.name }} (Kritiker)</p>
             	{% endfor %}
             </div>
         </div>

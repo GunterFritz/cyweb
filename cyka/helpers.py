@@ -75,10 +75,13 @@ class HtmlTopic:
     def __init__(self, db):
         self.topic = db
         self.person = []
-        assignments =  db.assignment_set.all()
-
-        for a in assignments:
+        self.critics = []
+        
+        for a in db.assignment_set.all().filter(atype='M'):
             self.person.append(HtmlPerson(a))
+
+        for a in db.assignment_set.all().filter(atype='C'):
+            self.critics.append(HtmlPerson(a))
 
 class Agenda:
     def __init__(self, proj):
