@@ -80,8 +80,14 @@ class MemberJoinTopic(helpers.MemberRequest):
     """
     def viewPad(self):
         pad = Pad(self.table.uuid, self.member.name)
-        mem = self.topic.assignment_set.all()
-        return render(self.request, 'round/pad.html', {'table': self.table, "etherpad": pad, "assign": mem })
+        mem = self.topic.assignment_set.all().filter(atype = 'M')
+        critics = self.topic.assignment_set.all().filter(atype = 'C')
+        return render(self.request, 'round/pad.html', {
+            'table': self.table, 
+            "etherpad": pad, 
+            "critics": critics, 
+            "assign": mem 
+            })
 
 class ModeratorJoinTopic(helpers.ModeratorRequest):
     def __init__(self, request, pid):
@@ -106,8 +112,9 @@ class ModeratorJoinTopic(helpers.ModeratorRequest):
     def viewPad(self):
         pad = Pad(self.table.uuid, self.name)
         pad.setReadOnly()
-        mem = self.topic.assignment_set.all()
-        return render(self.request, 'round/pad.html', {'table': self.table, "etherpad": pad, "assign": mem })
+        mem = self.topic.assignment_set.all().filter(atype = 'M')
+        critics = self.topic.assignment_set.all().filter(atype = 'C')
+        return render(self.request, 'round/pad.html', {'table': self.table, "etherpad": pad, "assign": mem, "critics": critics })
     
     def joinAsi(self):
         #main page
