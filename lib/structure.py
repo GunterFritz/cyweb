@@ -14,9 +14,10 @@ class Edge:
     def __init__(self, name, index, color = None):
         self.name = name    #??
         self.index = index  #??
-        self.struts = []    #array of connected struts
+        self.struts = []    #array of connected struts (member)
         self.color = color  #color
         self.topic = None   #topic
+        self.critics = []   #array of struts (critics)
         #self.Topic = None
 
     """
@@ -28,6 +29,15 @@ class Edge:
     def addStrut(self, strut):
         self.struts.append(strut)
         strut.addEdge(self)
+
+    """
+    adds an Critics to that edge
+    ---
+    params
+      strut: Strut that must be added
+    """
+    def add_critic(self, strut):
+        self.critics.append(strut)
 
     """
     assigns a topic to that edge
@@ -118,6 +128,18 @@ class Edge:
         return retval
 
     """
+    collects all assigned critics
+    ---
+    return
+      Person[]
+    """
+    def getCritics(self):
+        retval = []
+        for c in self.critics:
+            retval = retval + c.getPerson()
+        return retval
+
+    """
     searches a person and returns the strut
     ---
     params
@@ -188,6 +210,13 @@ class Strut:
                 string = string + ", Name: " + p.name + ", Rank(" + str(p.getRank(topic)) + ")"
             return "Empty: " + str(self.empty) + " " + str(self.edge1.index) + "," + str(self.edge2.index) + string
         return str(self.empty) + " " + str(self.edge1.index) + "," + str(self.edge2.index)
+    
+    def debugCritic(self):
+        string = ""
+        for p in self.person:
+            string = string + ", Critic: " + p.name
+            
+        return string
 
     """
     adds an Edge to that strut
@@ -364,7 +393,30 @@ class Structure2:
 
     def getNumTopics(self):
         return self.numTopics
-    
+
+    """
+    searches a strut by position and returns it
+    params
+    ---
+      position: (x,y) position touple
+
+    ---
+    return
+      Strut object
+    """
+    def get_strut_by_position(self, position):
+        for s in self.struts:
+            if s.position == position:
+                return s
+        return None
+
+    """
+    add the critics struts to edges
+    """
+    def create_critics(self):
+        for e in self.edges:
+            for p in self.get_critic(e.color):
+                e.add_critic(self.get_strut_by_position(p))
     """
     initializes the edges with color and index
     
@@ -654,10 +706,17 @@ class Structure2:
             #print left side
             for s in h[0].struts:
                 print("  ", s.debugName(h[0].topic))
-            print(h[1].color, h[1].topic.name if h[1].topic else None, h[1].topic.index)
+            #print critics 
+            for c in h[0].critics:
+                print("  ", c.debugCritic())
+            
             #print opposite
+            print(h[1].color, h[1].topic.name if h[1].topic else None, h[1].topic.index)
             for s in h[1].struts:
                 print("  ", s.debugName(h[1].topic))
+            #print critics 
+            for c in h[1].critics:
+                print("  ", c.debugCritic())
         print("Satisfaction:", self.getSatisfaction())
     """
     creates it
@@ -907,9 +966,25 @@ class Oktaeder(Structure2):
         
         #opposites: 1-6, 2-4, 3-5
 
+    def get_critic(self, color):
+        if color == 'white':
+            return [(2,3),(4,5)]
+        if color == 'black':
+            return [(5,2),(3,4)]
+        if color == 'green':
+            return [(1,3),(5,6)]
+        if color == 'yellow':
+            return [(1,5),(3,6)]
+        if color == 'blue':
+            return [(1,2),(4,6)]
+        if color == 'red':
+            return [(1,4),(2,6)]
+        return None
+
     def build(self):
         self.basic()
         self.create()
+        self.create_critics()
         #do not change original
         _topics = self.orig_topics[:]
         _persons = self.orig_persons[:]

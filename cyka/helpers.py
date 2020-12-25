@@ -97,7 +97,8 @@ class Agenda:
         struct.build()
 
         i=1
-        for t in struct.getAgenda():
+        agenda = struct.getAgenda()
+        for t in agenda:
             self.assign_topic(t[0], i)
             self.assign_topic(t[1], i+1)
             i = i + 2
@@ -130,6 +131,12 @@ class Agenda:
         for p in t.getPersons():
             person = Member.objects.get(pk=p.name)
             db_topic.assignment_set.create(member=person, atype="M")
+            db_topic.save()
+        
+        #recreate critics
+        for p in t.getCritics():
+            person = Member.objects.get(pk=p.name)
+            db_topic.assignment_set.create(member=person, atype="C")
             db_topic.save()
 
     #returns the priority for a person as list
