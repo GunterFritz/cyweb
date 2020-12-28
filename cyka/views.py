@@ -14,6 +14,7 @@ from random import randrange
 from . import helpers
 from . import topicauction as TopicAuction
 from . import priorization as Priorization
+from . import documentation as Documentation
 from . import start as Start
 from . import brainwriting
 from . import round as Round
@@ -495,6 +496,16 @@ def personal_schedule_jostle(request, uuid):
     m = Priorization.Member(request, uuid)
     return m.showAgenda()
 
+
+def get_member_doc(request):
+    return None
+
+@login_required
+def get_admin_doc(request):
+    project_id = request.GET.get('proj', '')
+    doc = Documentation.ModeratorOverview(request, project_id)
+
+    return doc.process()
 
 @login_required
 def moderator_schedule_jostle(request):

@@ -94,10 +94,13 @@
                         <a href="{% url 'cyka:project_team' project.id %}" class="collapsible-header" data-turbolinks="false"><i class="material-icons">supervisor_account</i>Teilnehmer</a>
                     </li>
                     <li>
-			    <a href="{% url 'cyka:admin_startjostle' project.id %}" class="collapsible-header" data-turbolinks="false"><i class="material-icons">videocam</i>Problem Jostle</a>
+			    <a href="{% url 'cyka:admin_startjostle' project.id %}" class="collapsible-header" data-turbolinks="false"><i class="material-icons">videocam</i>Konferenz</a>
                     </li>
                     <li>
-                        <a href="{% url 'cyka:workflow' project.id %}" class="collapsible-header" data-turbolinks="false"><i class="material-icons">group_work</i>Agenda(obsolete)</a>
+			    <a href="{% url 'cyka:get_admin_doc' %}?proj={{project.id}}" class="collapsible-header" data-turbolinks="false"><i class="material-icons">description</i>Dokumentation</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'cyka:workflow' project.id %}" class="collapsible-header" data-turbolinks="false"><i class="material-icons">group_work</i>Simulation</a>
                     </li>
                     <li>
 			    <a href="{% url 'cyka:plenum' project.id %}" class="collapsible-header" data-turbolinks="false"><i class="material-icons">videocam</i>Test</a>

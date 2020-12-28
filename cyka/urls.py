@@ -57,6 +57,9 @@ urlpatterns = [
         url(r'^data/asi/$', views.get_json_asi, name="get_json_asi"),
         url(r'^data/proj/$', views.get_json_proj, name="get_json_proj"),
         #end get data
+        #get docu
+        url(r'^documentation/admin/$', views.get_admin_doc, name="get_admin_doc"),
+        url(r'^documentation/member/$', views.get_member_doc, name="get_member_doc"),
 	# ex: /cyka/project/5/jostle/
 	url(r'^(?P<project_id>[0-9]+)/jostle/$', views.admin_jostle, name="admin_jostle"),
 	# ex: /cyka/project/5/jostle/randsession/

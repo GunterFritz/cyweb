@@ -2,12 +2,13 @@
         <div class="card-content black-text">
 	    <span class="card-title grey-text text-darken-2">{{table.card.heading}}</span>
 	    <p>{{table.card.desc}}<p>
+	    <hr>
 	    <div id="_supporter">
-	    {% for a in assign %}
-	    <span class="badge blue lighten-4">{{a.member.name}}</span>
-	    {% endfor %}
 	    {% for a in critics %}
 	    <span class="badge">{{a.member.name}}</span>
+	    {% endfor %}
+	    {% for a in assign %}
+	    <span class="badge blue lighten-4">{{a.member.name}}</span>
 	    {% endfor %}
 	    </div>
         </div>
