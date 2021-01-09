@@ -42,6 +42,9 @@
     <style type="text/css">
       html, body {
           background: #FFF;
+	  display: flex;
+  	  flex-flow: column;
+  	  height: 100%;
       }
     </style>
     {% block extrahead %}{% endblock %}
@@ -79,11 +82,11 @@
             {% endblock header %}
       </header>
 
-      <main style="height: 100%">
+      <main style="flex-grow: 1; overflow:hidden">
       {% block main %}
       {% block sidebar %}
-      <div class="row" style="height: 100%">
-        <div class="" style="height: 100%">
+      <div class="row vertcontainer" style="overflow:hidden; height: 100%">
+        <div style="flex-grow: 1; height: 100%">
             <dmc-sidenav>
                 <ul id="slide-out" class="sidenav sidenav-fixed">
                     {% block sidenav_items %}
@@ -111,11 +114,10 @@
 
             {% endblock %}
             {% block main_content %}
-            <div class="content">
-              {% block content %}{% endblock %}
-            </div>
-               {% endblock main_content %}
-          </div>
+              <div class="content" style="height: 100%">
+                {% block content %}{% endblock %}
+              </div>
+            {% endblock main_content %}
       </div>
       {% endblock main %}
       </main>

@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
-from .models import Member, Table, Card 
+from .models import Topic, Member, Table, Card 
 from . import helpers
+from . import config
 from .forms import CardForm
 from .htmlobjects import HTML_Si, HTMLAsi
 
@@ -14,6 +15,9 @@ class ModeratorOverview(helpers.ModeratorRequest):
     
     def get(self):
         #show only agreed
+        if 'pad' == self.request.GET.get('func', ''):
+            return self.pad()
+
         htables = HTMLAsi.get_proj_asi(self.proj)
         sis = HTML_Si.get_proj_si(self.proj)
         agenda = helpers.Agenda(self.proj).get_agenda()
@@ -24,3 +28,21 @@ class ModeratorOverview(helpers.ModeratorRequest):
             'agenda': agenda,
             })
 
+    def pad(self):
+        topic_id = self.request.GET.get('topic', '')
+
+        topic = Topic.objects.get(pk=topic_id)
+        table = topic.asi
+        
+        pad = config.Pad(str(table.uuid), self.request.user.get_username)
+        pad.setReadOnly()
+        mem = topic.assignment_set.all().filter(atype = 'M')
+        critics = topic.assignment_set.all().filter(atype = 'C')
+        
+        return render(self.request, 'cyka/documentation_pad.html', {'project' : self.proj, 
+            'table': table, 
+            "etherpad": pad, 
+            "critics": critics, 
+            "assign": mem 
+            })
+        

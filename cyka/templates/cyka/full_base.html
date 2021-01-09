@@ -101,13 +101,13 @@
 
       <main style="flex-grow: 1; overflow:hidden">
       {% block main %}
-      <div style="height: 100%">
+        <div style="height: 100%">
             {% block main_content %}
             <div class="content">
               {% block content %}{% endblock %}
             </div>
             {% endblock main_content %}
-      </div>
+        </div>
       {% endblock main %}
       </main>
       {% block javascript %}{% endblock %}

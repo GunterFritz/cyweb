@@ -1,0 +1,35 @@
+{% extends 'cyka/project_base.html' %}
+{% block extrahead %}
+{% endblock %}
+{% block javascript %}
+{% endblock %}
+{% block content %}
+<div class="row" style="height: 100%; padding-left: 20px; padding-right: 20px; overflow: hidden">
+    <div id="_pad" class="col actionarea vertcontainer">
+      <div class="card vertbox0">
+        <div class="card-content black-text">
+	    <span class="card-title grey-text text-darken-2">{{table.card.heading}}</span>
+	    <p>{{table.card.desc}}<p>
+	    <hr>
+	    <div id="_supporter">
+	    {% for a in critics %}
+	    <span class="badge">{{a.member.name}}</span>
+	    {% endfor %}
+	    {% for a in assign %}
+	    <span class="badge blue lighten-4">{{a.member.name}}</span>
+	    {% endfor %}
+	    </div>
+        </div>
+      </div>
+      <div class="vertbox1">
+	<iframe  frameborder="0" 
+            marginheight="0" 
+            marginwidth="0" 
+	    scrolling="auto" name="{{etherpad.name}}" src="{{etherpad.domain}}/{{etherpad.pad}}?showChat=false&showLineNumbers=false&userName={{etherpad.user}}" 
+	    width="100%" 
+            height="100%">
+	</iframe>
+      </div>
+    </div>
+</div>
+{% endblock %}
