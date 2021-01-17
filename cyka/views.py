@@ -778,7 +778,7 @@ def rand_session(request, project_id):
 def plenum(request, project_id):
     proj = get_project(request, project_id)
     
-    return render(request, 'cyka/project_plenum.html', {'project' : proj})
+    return render(request, 'cyka/test.html', {'project' : proj})
 
 @login_required
 def workflow(request, project_id):
