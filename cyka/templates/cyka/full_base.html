@@ -60,7 +60,10 @@
           </li>
         </ul>
         <div class="center-align valign-wrapper">
-          <ul class="pagination center center-align">
+          <ul id="_heading" class="pagination center center-align">
+            <li><a id="_heading_text"></a></li>
+          </ul>
+          <ul id="_agenda_list" class="pagination center center-align">
             <li id="_brain_label"  class="disabled"><a>Brainwriting</a></li>
             <li id="_topic_label"  class="disabled"><a>Themenvorschlag</a></li>
             <li id="_vote_label"   class="disabled"><a>Themenwahl</a></li>
@@ -68,10 +71,10 @@
             <li id="_agenda_label" class="disabled"><a>Agenda</a></li>
           </ul>
         </div>
-      <ul class="right" style="padding-right: 20px">
+      <ul id="_actions_list" class="right" style="padding-right: 20px">
         <li style="display: inline">
             <a id="_back_button" class="hoverable waves-effect waves-light btn-floating blue disabled">
-		  <i class="material-icons tooltipped" data-tooltip="Schritt zurücksetzen">fast_rewind</i>
+		  <i class="material-icons tooltipped" data-tooltip="Schritt zurücksetzen">navigate_before</i>
 	    </a>
 	</li>
           <li style="display: inline">
@@ -92,7 +95,7 @@
 	  </li>
           <li style="display: inline">
             <a id="_next_button" onmouseover="this.style.cursor='pointer'"
-	     class="hoverable waves-effect waves-light btn-floating blue disabled"><i class="material-icons tooltipped" data-tooltip="nächster Schritt">fast_forward</i>
+	     class="hoverable waves-effect waves-light btn-floating blue disabled"><i class="material-icons tooltipped" data-tooltip="nächster Schritt">navigate_next</i>
 	    </a>
 	</li>
       </ul>

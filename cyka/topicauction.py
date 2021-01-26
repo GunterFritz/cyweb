@@ -176,7 +176,9 @@ class ModeratorScheduler(helpers.ModeratorRequest):
         #reset, delete the steps
         if self.created and self.step.get_post_status(self.request) == 'O':
             self.proj.topic_set.all().delete()
-        
+       
+        #TODO: DOES NOT WORK FIRST TIME!!!!!! -> Don't create topics on Project creation
+        #BUG
         if not self.created and self.step.get_post_status(self.request) == 'B':
             self.step.post(self.request)
             return self.createTopics()

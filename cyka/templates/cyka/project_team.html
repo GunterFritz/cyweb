@@ -29,22 +29,8 @@
     <div class="row valign change-form">
         <div class="col s12 m8 offset-m2 l8 offset-l2">
             <div class="card">
-	        <dmc-form><form method="POST" enctype="multipart/form-data">
-                    <div class="card-content">
-                        <span class="card-title grey-text text-darken-2">Was ist zu tun</span>
-		        <p>{{step.todo}}</p>
-                        {% csrf_token %}
-                            {% form form=wf_form %}{% endform %}
-                    </div>
-                    <div class="card-action">
-                        <div class="right-align">
-                            <button class="btn btn-primary" name='step' type="submit">Speichern</button>
-                        </div>
-                    </div>
-                </form></dmc-form>
-            </div>
-            <div class="card">
-                <div class="card-content"><script>var counter = 0;</script>
+                <div class="card-content">
+		    <script>var counter = 0;</script>
                     <span class="card-title grey-text text-darken-2">Teilnehmer des Workshops</span>
 		    <ul class="collapsible">
 	            <li>

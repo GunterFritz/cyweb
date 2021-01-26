@@ -79,7 +79,8 @@ class MemberJoinTopic(helpers.MemberRequest):
     Pad function, renders etherpad
     """
     def viewPad(self):
-        pad = Pad(self.table.uuid, self.member.name)
+        pad = Pad(str(self.table.uuid), self.member.name)
+        pad.setReadOnly()
         mem = self.topic.assignment_set.all().filter(atype = 'M')
         critics = self.topic.assignment_set.all().filter(atype = 'C')
         return render(self.request, 'round/pad.html', {
@@ -110,7 +111,7 @@ class ModeratorJoinTopic(helpers.ModeratorRequest):
         return self.joinAsi()
     
     def viewPad(self):
-        pad = Pad(self.table.uuid, self.name)
+        pad = Pad(str(self.table.uuid), self.name)
         pad.setReadOnly()
         mem = self.topic.assignment_set.all().filter(atype = 'M')
         critics = self.topic.assignment_set.all().filter(atype = 'C')
@@ -119,4 +120,9 @@ class ModeratorJoinTopic(helpers.ModeratorRequest):
     def joinAsi(self):
         #main page
         jitsi = Jitsi(self.table.uuid, self.table.card.heading, self.name)
-        return render(self.request, 'round/moderator_join_table.html', {'project' : self.proj, 'topic': self.topic, 'jitsi': jitsi })
+        return render(self.request, 'round/moderator_join_table.html', {
+            'project' : self.proj, 
+            'topic': self.topic, 
+            'table': self.table, 
+            'jitsi': jitsi 
+            })

@@ -92,7 +92,15 @@
             $(where).html(response);
         }); 
     }
+function set_heading(label){
+    $("#_agenda_list").hide();
+    $("#_heading").show();
+    $("#_heading_text").text(label);
+}
+
 function set_active_label(label){
+    $("#_agenda_list").show();
+    $("#_heading").hide();
     $("#_brain_label").addClass("disabled");
     $("#_topic_label").addClass("disabled");
     $("#_vote_label").addClass("disabled");

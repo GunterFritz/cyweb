@@ -82,7 +82,7 @@ class AgreedStatementImportance(helpers.MemberRequest):
     Pad function, renders etherpad
     """
     def viewPad(self):
-        pad = Pad(self.table.uuid, self.member.name)
+        pad = Pad(str(self.table.uuid), self.member.name)
         if self.step.done:
             pad.setReadOnly()
         asis = self.table.sisign_set.all()
@@ -211,7 +211,7 @@ class ModeratorJoinASI:
         return render(self.request, 'problemjostle/supporter.html', {"sign": asis})
 
     def viewPad(self):
-        pad = Pad(self.table.uuid, self.name)
+        pad = Pad(str(self.table.uuid), self.name)
         pad.setReadOnly()
         asis = self.table.sisign_set.all()
         return render(self.request, 'problemjostle/pad.html', {'table': self.table, "etherpad": pad, "sign": asis, 'project' : self.proj })

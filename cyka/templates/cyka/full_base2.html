@@ -5,9 +5,6 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    {% block favicon %}<link href="{% static 'material/imgs/favicon.png' %}" rel="shortcut icon">{% endblock %}
-    
     <link href="https://unpkg.com/material-components-web@v4.0.0/dist/material-components-web.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="{% static 'css/icon-colors.css' %}">
@@ -31,20 +28,14 @@
           margin-left: 5px;
         }
 	.content {
-	  padding-left: 250px;
           height: 100%;
           width: 100%;
-        }
-	.sidenav{
-          top: 65px;
-          width: 250px;
-          height: 100%;
         }
       </style>
 
     <style type="text/css">
       html, body {
-          background: #FFF;
+          background: #161C44;
 	  display: flex;
   	  flex-flow: column;
   	  height: 100%;
@@ -53,7 +44,7 @@
     {% block extrahead %}{% endblock %}
     {% endblock %}
   </head>
-  <body class="valign-wrapper2">
+  <body >
       <header>
             {% block header %}
             {% block topbar %}
@@ -68,6 +59,9 @@
                     <div>
                     {% block topbar_links %}
                         <ul id="nav-mobile" class="right hide-on-med-and-down">
+                    <li>
+			    <a href="{% url 'cyka:project_details' project.id %}" data-turbolinks="false">{{project.name}}<i class="material-icons left">home</i></a>
+                    </li>
 			    <li><a href="{% url 'cyka:project_list' %}" data-turbolinks="false">Workshops<i class="material-icons left">account_balance</i></a></li>
 			    <li><a href="{% url 'cyka:project_new' %}" data-turbolinks="false">Neuer Workshop<i class="material-icons left">add</i></a></li>
                             {% if user.is_authenticated %}
@@ -87,39 +81,11 @@
 
       <main style="flex-grow: 1; overflow:hidden">
       {% block main %}
-      {% block sidebar %}
-      <div class="row vertcontainer" style="overflow:auto; height: 100%">
-        <div style="flex-grow: 1; height: 100%">
-            <dmc-sidenav>
-                <ul id="slide-out" class="sidenav sidenav-fixed">
-                    {% block sidenav_items %}
-                    <li>
-                        <a href="{% url 'cyka:project_details' project.id %}" class="collapsible-header" data-turbolinks="false"><i class="material-icons">home</i>Workshop</a>
-                    </li>
-                    <li>
-                        <a href="{% url 'cyka:project_team' project.id %}" class="collapsible-header" data-turbolinks="false"><i class="material-icons">supervisor_account</i>Teilnehmer</a>
-                    </li>
-                    <li>
-			    <a href="{% url 'cyka:admin_startjostle' project.id %}" class="collapsible-header" data-turbolinks="false"><i class="material-icons">videocam</i>Konferenz</a>
-                    </li>
-                    <li>
-			    <a href="{% url 'cyka:get_admin_doc' %}?proj={{project.id}}" class="collapsible-header" data-turbolinks="false"><i class="material-icons">description</i>Dokumentation</a>
-                    </li>
-                    <li>
-                        <a href="{% url 'cyka:workflow' project.id %}" class="collapsible-header" data-turbolinks="false"><i class="material-icons">group_work</i>Simulation</a>
-                    </li>
-                    <li>
-			    <a href="{% url 'cyka:plenum' project.id %}" class="collapsible-header" data-turbolinks="false"><i class="material-icons">videocam</i>Test</a>
-                    </li>
-                    {% endblock sidenav_items %}
-		</ul>
-            </dmc-sidenav>
-
-            {% endblock %}
+      <div style="height: 100%">
             {% block main_content %}
-              <div class="content" style="height: 100%">
-                {% block content %}{% endblock %}
-              </div>
+            <div class="content">
+              {% block content %}{% endblock %}
+            </div>
             {% endblock main_content %}
       </div>
       {% endblock main %}
